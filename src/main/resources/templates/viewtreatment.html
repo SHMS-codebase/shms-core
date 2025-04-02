@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View Treatment</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<link rel="stylesheet" th:href="@{/css/createstyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Make sure the path to formValidation.js is correct -->
+<script src="/path/to/formValidation.js"></script>
+<script>
+	$(document)
+			.ready(
+					function() {
+						// Enhanced edit button functionality that properly handles disabled fields
+						$('#editBtn')
+								.click(
+										function() {
+											// Store current values and enable fields
+											$(
+													'input[type="date"], input, select, textarea')
+													.each(
+															function() {
+																var currentValue = $(
+																		this)
+																		.val();
+																$(this)
+																		.prop(
+																				'disabled',
+																				false)
+																		.val(
+																				currentValue);
+															});
+											$('#saveChangesBtn').prop(
+													'disabled', false);
+											$('header h2').text(
+													'Update Treatment');
+										});
+
+						// Enhanced reset functionality that maintains proper field states
+						$('#resetBtn')
+								.click(
+										function() {
+											$('#viewForm')[0].reset();
+											// Re-disable fields after reset if not in edit mode
+											if ($('#saveChangesBtn').prop(
+													'disabled')) {
+												$(
+														'input[type="date"], input, select, textarea')
+														.prop('disabled', true);
+											}
+										});
+
+						// Form validation before submission
+						$('#viewForm').submit(function(event) {
+							if (!validateForm()) {
+								event.preventDefault();
+							}
+						});
+
+						// Format the date properly on page load
+						formatTreatmentDate();
+
+						// Additional function to ensure values persist after state changes
+						function preserveFieldValues() {
+							$(
+									'input[type="date"], input, textarea, select')
+									.each(
+											function() {
+												var currentValue = $(this)
+														.val();
+												$(this).attr(
+														'data-original-value',
+														currentValue);
+											});
+						}
+
+						// Function to format the date from the DB format to the date input format
+						function formatTreatmentDate() {
+							// Get the date from a hidden input or data attribute that contains the original DB value
+							var dbDateStr = $('#originalTreatmentDate').val();
+
+							if (dbDateStr) {
+								// Parse the date (handles formats like '2025-02-14' or '2025-02-14T11:27:50')
+								var dateParts = dbDateStr.split('T')[0]
+										.split('-');
+								if (dateParts.length === 3) {
+									// Format as YYYY-MM-DD for the date input
+									var formattedDate = dateParts[0] + '-'
+											+ dateParts[1] + '-' + dateParts[2];
+									$('#treatmentDate').val(formattedDate);
+								}
+							}
+						}
+
+						// Call on page load to store initial values
+						preserveFieldValues();
+					});
+</script>
+<style>
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; /* Center the form vertically */
+	height: 100vh; /* Ensure the body takes the full viewport height */
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+form {
+	margin-top: 0px;
+	margin-bottom: 40px;
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 600px;
+	padding: 30px;
+	margin-top: 420px;
+}
+
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+
+.success-message {
+	text-align: center;
+	color: #0f9d58;
+	font-size: 16px;
+	margin: 20px 0;
+	display: block;
+}
+
+button {
+	background-color: #4285f4;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	padding: 12px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	width: 100%;
+	transition: background-color 0.3s;
+	font-weight: 500;
+}
+
+button:hover {
+	background-color: #3367d6;
+}
+
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+table {
+	width: 100%;
+}
+
+th, td {
+	padding: 8px;
+	text-align: right;
+}
+
+.buttons-container {
+	margin-top: 20px;
+}
+
+.buttons-container button {
+	margin-right: 10px;
+}
+
+form {
+	width: 100%; /* Ensure form spans the full width of the container */
+}
+
+input[type="date"], input, select, textarea {
+	width: 100%;
+	/* Ensure input elements span the full width of their parent td */
+}
+</style>
+</head>
+<body>
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container">
+
+		<h4 class="centered-text">View Treatment</h4>
+
+		<div th:if="${errorMessage}" class="error-message">
+			<p th:text="${errorMessage}"></p>
+		</div>
+		<div th:if="${message}" class="success-message">
+			<p th:text="${message}"></p>
+		</div>
+
+		<form id="viewForm" th:object="${treatment}"
+			th:action="@{/treatments/updatetreatment}" method="POST">
+
+			<input type="hidden" th:name="source" th:value="${source}" />
+
+			<div id="treatmentFields">
+
+				<div class="form-group">
+					<label>Treatment ID:</label> <input type="hidden"
+						th:field="*{treatmentID}" /> <span
+						th:text="${treatment.treatmentID}"></span>
+				</div>
+				<div class="form-group">
+					<label>Patient Name:</label> <input type="hidden"
+						th:field="*{appointment.patient.patientID}" /> <span
+						th:text="${treatment.appointment.patient.patientName}"></span>
+				</div>
+				<div class="form-group">
+					<label>treatment Date:</label> <input type="hidden"
+						id="originalTreatmentDate" th:value="*{treatmentDate}" /> <input
+						type="date" id="treatmentDate" th:field="*{treatmentDate}"
+						disabled required />
+				</div>
+				<div class="form-group">
+					<label>Diagnosis:</label> <input th:field="*{diagnosis}" disabled />
+				</div>
+				<div class="form-group">
+					<label>Treatment Details:</label>
+					<textarea th:field="*{treatmentDetails}" disabled></textarea>
+				</div>
+				<div class="form-group">
+					<label>Additional Notes:</label>
+					<textarea th:field="*{notes}" disabled></textarea>
+				</div>
+				<div class="form-group">
+					<label>Follow-up Needed?</label> <select class="form-select"
+						id="followUpNeeded" th:field="*{followUpNeeded}" disabled>
+						<option value="false">No</option>
+						<option value="true">Yes</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label>Treatment Status:</label> <select
+						id="treatment.treatmentStatus" name="treatment.treatmentStatus"
+						th:field="*{treatmentStatus}" disabled>
+						<option value="ONGOING"
+							th:selected="${treatment.treatmentStatus == T(com.healthcaremngnt.enums.TreatmentStatus).ONGOING}">On
+							Going</option>
+						<option value="COMPLETED"
+							th:selected="${treatment.treatmentStatus == T(com.healthcaremngnt.enums.TreatmentStatus).COMPLETED}">Completed</option>
+						<option value="BILLED"
+							th:selected="${treatment.treatmentStatus == T(com.healthcaremngnt.enums.TreatmentStatus).BILLED}">Billed</option>
+						<option value="FOLLOWUP"
+							th:selected="${treatment.treatmentStatus == T(com.healthcaremngnt.enums.TreatmentStatus).FOLLOWUP}">Follow
+							Up</option>
+					</select>
+				</div>
+			</div>
+
+			<!-- Buttons -->
+			<div class="buttons-container">
+				<button type="button" id="editBtn" title="Edit Schedule">Edit</button>
+				<button type="reset" id="resetBtn" title="Reset Form">Reset</button>
+				<button type="submit" id="saveChangesBtn" disabled
+					title="Save Changes">Save</button>
+			</div>
+		</form>
+
+	</div>
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

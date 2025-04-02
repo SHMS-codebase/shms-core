@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit User Profile</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<link rel="stylesheet" th:href="@{/css/createstyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/path/to/formValidation.js"></script>
+<style>
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; /* Center the form vertically */
+	height: 100vh; /* Ensure the body takes the full viewport height */
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+form {
+	margin-top: 10px;
+	max-width: 1000px;
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 650px;
+	padding: 30px;
+	margin-top: 300px;
+}
+
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+
+.success-message {
+	text-align: center;
+	color: #0f9d58;
+	font-size: 16px;
+	margin: 20px 0;
+	display: block;
+}
+
+.large-textarea {
+	width: 100%; /* Adjust to fit the form's width */
+	min-height: 150px; /* Adjust height as needed */
+	box-sizing: border-box;
+	/* Ensures padding and border are included in the width and height */
+}
+</style>
+</head>
+<body>
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container">
+
+		<h4 class="centered-text">Edit User Profile</h4>
+
+		<div th:if="${errorMessage}" class="error-message">
+			<p th:text="${errorMessage}"></p>
+		</div>
+		<div th:if="${message}" class="success-message">
+			<p th:text="${message}"></p>
+		</div>
+
+		<form th:action="@{/users/edituserprofile}" th:object="${userDetails}"
+			method="post">
+
+			<!-- Hidden fields -->
+			<input type="hidden" th:field="*{roleID}" /> <input type="hidden"
+				th:field="*{userID}" /> <input type="hidden" th:field="*{userName}" />
+			<input type="hidden" th:field="*{password}" /> <input type="hidden"
+				th:name="source" th:value="${source}" />
+
+			<!-- Hidden fields for doctorID and doctorName -->
+			<input type="hidden" th:if="${userDetails.doctor != null}"
+				th:field="*{doctor.doctorID}" />
+
+			<!-- Hidden fields for patientID and patientName -->
+			<input type="hidden" th:if="${userDetails.patient != null}"
+				th:field="*{patient.patientID}" />
+
+			<div class="form-group">
+				<label>User Name: </label>
+				<div th:text="${userDetails.userName}"></div>
+			</div>
+			<div class="form-group">
+				<label class="required">Name: </label> <input type="text"
+					th:if="${userDetails.doctor != null}"
+					th:field="*{doctor.doctorName}" /> <input type="text"
+					th:if="${userDetails.doctor == null}"
+					th:field="*{patient.patientName}" />
+			</div>
+			<div class="form-group">
+				<label class="required">Password: </label> <a
+					th:href="@{/auth/change-password(userID=${userDetails.userID}, source=${source})}">Change
+					Password</a>
+			</div>
+			<div class="form-group">
+				<label class="required">Email ID: </label> <input type="email"
+					th:field="*{emailID}" />
+			</div>
+			<div class="form-group">
+				<label>Contact Number: </label> <input type="text"
+					th:if="${userDetails.doctor != null}"
+					th:field="*{doctor.contactNumber}" /> <input type="text"
+					th:if="${userDetails.doctor == null}"
+					th:field="*{patient.contactNumber}" />
+			</div>
+			<div class="form-group">
+				<label>Address: </label> <input type="text"
+					th:if="${userDetails.doctor != null}" th:field="*{doctor.address}" />
+				<input type="text" th:if="${userDetails.doctor == null}"
+					th:field="*{patient.address}" />
+			</div>
+			<div class="form-group" th:if="${userDetails.doctor != null}">
+				<label class="required">Qualification: </label> <input type="text"
+					th:field="*{doctor.qualification}" />
+			</div>
+			<div class="form-group" th:if="${userDetails.doctor != null}">
+				<label for="specialization" class="required">Specialization:</label>
+				<select id="doctor.specialization" name="doctor.specialization">
+					<option value="General Physician"
+						th:selected="${userDetails.doctor.specialization == 'General Physician'}">General
+						Physician</option>
+					<option value="Cardiology"
+						th:selected="${userDetails.doctor.specialization == 'Cardiology'}">Cardiology</option>
+					<option value="Dermatology"
+						th:selected="${userDetails.doctor.specialization == 'Dermatology'}">Dermatology</option>
+					<option value="Emergency Medicine"
+						th:selected="${userDetails.doctor.specialization == 'Emergency Medicine'}">Emergency
+						Medicine</option>
+					<option value="Endocrinology"
+						th:selected="${userDetails.doctor.specialization == 'Endocrinology'}">Endocrinology</option>
+					<option value="Gastroenterology"
+						th:selected="${userDetails.doctor.specialization == 'Gastroenterology'}">Gastroenterology</option>
+					<option value="Neurology"
+						th:selected="${userDetails.doctor.specialization == 'Neurology'}">Neurology</option>
+					<option value="Oncology"
+						th:selected="${userDetails.doctor.specialization == 'Oncology'}">Oncology</option>
+					<option value="Orthopedics"
+						th:selected="${userDetails.doctor.specialization == 'Orthopedics'}">Orthopedics</option>
+					<option value="Pediatrics"
+						th:selected="${userDetails.doctor.specialization == 'Pediatrics'}">Pediatrics</option>
+					<option value="Psychiatry"
+						th:selected="${userDetails.doctor.specialization == 'Psychiatry'}">Psychiatry</option>
+					<option value="Radiology"
+						th:selected="${userDetails.doctor.specialization == 'Radiology'}">Radiology</option>
+					<option value="ENT"
+						th:selected="${userDetails.doctor.specialization == 'ENT'}">ENT
+						(Otolaryngology)</option>
+					<option value="Nephrology"
+						th:selected="${userDetails.doctor.specialization == 'Nephrology'}">Nephrology</option>
+					<option value="Urology"
+						th:selected="${userDetails.doctor.specialization == 'Urology'}">Urology</option>
+					<option value="Rheumatology"
+						th:selected="${userDetails.doctor.specialization == 'Rheumatology'}">Rheumatology</option>
+					<option value="Pulmonology"
+						th:selected="${userDetails.doctor.specialization == 'Pulmonology'}">Pulmonology</option>
+					<option value="Hematology"
+						th:selected="${userDetails.doctor.specialization == 'Hematology'}">Hematology</option>
+					<option value="Ophthalmology"
+						th:selected="${userDetails.doctor.specialization == 'Ophthalmology'}">Ophthalmology</option>
+					<option value="Plastic Surgery"
+						th:selected="${userDetails.doctor.specialization == 'Plastic Surgery'}">Plastic
+						Surgery</option>
+					<option value="Geriatrics"
+						th:selected="${userDetails.doctor.specialization == 'Geriatrics'}">Geriatrics</option>
+					<option value="Obstetrics and Gynecology"
+						th:selected="${userDetails.doctor.specialization == 'Obstetrics and Gynecology'}">Obstetrics
+						and Gynecology</option>
+					<option value="Anesthesiology"
+						th:selected="${userDetails.doctor.specialization == 'Anesthesiology'}">Anesthesiology</option>
+				</select>
+			</div>
+			<div class="form-group" th:if="${userDetails.doctor != null}">
+				<label class="required">Experience: </label> <input type="text"
+					th:field="*{doctor.experience}" />
+			</div>
+			<div class="form-group" th:if="${userDetails.patient != null}">
+				<label for="gender" class="required">Gender:</label> <select
+					id="patient.gender" name="patient.gender"
+					th:field="*{patient.gender}">
+					<option value="MALE"
+						th:selected="${userDetails.patient.gender == T(com.healthcaremngnt.enums.Gender).MALE}">Male</option>
+					<option value="FEMALE"
+						th:selected="${userDetails.patient.gender == T(com.healthcaremngnt.enums.Gender).FEMALE}">Female</option>
+					<option value="OTHER"
+						th:selected="${userDetails.patient.gender == T(com.healthcaremngnt.enums.Gender).OTHER}">Other</option>
+				</select>
+			</div>
+			<div class="form-group" th:if="${userDetails.patient != null}">
+				<label for="dob" class="required">Date of Birth:</label> <input
+					type="date" id="patient.dob" name="patient.dob"
+					th:value="${userDetails.patient.dob}">
+			</div>
+			<button type="submit">Update</button>
+		</form>
+
+	</div>
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

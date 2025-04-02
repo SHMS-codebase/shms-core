@@ -1,0 +1,356 @@
+/* General Reset */
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	background-color: #FFF0F5;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	/* background-color: #FFF0F5; */
+	font-family: 'Open Sans', sans-serif;
+	background-color: #e0e4f1;
+	height: 100vh;
+	overflow: hidden; /* Ensure full background coverage */
+}
+
+.background-image {
+	position: fixed;
+	/* Make it fill the entire background */
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../images/background-image.jpg");
+	background-size: cover;
+	/* Ensure the image is fully displayed without stretching */
+	background-repeat: no-repeat;
+	background-position: center;
+	z-index: -1;
+	/* Ensure it appears behind all other content */
+	transform: translateY(50px);
+	/* Slightly adjust the bg image position */
+}
+
+.fixed-header {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 1000;
+	background-color: transparent;
+	/* Make it transparent to show the background image */
+	z-index: 1030;
+}
+
+.main-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: left;
+	margin-top: 200px;
+	flex: 1;
+	padding: 20px;
+	width: 100%;
+	/* Make it occupy full width */
+	position: relative;
+	/* Add this to enable positioning */
+}
+
+.content {
+	/* padding: 20px; */
+	padding: 30px;
+	/*background: rgba(255, 255, 255,35%);  Semi-transparent background */
+	background: rgba(255, 255, 255, 30%);
+	/* Increased opacity to 0.9 for better readability */
+	border-radius: 15px;
+	/* Rounded corners */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	/* Subtle shadow */
+	position: relative;
+	/* Positioning for the fading effect */
+	z-index: 1;
+	/* Ensure it appears above the background image */
+}
+
+.text {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 20px;
+	color: #333; /* Ensures good contrast with the background */
+	margin-bottom: 1.5em; /* Add spacing between paragraphs */
+}
+
+/* Header Styling */
+header {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	/* padding: 20px; */
+	padding: 8px 5px; /* Reduced padding */
+	/* background-color: rgb(120, 30, 140); Slightly darker shade
+	background-color: rgb(138, 6, 145); */
+	background: linear-gradient(to bottom, rgb(5, 5, 40), rgb(15, 32, 95));
+	/* Dark at the top, lighter at the bottom */
+	/* Dark blue gradient */
+	color: white;
+	box-shadow: 0px 0px 10px 0px #0000001a;
+	text-align: center;
+}
+
+.header-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+/* Logo Styling */
+.logo {
+	height: 50%; /* Default height for the logo */
+	width: auto;
+	/* margin-right: 20px; */
+	margin-right: 15px;
+}
+
+h1, .heading {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 700;
+	font-size: 30px;
+	margin: 0;
+}
+
+.underlined-text {
+	text-decoration: underline;
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.text {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 20px;
+}
+
+/* Responsive Adjustments */
+@media ( max-width : 768px) {
+	header {
+		padding: 6px 4px; /* Further reduce padding on smaller screens */
+	}
+	.logo {
+		height: 40px; /* Adjust logo height for smaller screens */
+	}
+	h1, .heading {
+		font-size: 24px; /* Adjust font size for smaller screens */
+	}
+}
+
+@media ( max-width : 480px) {
+	header {
+		padding: 5px 3px;
+		/* Even further reduce padding on very small screens */
+	}
+	.logo {
+		height: 35px; /* Adjust logo height for very small screens */
+	}
+	h1, .heading {
+		font-size: 20px; /* Adjust font size for very small screens */
+	}
+}
+
+/* Navbar Styling */
+.navbar-custom {
+	/* background-color: rgba(186, 134, 190, 0.87); */
+	/* background-color: rgb(220, 152, 224); */
+	background-color: rgb(128, 166, 192, 0.53);
+	border-radius: 25px;
+	margin: 10px auto;
+	padding: 10px 20px;
+	width: 90%;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.navbar-custom .navbar-brand {
+	color: white;
+}
+
+.navbar-custom .navbar-brand:hover {
+	color: #FFD700;
+	box-shadow: 0 0 10px #FFD700;
+}
+
+/* Navbar links */
+.navbar-custom .nav-link {
+	/* color: rgb(13, 12, 12); */
+	color: rgb(255, 255, 255);
+	transition: color 0.3s, background-color 0.3s, border-bottom 0.3s;
+	padding: 10px 20px;
+	position: relative;
+}
+
+/* Underline and highlight effect on hover */
+.navbar-custom .nav-link:hover {
+	color: #FFD700;
+	background-color: rgba(90, 8, 95, 0.956); /* Subtle highlight effect */
+}
+
+/* Underline effect */
+/* .navbar-custom .nav-link::after {
+	content: "";
+	display: block;
+	width: 0%;
+	height: 3px;
+	background-color: #FFD700;
+	transition: width 0.3s ease-in-out;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+} */
+
+/* Expand the underline on hover */
+.navbar-custom .nav-link:hover::after {
+	width: 100%;
+}
+
+.navbar-nav {
+	margin-left: 0;
+	display: flex;
+	justify-content: flex-start;
+	gap: 15px;
+}
+
+.navbar-toggler {
+	border: none;
+}
+
+.navbar-toggler:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+/* For the rounded highlight on hover to menu */
+.navbar-nav .nav-link {
+	padding: 10px 15px; /* Adjust padding for better spacing */
+	border-radius: 25px; /* Makes the hover effect rounded */
+	transition: background-color 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+	background-color: rgb(138, 6, 145);; /* Change to desired hover color */
+	color: #FFD700; /* Ensures text remains visible */
+}
+
+/* Footer Styling */
+footer {
+	/* background-color: rgb(120, 30, 140); Slightly darker shade
+	background-color: rgb(138, 6, 145); */
+	background: linear-gradient(to bottom, rgb(15, 32, 95), rgb(5, 5, 40));
+	/* Dark blue gradient */
+	color: #fff;
+	padding: 1px 0;
+	text-align: center;
+	position: relative;
+	width: 100%;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: auto;
+}
+
+footer p {
+	margin: 5px 0 10px 0; /* Adjusted bottom margin to reduce space */
+	color: #fff; /* Ensure text color contrast */
+}
+
+footer a, footer span {
+	color: #fff;
+	text-decoration: none;
+}
+
+.social-icons {
+	/* margin-top: 5px;  Add margin for spacing */
+	/*right: 10px; */
+	position: absolute;
+	bottom: 10px; /* Adjust spacing from the bottom */
+	right: 10px; /* Adjust spacing from the right */
+}
+
+/* socia-media icon styling */
+.social-icons a {
+	color: #fff; /* Ensure icon color contrast */
+	margin: 0 10px; /* Space out the icons */
+	font-size: 20px; /* Size of the social media icons */
+	transition: color 0.3s; /* Add a smooth color transition */
+}
+
+.social-icons a:hover {
+	color: #FFD700; /* Change color on hover */
+}
+
+/* Logo styling */
+.header-content {
+	display: flex;
+	align-items: center;
+}
+
+.header-content .logo {
+	margin-right: 20px;
+	/* Adjust the spacing between the logo and the title */
+}
+
+/* aboutus.html styles */
+.about-container {
+	flex: 1; /* Allow welcome text to take up available space */
+	max-width: 95%; /* Adjust max-width */
+	padding-top: 250px; /* Reduce padding-top */
+	padding-left: 200px;
+}
+
+.about-container h1 {
+	font-weight: 300;
+	margin-bottom: 30px; /* Adjust the spacing */
+}
+
+/* contactus.html styles */
+.contact-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 70vh;
+	text-align: center;
+	padding-top: 200px;
+}
+
+.contact-container p {
+	margin-bottom: 5px; /* Reduced the space between paragraphs */
+}
+
+.contact-container h1 {
+	font-weight: 300;
+	margin-bottom: 30px; /* Adjust the spacing */
+}
+
+.contact-info {
+	text-align: left;
+	max-width: 500px;
+}
+
+.contact-info p {
+	margin: 10px 0;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.contact-info i {
+	margin-right: 10px;
+	color: #007bff;
+}

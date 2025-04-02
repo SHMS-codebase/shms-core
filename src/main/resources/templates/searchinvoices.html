@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Invoices</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<link rel="stylesheet" th:href="@{/css/searchstyles.css}">
+<link rel="stylesheet" th:href="@{/css/createstyles.css}">
+<style>
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+	padding: 10px;
+	text-align: left;
+}
+
+.form-group {
+	margin-bottom: 15px;
+}
+
+.buttons {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+form {
+	margin-top: 10px;
+	max-width: 1000px;
+	width: 100%;
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 1200px;
+	padding: 30px;
+	margin-top: 700px;
+	margin-bottom: 550px;
+	display: flex;
+	flex-direction: column;
+}
+
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+
+/* New styles for scrollable table */
+.table-container {
+	max-height: 400px;
+	overflow-y: auto;
+	margin-top: 20px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.table-container table {
+	width: 100%;
+}
+
+.table-container thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa;
+	z-index: 1;
+}
+
+/* Make sure the form stays at the top */
+.search-section {
+	margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media ( max-height : 800px) {
+	.table-container {
+		max-height: 300px;
+	}
+}
+
+@media ( max-height : 600px) {
+	.table-container {
+		max-height: 200px;
+	}
+}
+
+.form-inline.row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 15px; /* Adjust spacing between fields */
+}
+
+.form-group {
+	margin-bottom: 0;
+	flex: 1; /* Equal width for all fields */
+}
+
+label {
+	display: block; /* Ensure the label stays above the field */
+	margin-bottom: 5px;
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container">
+
+		<div class="search-section">
+			<h4 class="centered-text">Search Invoices</h4>
+
+			<div th:if="${errorMessage}" class="error-message">
+				<p th:text="${errorMessage}"></p>
+			</div>
+
+			<form id="searchForm" th:action="@{/searchinvoices}" method="POST">
+
+				<input type="hidden" name="source" th:value="${source}">
+
+				<div class="form-inline row">
+					<div class="form-group col-md-3">
+						<label for="patientID">Patient Name:</label> <select
+							id="patientID" name="patientID" class="form-control">
+							<option value="" disabled selected>Select Patient</option>
+							<th:block th:each="patient : ${patients}">
+								<option th:value="${patient.patientID}"
+									th:text="${patient.patientName}"></option>
+							</th:block>
+						</select>
+					</div>
+
+					<div class="form-group col-md-3">
+						<label for="invoiceID">Invoice ID:</label> <input type="number"
+							id="invoiceID" name="invoiceID" class="form-control"
+							placeholder="Enter Invoice ID">
+					</div>
+
+					<div class="form-group col-md-3">
+						<label for="invoiceDate">Invoice Date:</label> <input type="date"
+							id="invoiceDate" name="invoiceDate" class="form-control">
+					</div>
+
+					<div class="form-group col-md-3">
+						<label for="invoiceStatus">Invoice Status:</label> <select
+							id="invoiceStatus" name="invoiceStatus" class="form-control">
+							<option value="" disabled selected>Select a status</option>
+							<th:block
+								th:each="status : ${T(com.healthcaremngnt.enums.InvoiceStatus).values()}">
+								<option th:value="${status}" th:text="${status}"></option>
+							</th:block>
+						</select>
+					</div>
+				</div>
+
+				<div class="buttons">
+					<button type="submit">Search</button>
+					<button type="reset">Reset</button>
+				</div>
+			</form>
+		</div>
+
+		<div id="searchResults"
+			th:if="${invoices != null and #lists.isEmpty(invoices) == false}">
+			<h3>Search Results</h3>
+			<!-- <span th:text="${resultsCount}">Results</span> -->
+    			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>Invoice ID</th>
+							<th>Invoice Date</th>
+							<th>Invoice Amount</th>
+							<th>Invoice Status</th>
+						</tr>
+					</thead>
+					<tbody id="resultsBody">
+						<tr th:each="invoice : ${invoices}">
+							<td><a
+								th:href="@{'/invoices/viewinvoice'(invoiceID=${invoice.invoiceID}, source='admindashboard')}"
+								th:text="${invoice.invoiceID}"></a></td>
+							<td th:text="${invoice.invoiceDate}"></td>
+							<td th:text="${invoice.totalAmount}"></td>
+							<td th:text="${invoice.invoiceStatus}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div th:if="${invoices == null or #lists.isEmpty(invoices)}">
+			<p th:text="${message}"></p>
+		</div>
+
+	</div>
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

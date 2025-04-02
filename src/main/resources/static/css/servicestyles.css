@@ -1,0 +1,93 @@
+body {
+	padding-top: 140px;
+	/* Adjust this value to ensure there's enough space below the fixed navbar */
+	background-color: #e9ecef;
+	/* Lighter shade of the navbar color */
+	overflow-y: auto;
+	/* Enable vertical scrolling */
+}
+
+.container {
+	max-width: 800px;
+	margin-bottom: 50px;
+	/* Adds space between the container and footer */
+}
+
+p {
+	margin-top: 40px;
+	/* Adds space between the navbar and the text */
+}
+
+.accordion {
+	border: 1px solid #ddd;
+	/* Border for accordion */
+	border-radius: 5px;
+	/* Rounded corners for accordion */
+}
+
+.accordion-item {
+	border: none;
+	/* Remove border for accordion item */
+}
+
+.accordion-header {
+	border-bottom: 1px solid #ddd;
+	/* Border for accordion header */
+}
+
+.accordion-header:last-of-type {
+	border-bottom: none; /* Remove border for last accordion header */
+}
+
+.accordion-button {
+	border-radius: 0; /* Remove rounded corners for accordion button */
+	box-shadow: none; /* Remove box shadow for accordion button */
+	color: #fff; /* White text color for accordion button */
+	font-weight: bold;
+	font-family: 'Open Sans', sans-serif;
+	background-color: #f8f9fa;
+	/* Match the background color with the theme */
+}
+
+.accordion-button:hover {
+	box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+	background-color: #e9ecef; /* Add a subtle hover background color */
+}
+
+.accordion-button:focus {
+	box-shadow: none; /* Remove default Bootstrap focus outline */
+}
+
+.accordion-body {
+	background-color: #fff; /* Background color for accordion body */
+	border-top: 1px solid #ddd; /* Border for accordion body */
+	font-family: 'Open Sans', sans-serif;
+}
+
+#headingOne .accordion-button {
+	background-color: #6A5ACD;
+}
+
+#headingTwo .accordion-button {
+	background-color: #00A9E0;
+}
+
+#headingThree .accordion-button {
+	background-color: #E1BEE7;
+}
+
+#headingFour .accordion-button {
+	background-color: #7BC8A4;
+}
+
+#headingFive .accordion-button {
+	background-color: #FFD700;
+}
+
+#headingSix .accordion-button {
+	background-color: #FFB347;
+}
+
+#headingSeven .accordion-button {
+	background-color: #FF6B6B;
+}

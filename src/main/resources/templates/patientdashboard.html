@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Dashboard</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/doctordashboardstyles.css}">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+</head>
+<body>
+	<div class="wrapper">
+		<!-- Include Header Fragment -->
+		<div th:replace="fragments/header :: header"></div>
+
+		<!-- Main Content Section -->
+		<div class="main-container">
+			<div class="side-container">
+				<section class="info-card">
+					<h3>Patient Information Card</h3>
+					<div th:if="${patient != null}">
+						<div>
+							<strong>Name:</strong> <span th:text="${patient.patientName}"></span>
+						</div>
+						<div>
+							<strong>Contact Number:</strong> <span
+								th:text="${patient.contactNumber}"></span>
+						</div>
+						<div>
+							<strong>Date Of Birth:</strong> <span th:text="${patient.dob}"></span>
+						</div>
+						<div>
+							<a th:href="@{/users/edituserprofile(source='patientdashboard')}">Edit
+								Profile</a>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="content-container">
+				<!-- Tabs Section -->
+				<div class="tabs">
+					<button class="tablinks" onclick="openTab(event, 'Appointments')">Upcoming
+						Appointments</button>
+					<button class="tablinks" onclick="openTab(event, 'DoctorProfiles')">View
+						Doctor Profiles</button>
+					<button class="tablinks" onclick="openTab(event, 'MedRecSummary')">Medical
+						Summary</button>
+					<button class="tablinks"
+						onclick="openTab(event, 'ActivePrescriptions')">Active
+						Prescriptions</button>
+					<button class="tablinks" onclick="openTab(event, 'BillingInfo')">Billing
+						Info</button>
+					<!-- <button class="tablinks" onclick="openTab(event, 'HealthTips')">HealthTips</button> -->
+					<button class="tablinks" onclick="openTab(event, 'Announcements')">Announcements</button>
+				</div>
+				<!-- Tab Content Section -->
+				<div id="Appointments" class="tabcontent">
+					<h3 class="centered-text">Upcoming Appointments</h3>
+					<div th:if="${appointments != null and !appointments.isEmpty()}">
+						<table>
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>Time</th>
+									<th>Doctor Name</th>
+									<th>Reason for Visit</th>
+									<th>Schedule</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="appointment : ${appointments}">
+									<td th:text="${appointment.appointmentDate}"></td>
+									<td th:text="${appointment.appointmentTime}"></td>
+									<td th:text="${appointment.doctor.doctorName}"></td>
+									<td th:text="${appointment.reasonToVisit}"></td>
+									<td th:text="${appointment.appointmentStatus}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div th:if="${appointments == null or appointments.isEmpty()}">
+						<p>No upcoming appointments!</p>
+					</div>
+				</div>
+				<div id="MedRecSummary" class="tabcontent">
+					<h3>Medical Summary</h3>
+					<ul>
+						<li><a href="#">Recent Visits</a></li>
+						<li><a href="#">Treatment Details</a></li>
+						<li><a href="#">Prescription Details</a></li>
+						<li><a href="#">Medical History</a></li>
+					</ul>
+				</div>
+				<div id="DoctorProfiles" class="tabcontent">
+					<h3>View Doctor Profiles</h3>
+					<ul>
+						<li><a href="#">Search Doctors</a></li>
+						<li><a href="#">My Doctors</a></li>
+					</ul>
+				</div>
+				<div id="ActivePrescriptions" class="tabcontent">
+					<h3>Active Prescriptions</h3>
+					<div
+						th:if="${activeprescriptions != null and !activeprescriptions.isEmpty()}">
+						<table>
+							<thead>
+								<tr>
+									<th>Prescription ID</th>
+									<th>Patient Name</th>
+									<th>Diagnosis</th>
+									<th>Number of Medications Prescribed</th>
+									<th>Prescription Date</th>
+									<th>Treatment Status</th>
+									<th>Follow-Up Needed</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="prescription : ${activeprescriptions}">
+									<td><a
+										th:href="@{'/prescriptions/viewprescription'(prescriptionID=${prescription.prescriptionID}, source='doctordashboard')}"
+										th:text="${prescription.prescriptionID}"></a></td>
+									<td th:text="${prescription.patientName}"></td>
+									<td th:text="${prescription.diagnosis}"></td>
+									<td th:text="${prescription.numberOfMedications}"></td>
+									<td th:text="${prescription.prescriptionDate}"></td>
+									<td th:text="${prescription.treatmentStatus}"></td>
+									<td th:text="${prescription.followUpNeeded}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div
+						th:if="${activeprescriptions == null or activeprescriptions.isEmpty()}">
+						<p>No Active Prescriptions!</p>
+					</div>
+				</div>
+				<div id="BillingInfo" class="tabcontent">
+					<h3>Billing Information</h3>
+					<ul>
+						<li><a href="#">Outstanding Invoices</a></li>
+						<li><a href="#">Recent Payments</a></li>
+					</ul>
+				</div>
+				<!-- <div id="HealthTips" class="tabcontent">
+					<p>Stay hydrated and exercise regularly.</p>
+				</div> -->
+				<div id="Announcements" class="tabcontent">
+					<p>New health guidelines released!</p>
+				</div>
+			</div>
+		</div>
+		<!-- Include Footer Fragment -->
+		<div th:replace="fragments/footer :: footer"></div>
+	</div>
+	<script src="../js/dashboard.js"></script>
+</body>
+</html>

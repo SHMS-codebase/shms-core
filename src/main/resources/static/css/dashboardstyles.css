@@ -1,0 +1,165 @@
+/* dashboardstyles.css */
+
+nav {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+nav a {
+	padding: 14px 20px;
+	text-decoration: none;
+	color: black;
+}
+
+nav .left {
+	order: 1;
+	margin-right: auto;
+}
+
+nav .middle {
+	order: 2;
+}
+
+nav .right {
+	order: 3;
+	margin-left: auto;
+}
+
+.container {
+	padding: 20px;
+	text-align: center;
+}
+
+.main-container {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+}
+
+.container h1 {
+	margin: 0 10px;
+	font-family: 'Helvetica', sans-serif;
+	font-size: 30px;
+	color: #333;
+}
+
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 13px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.user-management {
+	border: 1px solid #ccc;
+	padding: 5px;
+	border-radius: 8px;
+	width: 300px;
+}
+
+.user-management h2 {
+	font-family: 'Helvetica', sans-serif;
+	font-size: 24px;
+	margin-bottom: 5px;
+	text-align: center;
+	color: #333;
+}
+
+.user-management a {
+	font-family: 'Helvetica', sans-serif;
+	font-size: 18px;
+	margin-bottom: 5px;
+	text-decoration: none;
+	color: #333;
+}
+
+.user-management a:hover {
+	text-decoration: underline;
+}
+
+/* Tabs Styles */
+.tabs {
+	display: flex;
+	justify-content: center;
+	background-color: transparent;  /* Change to transparent to remove the ribbon effect */
+	padding: 10px 0;
+	border: none; /* Remove any border */
+}
+
+.tablinks {
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 25px;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	transition: 0.3s;
+	margin: 0 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tablinks:hover {
+	background-color: #ddd;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tablinks.active {
+	background-color:  hsl(31, 82%, 64%); 				/* Lighter shade of purple for active tab */
+	color: white;
+	box-shadow: white; 										/* Change text color for active tab */
+	box-shadow: 0 0 10px #f8f9facc; 	/*Glow effect for active tab */
+	border: 10px;								 /* Remove border for active tab */
+}
+
+.tablinks.active:hover {
+	background-color:  hsl(31, 82%, 64%); /* Keep background color for active tab */
+	color: white; /* Keep text color for active tab */
+	box-shadow: 0 0 15px  hwb(31 59% 5%);;
+	/* Enhanced glow effect on hover */
+}
+
+.tabcontent {
+	display: none;
+	width: 100%; /* Adjust the width as needed */
+	max-width: 800px; /* Adjust the max width as needed */
+	/* background-color: #acbbeb4d; */
+	font-size: 16px;
+	background-color: white;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 50px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+.tab-content-container {
+	background-color: #dcdfef;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	flex-direction: column;
+	margin: 0 auto;
+	padding: 20px;
+	width: 100%;
+	box-sizing: border-box;
+	padding-top: 50px;
+}
+
+.tab-content-container h3 {
+    text-align: center;
+    margin: 0 auto; /* Optional: Ensures consistent spacing */
+	font-weight: bold;
+	padding-bottom: 10px;
+}
+
+.tab-content-container p{
+    padding-top: 10px;
+}

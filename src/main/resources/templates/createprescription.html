@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Prescription</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<link rel="stylesheet" th:href="@{/css/createstyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/path/to/formValidation.js"></script>
+<style>
+/* Additional styles to make card look consistent with existing design */
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; /* Center the form vertically */
+	height: 100vh; /* Ensure the body takes the full viewport height */
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+.card {
+	margin-top: 100px;
+	width: 100%;
+	max-width: 1000px;
+	margin: 35px auto 20px;
+	background-color: #fff;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	width: 100%;
+}
+
+.card-header {
+	background: linear-gradient(to bottom, rgb(5, 5, 40), rgb(15, 32, 95));
+	color: white;
+	padding: 10px 15px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.card-header h5 {
+	margin: 0;
+	text-align: center;
+}
+
+.card-body {
+	padding: 15px;
+}
+
+.card-body p {
+	margin: 10px 0;
+	display: flow-root;
+	justify-content: space-between;
+}
+
+.card-body strong {
+	width: 150px;
+	text-align: right;
+	margin-right: 10px;
+}
+
+form {
+	margin-top: 10px;
+	max-width: 1000px;
+}
+
+.input-group {
+	display: flex;
+	align-items: center;
+}
+
+.input-group-text {
+	margin-left: 4px; /* Space between input and text */
+	padding: 4px 8px; /* Adjust padding as needed */
+	background-color: #f8f9fa;
+	/* Optional background for a subtle effect */
+	border: 1px solid #ced4da; /* Matching input field border */
+	border-radius: 4px; /* Optional rounded edges */
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 1000px;
+	padding: 30px;
+	margin-top: 475px;
+}
+
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+
+.success-message {
+	text-align: center;
+	color: #0f9d58;
+	font-size: 16px;
+	margin: 20px 0;
+	display: block;
+}
+</style>
+</head>
+<body>
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container">
+
+		<h4 class="centered-text">Create Prescription</h4>
+
+		<div th:if="${errorMessage}" class="error-message">
+			<p th:text="${errorMessage}"></p>
+		</div>
+		<div th:if="${message}" class="success-message">
+			<p th:text="${message}"></p>
+		</div>
+
+		<div class="card">
+			<div class="card-header">
+				<h5>Patient Information</h5>
+			</div>
+			<div class="card-body">
+				<p>
+					<strong>Patient Name :</strong> <span
+						th:text="${patient != null ? patient.patientName : 'No Patient Found'}"
+						th:style="${patient.patientName == null ? 'color: red;' : ''}">
+					</span>
+				</p>
+				<p>
+					<strong>Treatment ID :</strong> <span
+						th:text="${treatment != null ? treatment.treatmentID : 'No Treatment Found'}"
+						th:style="${treatment == null ? 'color: red;' : ''}"> </span>
+				</p>
+				<p>
+					<strong>Diagnosis :</strong> <span
+						th:text="${treatment != null ? treatment.diagnosis : 'No Diagnosis Available'}"
+						th:style="${treatment == null ? 'color: red;' : ''}"> </span>
+				</p>
+				<!-- Debug Information -->
+				<!-- <div th:if="${#httpServletRequest.remoteUser == 'admin'}" class="debug-info">
+            <p><strong>Debug Info:</strong></p>
+            <p>Patient Object: <span th:text="${patient}"></span></p>
+            <p>Treatment Object: <span th:text="${treatment}"></span></p>
+            <p>Source: <span th:text="${source}"></span></p>
+        </div> -->
+			</div>
+		</div>
+
+		<form th:action="@{/prescriptions/saveprescription}" method="POST"
+			id="prescriptionForm">
+			<!-- Hidden fields for treatmentID, appointmentID and source -->
+			<input type="hidden" name="treatmentID"
+				th:value="${treatment.treatmentID}"> <input type="hidden"
+				name="appointmentID" th:value="${appointmentID}"> <input
+				type="hidden" name="source" th:value="${source}">
+
+			<div class="form-group">
+				<label for="prescriptionDate" class="required">Prescription
+					Date:</label> <input type="date" id="prescriptionDate"
+					name="prescriptionDate" required
+					th:min="${#dates.format(#dates.createToday(), 'yyyy-MM-dd')}"
+					th:max="${#dates.format(#dates.createToday(), 'yyyy-MM-dd')}">
+
+				<label for="prescriptionStatus" class="required">Prescription
+					Status:</label> <select id="prescriptionStatus" name="prescriptionStatus"
+					required>
+					<option value="" disabled>Select Status</option>
+					<th:block
+						th:each="status : ${T(com.healthcaremngnt.enums.PrescriptionStatus).values()}">
+						<option th:value="${status}" th:text="${status}"
+							th:selected="${status == 'ACTIVE'}"></option>
+					</th:block>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="generalInstructions">General Instructions:</label>
+				<textarea class="form-control" id="generalInstructions"
+					name="generalInstructions" th:text="${generalInstructions}"></textarea>
+			</div>
+
+			<div class="form-group">
+				<table id="prescriptionTable">
+					<thead>
+						<tr>
+							<th>Medicine Name</th>
+							<th>Dosage</th>
+							<th>Frequency <br> (e.g., 1-0-1)
+							</th>
+							<th>Duration (In Days)</th>
+							<th>Instructions</th>
+							<th>Remove</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Ensure to display all prescription records in separate rows -->
+						<tr
+							th:each="prescriptionDetail, iterStat : ${prescriptionForm.prescriptionDetails}">
+							<td><select
+								th:field="*{prescriptionDetails[__${iterStat.index}__].medicine.medicineID}"
+								class="medicine-dropdown form-control"
+								th:attr="data-row-index=${iterStat.index}" required>
+									<option value="">Select Medicine</option>
+									<option th:each="medicine : ${uniqueMedicineNames}"
+										th:value="${medicine.key}" th:text="${medicine.value}"
+										th:selected="${prescriptionDetail.medicine != null && medicine.key == prescriptionDetail.medicine.medicineID}">
+									</option>
+							</select></td>
+							<td><select
+								th:field="*{prescriptionDetails[__${iterStat.index}__].dosage}"
+								class="dosage-dropdown form-control"
+								th:id="${'dosage-' + iterStat.index}" required>
+									<option value="">Select Dosage</option>
+									<!-- Dosage options will be populated dynamically via JavaScript -->
+							</select></td>
+							<td><input type="text" class="form-control"
+								name="prescriptionDetails[__${iterStat.index}__].frequency"
+								placeholder="e.g., 1-0-1"
+								th:value="${prescriptionDetail.frequency}"
+								pattern="^[0-9]+-[0-9]+-[0-9]+$"
+								title="Enter frequency in the format Morning-Afternoon-Night (e.g., 1-0-1)"
+								required></td>
+							<td>
+								<div class="input-group">
+									<input type="number" class="form-control"
+										name="prescriptionDetails[__${iterStat.index}__].duration"
+										placeholder="Duration in days"
+										th:value="${prescriptionDetail.duration}" min="1" required>
+									<span class="input-group-text">Days</span>
+								</div>
+							</td>
+
+							<td><input type="text" class="form-control"
+								name="prescriptionDetails[__${iterStat.index}__].instructions"
+								th:value="${prescriptionDetail.instructions}"></td>
+							<td><button type="button"
+									class="deleteRowBtn btn btn-danger btn-sm">X</button></td>
+						</tr>
+
+						<!-- If there are no prescriptions, add an empty row -->
+						<tr th:if="${prescriptionForm.prescriptionDetails.size() == 0}">
+							<td><select
+								name="prescriptionDetails[0].medicine.medicineID"
+								class="medicine-dropdown form-control" data-row-index="0"
+								required>
+									<option value="">Select Medicine</option>
+									<option th:each="medicine : ${uniqueMedicineNames}"
+										th:value="${medicine.key}" th:text="${medicine.value}">
+									</option>
+							</select></td>
+							<td><select name="prescriptionDetails[0].dosage"
+								class="dosage-dropdown form-control" id="dosage-0" required>
+									<option value="">Select Dosage</option>
+									<!-- Dosage options will be populated dynamically via JavaScript -->
+							</select></td>
+							<td><input type="text" class="form-control"
+								name="prescriptionDetails[0].frequency" required></td>
+							<td><input type="text" class="form-control"
+								name="prescriptionDetails[0].duration" required></td>
+							<td><input type="text" class="form-control"
+								name="prescriptionDetails[0].instructions"></td>
+							<td><button type="button"
+									class="deleteRowBtn btn btn-danger btn-sm">X</button></td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+
+			<div class="buttons-container">
+				<button type="button" id="addMedicationBtn">Add Medication</button>
+				<button type="submit">Save Prescription</button>
+			</div>
+		</form>
+
+	</div>
+
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+	<!-- JavaScript to handle dependent dropdowns -->
+	<script th:inline="javascript">
+ 	
+	// Store medicine details for JavaScript use
+	const medicineDetailsList = /*[[${medicineDetails}]]*/ [];
+	const uniqueMedicineNames = /*[[${uniqueMedicineNames}]]*/ {};
+	const MAX_MEDICATIONS = 5;
+	  
+	// Create a map to store variations (dosages) by medicine ID
+	const medicineDosageMap = {};
+
+	function processMedicineDetails() {
+	  console.log("Processing medicine details:", medicineDetailsList);
+	  
+	  medicineDetailsList.forEach(medicine => {
+	    const medicineID = medicine.medicineID;
+	    
+	    // Initialize this medicine in our map if it doesn't exist
+	    if (!medicineDosageMap[medicineID]) {
+	      medicineDosageMap[medicineID] = {
+	        name: medicine.medicineName,
+	        type: medicine.medicineType,
+	        variations: []
+	      };
+	    }
+	    
+	    // Add the variation as a dosage option if it doesn't exist already
+	    if (medicine.variation && 
+	        !medicineDosageMap[medicineID].variations.includes(medicine.variation)) {
+	      medicineDosageMap[medicineID].variations.push(medicine.variation);
+	    }
+	  });
+	  
+	  console.log("Medicine dosage map:", medicineDosageMap);
+	}
+
+	// Update dosage options based on selected medicine ID
+	function updateDosages(medicineSelect) {
+	  const rowIndex = medicineSelect.getAttribute('data-row-index');
+	  const selectedMedicineID = medicineSelect.value;
+	  const dosageDropdown = document.getElementById(`dosage-${rowIndex}`);
+	  
+	  console.log(`Updating dosages for medicine ID: ${selectedMedicineID}, row: ${rowIndex}`);
+	  
+	  // Clear existing options
+	  dosageDropdown.innerHTML = '<option value="">Select Dosage</option>';
+	  
+	  // Add new options if a medicine is selected
+	  if (selectedMedicineID && medicineDosageMap[selectedMedicineID]) {
+	    const variations = medicineDosageMap[selectedMedicineID].variations;
+	    console.log(`Found ${variations.length} variations for medicine ID ${selectedMedicineID}:`, variations);
+	    
+	    variations.forEach(variation => {
+	      const option = document.createElement('option');
+	      option.value = variation;
+	      option.textContent = variation;
+	      dosageDropdown.appendChild(option);
+	    });
+	  } else {
+	    console.log(`No variations found for medicine ID ${selectedMedicineID}`);
+	  }
+	}
+
+	document.addEventListener('DOMContentLoaded', function() {
+	  console.log("DOM loaded, processing medicine details");
+	  console.log("Medicine details list:", medicineDetailsList);
+	  console.log("Unique medicine names:", uniqueMedicineNames);
+	  
+	  // Process medicine details to populate the dosage map
+	  processMedicineDetails();
+	  
+	  // Set up event listeners for existing medicine dropdowns
+	  const medicineDropdowns = document.querySelectorAll('.medicine-dropdown');
+	  console.log(`Found ${medicineDropdowns.length} medicine dropdowns`);
+	  
+	  medicineDropdowns.forEach(dropdown => {
+	    dropdown.addEventListener('change', function() {
+	      console.log(`Medicine dropdown changed to ${this.value}`);
+	      updateDosages(this);
+	    });
+	    
+	    // If a medicine is already selected, populate its dosages
+	    if (dropdown.value) {
+	      console.log(`Medicine dropdown has preselected value: ${dropdown.value}`);
+	      updateDosages(dropdown);
+	    }
+	  });
+	  
+	  // Initialize prescription index by counting existing rows
+	  let prescriptionIndex = document.querySelectorAll('#prescriptionTable tbody tr').length;
+	  
+	  // Add record functionality
+	  document.getElementById('addMedicationBtn').addEventListener('click', function() {
+	    // Check against actual table rows
+	    if (document.querySelectorAll('#prescriptionTable tbody tr').length >= MAX_MEDICATIONS) {
+	      alert('Maximum 5 medications allowed');
+	      return;
+	    }
+	    
+	    // Build options for medicine dropdown
+	    const medicineOptions = Object.entries(uniqueMedicineNames).map(([id, name]) => 
+	      `<option value="${id}">${name}</option>`
+	    ).join('');
+	    
+	    const newRow = document.createElement('tr');
+	    newRow.innerHTML = `
+	      <td>
+	        <select name="prescriptionDetails[${prescriptionIndex}].medicine.medicineID" 
+	                class="medicine-dropdown form-control"
+	                data-row-index="${prescriptionIndex}" required>
+	          <option value="">Select Medicine</option>
+	          ${medicineOptions}
+	        </select>
+	      </td>
+	      <td>
+	        <select name="prescriptionDetails[${prescriptionIndex}].dosage" 
+	                class="dosage-dropdown form-control"
+	                id="dosage-${prescriptionIndex}" required>
+	          <option value="">Select Dosage</option>
+	        </select>
+	      </td>
+	      <td><input type="text" class="form-control" name="prescriptionDetails[${prescriptionIndex}].frequency" required></td>
+	      <td><input type="text" class="form-control" name="prescriptionDetails[${prescriptionIndex}].duration" required></td>
+	      <td><input type="text" class="form-control" name="prescriptionDetails[${prescriptionIndex}].instructions"></td>
+	      <td><button type="button" class="deleteRowBtn btn btn-danger btn-sm">X</button></td>
+	    `;
+	    
+	    // Append to the actual table body
+	    document.querySelector('#prescriptionTable tbody').appendChild(newRow);
+	    
+	    // Set up change event listener for the new medicine dropdown
+	    const newMedicineDropdown = newRow.querySelector('.medicine-dropdown');
+	    newMedicineDropdown.addEventListener('change', function() {
+	      updateDosages(this);
+	    });
+	    
+	    prescriptionIndex++;
+	  });
+    
+    // Remove medication functionality using event delegation
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('deleteRowBtn')) {
+        event.target.closest('tr').remove();
+      }
+    });
+    
+    // Form submission handler
+    document.getElementById('prescriptionForm').addEventListener('submit', function(event) {
+      // Remove empty rows
+      document.querySelectorAll('#prescriptionTable tbody tr').forEach(function(row) {
+        let isEmpty = true;
+        row.querySelectorAll('input[type="text"], select').forEach(function(input) {
+          if (input.value.trim() !== "") {
+            isEmpty = false;
+            return;
+          }
+        });
+        
+        if (isEmpty) {
+          row.remove();
+        }
+      });
+      
+      // Renumber the remaining rows sequentially
+      let newIndex = 0;
+      document.querySelectorAll('#prescriptionTable tbody tr').forEach(function(row) {
+        row.querySelectorAll('input, select').forEach(function(input) {
+          const name = input.getAttribute('name');
+          if (name) {
+            const newName = name.replace(/prescriptionDetails\[\d+\]/, `prescriptionDetails[${newIndex}]`);
+            input.setAttribute('name', newName);
+          }
+          
+          // Update select IDs and data attributes
+          if (input.classList.contains('dosage-dropdown')) {
+            input.setAttribute('id', `dosage-${newIndex}`);
+          }
+          
+          if (input.classList.contains('medicine-dropdown')) {
+            input.setAttribute('data-row-index', newIndex);
+          }
+        });
+        newIndex++;
+      });
+    });
+    
+    // Set today's date as default and restrict date selection
+    const today = new Date().toISOString().split('T')[0];
+    const dateField = document.getElementById('prescriptionDate');
+    if (dateField) {
+      dateField.value = today;
+      dateField.max = today;
+    }
+  });
+	document.addEventListener('input', function(event) {
+		  const row = event.target.closest('tr'); // Get the current row where the input occurred
+		  if (!row) return;
+
+		  const frequencyInput = row.querySelector('input[name^="prescriptionDetails"][name$=".frequency"]').value;
+		  const durationInput = row.querySelector('input[name^="prescriptionDetails"][name$=".duration"]').value;
+		  const costField = row.querySelector('input[name^="prescriptionDetails"][name$=".cost"]');
+
+		  // Get the selected medicine's cost per unit from the dropdown (assume it's stored as a data attribute)
+		  const medicineDropdown = row.querySelector('select[name^="prescriptionDetails"][name$=".medicineName"]');
+		  const costPerUnit = medicineDropdown.options[medicineDropdown.selectedIndex]?.getAttribute('data-cost') || 0;
+
+		  // Parse the frequency (e.g., "1-0-1") and calculate doses per day
+		  const dosesPerDay = frequencyInput.split('-').reduce((total, num) => total + (parseInt(num, 10) || 0), 0);
+
+		  // Ensure valid inputs for calculation
+		  const durationInDays = parseInt(durationInput, 10) || 0;
+		  const unitCost = parseFloat(costPerUnit) || 0;
+
+		  // Calculate the total cost and update the field
+		  const totalCost = (dosesPerDay * durationInDays * unitCost).toFixed(2);
+		  costField.value = totalCost > 0 ? `$${totalCost}` : ''; // Display cost or clear field if invalid
+		});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration Form</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/customregister.css}">
+<style>
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+</style>
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container">
+
+		<!-- Left Pane -->
+		<div class="left-pane" id="leftPane">
+			<div id="userRolesContainer">
+				<label for="role" class="centered-text"> User Roles </label> <select
+					id="role" name="role" onchange="toggleForm()">
+					<option value="" disabled selected>Select a User Role</option>
+					<option value="Admin">Administrator</option>
+					<option value="Doctor">Doctor</option>
+					<option value="Patient">Patient</option>
+				</select>
+			</div>
+		</div>
+
+		<!-- Right Pane -->
+		<div class="right-pane" id="rightPane">
+
+			<div class="form-container">
+				<div class="form-header">Administrator Registration Form</div>
+
+				<div th:if="${errorMessage}" class="error-message">
+					<p th:text="${errorMessage}"></p>
+				</div>
+				<!-- Common Registration Form -->
+				<form id="registrationForm" th:action="@{/users/register}"
+					th:method="POST" onsubmit="return register()">
+
+					<input type="hidden" th:value="${source}" name="source"> <input
+						type="hidden" id="roleHidden" name="role" value="">
+
+					<!-- Admin Fields -->
+					<div id="adminFields" class="role-fields">
+						<label for="adminName" class="required">Administrator
+							Name:</label> <input type="text" id="adminName" name="adminName">
+						<div class="tooltip" id="nameTooltip"></div>
+
+						<label for="adminEmailID" class="required">Email ID:</label> <input
+							type="email" id="adminEmailID" name="adminEmailID">
+						<div class="tooltip" id="emailTooltip"></div>
+					</div>
+
+					<!-- Doctor Fields -->
+					<div id="doctorFields" class="role-fields" style="display: none;">
+						<div class="form-row">
+							<div>
+								<label for="doctorName" class="required">Doctor Name:</label> <input
+									type="text" id="doctorName" name="doctorName">
+								<div class="tooltip" id="doctorNameTooltip"></div>
+							</div>
+							<div>
+								<label for="doctorEmailID" class="required">Email ID:</label> <input
+									type="email" id="doctorEmailID" name="doctorEmailID">
+								<div class="tooltip" id="doctorEmailIDTooltip"></div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div>
+								<label for="doctorContactNumber" class="required">Contact
+									Number:</label> <input type="tel" id="doctorContactNumber"
+									name="doctorContactNumber">
+								<div class="tooltip" id="doctorContactNumberTooltip"></div>
+							</div>
+							<div>
+								<label for="doctorAddress" class="required">Address:</label> <input
+									type="text" id="doctorAddress" name="doctorAddress">
+								<div class="tooltip" id="doctorAddressTooltip"></div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div>
+								<label for="qualification" class="required">Qualification:</label>
+								<input type="text" id="qualification" name="qualification">
+								<div class="tooltip" id="qualificationTooltip"></div>
+							</div>
+							<div>
+								<label for="specialization" class="required">Specialization:</label>
+								<select id="specialization" name="specialization">
+									<option value="">Loading...</option>
+								</select>
+								<div class="tooltip" id="specializationTooltip"></div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div>
+								<label for="experience" class="required">Experience:</label> <input
+									type="number" id="experience" name="experience" min="0"
+									max="40">
+								<div class="tooltip" id="experienceTooltip"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Patient Fields -->
+					<div id="patientFields" class="role-fields" style="display: none;">
+						<div class="form-row">
+							<div>
+								<label for="patientName" class="required">Patient Name:</label>
+								<input type="text" id="patientName" name="patientName">
+								<div class="tooltip" id="patientNameTooltip"></div>
+							</div>
+							<div>
+								<label for="patientEmailID" class="required">Email ID:</label> <input
+									type="email" id="patientEmailID" name="patientEmailID">
+								<div class="tooltip" id="patientEmailIDTooltip"></div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div>
+								<label for="dob" class="required">Date of Birth:</label> <input
+									type="date" id="dob" name="dob">
+								<div class="tooltip" id="dobTooltip"></div>
+							</div>
+							<div>
+								<label for="gender" class="required">Gender:</label> <select
+									id="gender" name="gender">
+									<option value="" disabled selected>Select Gender</option>
+									<option value="MALE">Male</option>
+									<option value="FEMALE">Female</option>
+									<option value="OTHER">Other</option>
+								</select>
+								<div class="tooltip" id="genderTooltip"></div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div>
+								<label for="patientContactNumber" class="required">Contact
+									Number:</label> <input type="tel" id="patientContactNumber"
+									name="patientContactNumber">
+								<div class="tooltip" id="patientContactNumberTooltip"></div>
+							</div>
+							<div>
+								<label for="patientAddress" class="required">Address:</label> <input
+									type="text" id="patientAddress" name="patientAddress">
+								<div class="tooltip" id="patientAddressTooltip"></div>
+							</div>
+						</div>
+						<div class="form-row">
+							<div>
+								<label for="medicalHistory">Medical History:</label>
+								<textarea id="medicalHistory" name="medicalHistory" rows="3"
+									style="width: 100%;"
+									placeholder="Within 1000 characters or less."></textarea>
+								<div class="tooltip" id="medicalHistoryTooltip"></div>
+							</div>
+						</div>
+					</div>
+
+					<button type="submit" class="register">Register</button>
+					<button type="button" class="reset" onclick="resetForm()">Reset</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+	<script>
+
+        function populateSpecializations() {
+            const specializations = [
+                "General Physician", "Cardiology", "Dermatology", "Emergency Medicine", "Endocrinology",
+                "Gastroenterology", "Neurology", "Oncology", "Orthopedics", "Pediatrics", "Psychiatry",
+                "Radiology", "ENT", "Nephrology", "Urology", "Rheumatology", "Pulmonology", "Hematology",
+                "Ophthalmology", "Plastic Surgery", "Geriatrics", "Obstetrics and Gynecology", "Anesthesiology"
+            ]; // Add or fetch dynamically from API if needed
+
+            const specializationDropdown = document.getElementById("specialization");
+            if (!specializationDropdown) return; // Ensure element exists
+
+            // Clear existing options
+            specializationDropdown.innerHTML = '<option value="">Select Specialization</option>';
+
+            // Populate new options
+            specializations.forEach(spec => {
+                const option = document.createElement("option");
+                option.value = spec;
+                option.textContent = spec;
+                specializationDropdown.appendChild(option);
+            });
+        }
+
+        // Call the function on page load
+        document.addEventListener('DOMContentLoaded', populateSpecializations);
+
+        const toggleForm = () => {
+            const role = document.getElementById('role').value;
+            const leftPane = document.getElementById('leftPane');
+            const rightPane = document.getElementById('rightPane');
+            const formHeader = document.querySelector('.form-header'); // Select the header element
+
+         	// Update the hidden field with the selected role
+            document.getElementById('roleHidden').value = role;
+            
+            if (!formHeader) {
+                console.error('Header element not found! Ensure your HTML has an element with class "form-header".');
+                return;
+            }
+
+            if (role) {
+                // Adjust layout for selected role
+                leftPane.style.flex = '0.2'; // Occupy 20% width
+                rightPane.style.display = 'flex'; // Make right pane visible
+                rightPane.style.flex = '0.8'; // Occupy 80% width
+            } else {
+                // Reset layout when no role is selected
+                leftPane.style.flex = '1'; // Reset to center
+                rightPane.style.display = 'none'; // Hide right pane
+            }
+
+            // Toggle form fields dynamically
+            document.querySelectorAll('.role-fields').forEach(fields => fields.style.display = 'none');
+
+            if (role === 'Admin') {
+                document.getElementById('adminFields').style.display = 'block';
+            } else if (role === 'Doctor') {
+                document.getElementById('doctorFields').style.display = 'block';
+            } else if (role === 'Patient') {
+                document.getElementById('patientFields').style.display = 'block';
+                formHeader.textContent = 'Patient Registration Form'; // Update header for Patient
+            }
+
+            // Update form header dynamically
+            if (role === 'Admin') {
+                document.getElementById('adminFields').style.display = 'block';
+                formHeader.textContent = 'Admin Registration Form'; // Set the header for Admin
+            } else if (role === 'Doctor') {
+                const doctorFields = document.getElementById('doctorFields');
+                doctorFields.style.display = 'block';
+                formHeader.textContent = 'Doctor Registration Form'; // Set the header for Doctor
+            } else if (role === 'Patient') {
+                const doctorFields = document.getElementById('patientFields');
+                doctorFields.style.display = 'block';
+                formHeader.textContent = 'Patient Registration Form'; // Set the header for Patient
+            }
+        };
+
+        const validateField = (field, rules) => {
+            const element = document.getElementById(field); // Get the field element (input or select)
+            const value = element.value; // Get the value of the element
+            const tooltip = document.getElementById(`${field}Tooltip`); // Get the tooltip for the field
+            let valid = true;
+
+            for (const rule of rules) {
+                if (!rule.validate(value)) {
+                    tooltip.textContent = rule.message; // Display the error message
+                    tooltip.classList.add('visible');  // Make the tooltip visible
+
+                    // Check if the field is a dropdown (SELECT) and apply the error class accordingly
+                    if (element.tagName === 'SELECT') {
+                        element.classList.add('error'); // Add the red border to the dropdown
+                    } else {
+                        element.classList.add('error'); // Add the red border for other inputs
+                    }
+
+                    valid = false;
+                    return valid; // Exit once a rule fails
+                }
+            }
+
+            // Clear tooltip and error styles if valid
+            tooltip.textContent = ''; // Clear tooltip text
+            tooltip.classList.remove('visible'); // Hide tooltip
+            element.classList.remove('error'); // Remove the red border for valid fields
+            return valid;
+        };
+
+        const register = () => {
+        	console.log('Inside register() js!!');
+            const role = document.getElementById('role').value;
+            console.log(role);
+            let valid = true; // Initialize valid flag
+
+            if (role === 'Admin') {
+            	valid =  validateField('adminName', [
+                    { validate: value => value.trim() !== '', message: 'Admin Name is mandatory.' },
+                    { validate: value => value.length >= 3 && value.length <= 50, message: 'Length 3-50 characters' },
+                    { validate: value => /^[a-zA-Z0-9 ]+$/.test(value), message: 'No special characters allowed.' },
+                ]) && valid;
+            	valid = validateField('adminEmailID', [
+                    { validate: value => value.trim() !== '', message: 'Email ID is mandatory.' },
+                    { validate: value => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value), message: 'Provide a valid email address.' },
+                ]) && valid;	
+            } else if (role === 'Doctor') {
+            	valid = validateField('doctorName', [
+                    { validate: value => value.trim() !== '', message: 'Doctor Name is mandatory.' },
+                    { validate: value => value.length >= 3 && value.length <= 50, message: 'Length 3-50 characters.' },
+                    { validate: value => /^[a-zA-Z0-9 ]+$/.test(value), message: 'No special characters allowed.' },
+                ]) && valid;
+            	valid = validateField('doctorContactNumber', [
+                    { validate: value => value.trim() !== '', message: 'Contact Number is mandatory.' },
+                    { validate: value => /^[0-9]{10}$/.test(value), message: 'Must be a valid 10-digit number.' },
+                ]) && valid;
+            	valid = validateField('doctorEmailID', [
+                    { validate: value => value.trim() !== '', message: 'Email ID is required.' },
+                    { validate: value => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value), message: 'Provide a valid email address.' },
+                ]) && valid;
+            	valid = validateField('doctorAddress', [
+                    { validate: value => value.trim() !== '', message: 'Address is mandatory.' },
+                    { validate: value => value.length <= 255, message: 'Must be 255 characters or less.' },
+                ]) && valid;
+            	valid = validateField('qualification', [
+                    { validate: value => value.trim() !== '', message: 'Qualification is mandatory.' },
+                    { validate: value => value.length <= 100, message: 'Must be 100 characters or less.' },
+                ]) && valid;
+            	valid = validateField('specialization', [
+                    { validate: value => value.trim() !== '', message: 'Specialization is mandatory.' },
+                ]) && valid;
+            	valid = validateField('experience', [
+                    { validate: value => value.trim() !== '', message: 'Experience is mandatory.' },
+                    { validate: value => /^[0-9]+$/.test(value), message: 'Must be a numeric value.' },
+                    { validate: value => value >= 0 && value <= 40, message: 'Must be between 0 and 40 years.' },
+                ]) && valid;
+            } else if (role === 'Patient') {
+            	valid = validateField('patientName', [
+                    { validate: (value) => value.trim() !== '', message: 'Patient Name is mandatory.' },
+                    { validate: (value) => value.length >= 3 && value.length <= 50, message: 'Length 3-50 characters.' },
+                    { validate: (value) => /^[a-zA-Z0-9 ]+$/.test(value), message: 'No special characters allowed.' }
+                ]) && valid;
+            	valid = validateField('dob', [
+                    { validate: (value) => value.trim() !== '', message: 'Date of Birth is mandatory.' },
+                    { validate: (value) => /^\d{4}-\d{2}-\d{2}$/.test(value), message: 'Must be in the format YYYY-MM-DD.' },
+                    { validate: (value) => new Date(value) <= new Date(), message: 'Value cannot be in the future.' }
+                ]) && valid;
+            	valid = validateField('gender', [
+                    { validate: (value) => value.trim() !== '', message: 'Gender is mandatory.' }
+                ]) && valid;
+            	valid = validateField('patientContactNumber', [
+                    { validate: (value) => value.trim() !== '', message: 'Contact Number is mandatory.' },
+                    { validate: (value) => /^[0-9]{10}$/.test(value), message: 'Must be a valid 10-digit number.' }
+                ]) && valid;
+            	valid = validateField('patientEmailID', [
+                    { validate: (value) => value.trim() !== '', message: 'Email ID is mandatory.' },
+                    { validate: (value) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value), message: 'Provide a valid email address.' }
+                ]) && valid;
+            	valid = validateField('patientAddress', [
+                    { validate: (value) => value.trim() !== '', message: 'Address is mandatory.' },
+                    { validate: (value) => value.length <= 255, message: 'Must be 255 characters or less.' }
+                ]) && valid;
+            	valid = validateField('medicalHistory', [
+                    { validate: (value) => value.trim() !== '', message: 'Medical History is mandatory.' },
+                    { validate: (value) => value.length >= 10, message: 'Must be at least 10 characters long.' },
+                    { validate: (value) => value.length <= 1000, message: 'Must be 1000 characters or less.' }
+                ]) && valid;
+            }
+            return valid;
+        };
+        const resetForm = () => {
+            // Reset the common registration form
+            document.getElementById('registrationForm').reset();
+
+            // Clear all tooltips
+            document.querySelectorAll('.tooltip').forEach(tooltip => {
+                tooltip.textContent = ''; // Remove tooltip content
+                tooltip.classList.remove('visible'); // Hide tooltip
+            });
+
+            // Clear error styles from all input fields
+            document.querySelectorAll('input').forEach(input => {
+                input.classList.remove('error'); // Remove error styles
+            });
+
+            // Clear error styles from all select fields
+            document.querySelectorAll('select').forEach(select => {
+                select.classList.remove('error'); // Remove error styles
+            });
+
+            // Repopulate the specialization dropdown
+            populateSpecializations();
+        };
+    </script>
+</body>
+
+</html>

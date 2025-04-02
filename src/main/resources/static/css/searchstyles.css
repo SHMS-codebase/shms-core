@@ -1,0 +1,83 @@
+body {
+	background-color: #FFF0F5;
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	min-height: 100vh;
+	padding-top: 100px;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 1200px;
+	padding: 20px;
+	background-color: #fff;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+form .form-row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+form .buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: center; /* Center the buttons */
+	margin-top: 10px;
+}
+
+form label, form input, form select {
+	margin-bottom: 0;
+	width: auto;
+}
+
+form button {
+	width: auto;
+	margin-right: 10px;
+}
+
+form input, form select {
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+/* Styling the search results table */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+table th, table td {
+	border: 1px solid #ddd;
+	padding: 8px;
+	text-align: left;
+}
+
+table th {
+	background-color: #f2f2f2;
+	color: black;
+}
+
+table tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+table tr:hover {
+	background-color: #ddd;
+}

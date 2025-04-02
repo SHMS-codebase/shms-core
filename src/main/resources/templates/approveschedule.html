@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approve Doctor Schedule</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<link rel="stylesheet" th:href="@{/css/profilestyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/path/to/formValidation.js"></script>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	margin: 20px;
+}
+
+.home-link, .logout-link {
+	color: white; /* Set the link color to white */
+	text-decoration: none; /* Remove underline from links */
+	margin: 0 20px;
+	/* Optional: Add some space to the right and left of the links */
+}
+
+.container {
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+table, th, td {
+	border: 1px solid #ddd;
+}
+
+th, td {
+	padding: 10px;
+	text-align: left;
+}
+
+th {
+	background-color: #f2f2f2;
+}
+
+.buttons {
+	display: flex;
+	gap: 10px;
+}
+
+.buttons button {
+	padding: 10px 20px;
+	cursor: pointer;
+}
+
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; /* Center the form vertically */
+	height: 100vh; /* Ensure the body takes the full viewport height */
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 1050px;
+	padding: 30px;
+	margin-top: 50px;
+}
+
+.form-group {
+	margin-bottom: 20px;
+}
+
+label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: 500;
+	color: #555;
+}
+
+input {
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+	transition: border-color 0.3s;
+}
+
+input:focus {
+	outline: none;
+	border-color: #4285f4;
+}
+
+button {
+	background-color: #4285f4;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	padding: 12px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	width: 100%;
+	transition: background-color 0.3s;
+	font-weight: 500;
+}
+
+button:hover {
+	background-color: #3367d6;
+}
+
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+
+.success-message {
+	text-align: center;
+	color: #0f9d58;
+	font-size: 16px;
+	margin: 20px 0;
+	display: block;
+}
+
+.form-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.form-row label {
+	width: 40%;
+	margin-bottom: 0;
+	margin-right: 10px;
+}
+
+.form-row select, .form-row input {
+	width: 60%;
+}
+</style>
+</head>
+<body>
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container">
+
+		<h4 class="centered-text">Approve Doctor Schedules</h4>
+
+		<div th:if="${errorMessage}" class="error-message">
+			<p th:text="${errorMessage}"></p>
+		</div>
+		<div th:if="${message}" class="success-message">
+			<p th:text="${message}"></p>
+		</div>
+
+		<div th:if="${#lists.isEmpty(doctorSchedules)}">
+			<p>No Pending Schedules for Approval</p>
+		</div>
+		<div th:unless="${#lists.isEmpty(doctorSchedules)}">
+			<table>
+				<thead>
+					<tr>
+						<th>Doctor Name</th>
+						<th>Appointment Date</th>
+						<th>Appointment Time</th>
+						<th>Status</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="schedule : ${doctorSchedules}">
+						<td th:text="${schedule.doctor.doctorName}"></td>
+						<td th:text="${schedule.availableDate}"></td>
+						<td th:text="${schedule.startTime + ' - ' + schedule.endTime}"></td>
+						<td th:text="${schedule.scheduleStatus}"></td>
+						<td class="buttons">
+							<button
+								th:onclick="'updateScheduleStatus(\'APPROVED\', ' + ${schedule.scheduleID} + ')'">Approve</button>
+							<button
+								th:onclick="'updateScheduleStatus(\'REJECTED\', ' + ${schedule.scheduleID} + ')'">Reject</button>
+						</td>
+					</tr>
+					<!-- More rows can be added here -->
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+	<script>
+		function updateScheduleStatus(status, scheduleID) {
+			$.ajax({
+				url : '/doctor/updateschedulestatus',
+				method : 'POST',
+				data : {
+					scheduleID : scheduleID,
+					status : status
+				},
+				success : function(response) {
+					location.reload(); // Reload the page to show updated status and messages
+				},
+				error : function() {
+					alert('Error updating schedule status.');
+				}
+			});
+		}
+	</script>
+</body>
+</html>

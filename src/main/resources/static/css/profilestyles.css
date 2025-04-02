@@ -1,0 +1,180 @@
+@charset "UTF-8";
+
+body {
+	background-color: #FFF0F5;
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; /* Center the form vertically */
+	height: 100vh; /* Ensure the body takes the full viewport height */
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between; /* Space between header content */
+	align-items: center;
+	padding: 0;
+	background-color: rgb(138, 6, 145);
+	color: white;
+	box-shadow: 0px 0px 10px 0px #0000001a;
+	text-align: center;
+	font-family: 'Helvetica', sans-serif;
+	margin-bottom: 20px; /* Add space between header and form */
+	position: fixed; /* Fix the header at the top of the page */
+	top: 0; /* Position it at the top */
+	left: 0; /* Position it at the left edge */
+	z-index: 1000; /* Ensure it stays on top of other elements */
+	box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header .header-content {
+	flex-grow: 1; /* Make the header content take up the available space */
+	text-align: center; /* Center the text within the available space */
+}
+
+home-link, .search-link, .logout-link {
+    color: white; /* Set the link color to white */
+    text-decoration: none; /* Remove underline from links */
+    margin: 0 20px; /* Optional: Add some space to the right and left of the links */
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 600px; /* Optional: Set a max width for the form */
+	padding: 10px;
+	background-color: #fff;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+form label, form input, form select, form button {
+	width: 27%;
+	margin-bottom: 10px;
+}
+
+form input, form select {
+	padding: 5px;
+	box-sizing: border-box;
+	/* Include padding and border in element's total width and height */
+}
+
+/* Common styling for adminFields, doctorFields, and patientFields */
+#adminFields, #doctorFields, #patientFields {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	background-color: #fff;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	width: 100%; /* Set the width to 100% of the parent container */
+	max-width: 400px;
+	/* Optionally set a maximum width for the div elements */
+	margin: 0 auto; /* Center the div elements horizontally */
+}
+
+#adminFields label, #adminFields input, #doctorFields label,
+	#doctorFields input, #patientFields label, #patientFields input {
+	display: block;
+	margin-bottom: 5px; /* Adds some space between each field */
+	width: 100%; /* Ensure inputs take the full width */
+}
+
+#adminFields input, #doctorFields input, #patientFields input {
+	padding: 5px; /* Adds some padding to the input fields */
+	box-sizing: border-box;
+	width: 80%; /* Set the width to 80% of the parent container */
+	max-width: 600px;
+	/* Optionally set a maximum width for the input fields */
+	/* Ensures padding and border are included in the element's total width and height */
+}
+
+footer {
+	background-color: rgb(138, 6, 145);
+	color: #fff; /* White text color */
+	padding: 10px 0;
+	text-align: center;
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+footer p {
+	margin: 0;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+footer a, footer span {
+	color: #fff; /* White link and text color */
+	text-decoration: none;
+}
+
+footer .center {
+	order: 2;
+	flex-grow: 1;
+	text-align: center;
+}
+
+.content {
+	flex: 1;
+}
+
+.error {
+	color: red;
+}
+
+.required:before {
+	content: '* ';
+	color: red;
+}
+
+.form-group {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+label {
+	width: 150px;
+	text-align: right;
+	margin-right: 10px;
+}
+
+input, select {
+	width: 300px;
+}
+
+input[type="email"] {
+	width: 500px;
+}
+
+.buttons-container {
+	margin-top: 20px;
+	display: flex;
+	gap: 20px;
+	justify-content: center;
+}
+
+.large-textarea {
+    width: 100%; /* Adjust to fit the form's width */
+    min-height: 150px; /* Adjust height as needed */
+    box-sizing: border-box; /* Ensures padding and border are included in the width and height */
+}

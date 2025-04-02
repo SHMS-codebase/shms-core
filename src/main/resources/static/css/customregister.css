@@ -1,0 +1,455 @@
+body {
+    background-color: rgb(220, 223, 239);
+    font-family: 'Helvetica', sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+}
+
+html, body {
+    width: 100%; /* Full viewport width */
+    height: 100%; /* Full viewport height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    box-sizing: border-box; /* Include padding and border */
+}
+
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: all 0.5s ease;    /* Smooth transition */
+    /* Remove any unintended gaps */
+    margin: 0;
+    padding: 0;
+}
+
+.left-pane,
+.right-pane {
+    flex: 0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-pane {
+    flex: 0.2;   /* 20% width */
+    background-color: hwb(219 49% 4%);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;   /* Ensure the container has enough width */
+}
+
+select {
+    width: 100%;
+    /* Dropdown now occupies 90% of parent container */
+    max-width: 300px;
+    /* Prevent excessive width on larger screens */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    font-size: 16px;
+    outline: none;
+}
+
+.right-pane {
+    flex: 0.8;
+    /* 80% width */
+    background-color: rgb(220, 223, 239);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+#userRolesContainer {
+    text-align: center;
+    width: 100%;
+}
+
+.form-container {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);    /* Subtle shadow */
+    background-color: #f9f9f9;
+    padding: 20px;    /* Remove any padding to avoid shifting the header */
+    max-width: 500px;
+    margin: auto;    /* Center the form container */
+    text-align: center;
+    position: relative;    /* Ensure absolute elements like header align correctly */
+    overflow: hidden;    /* Prevent the header from overflowing */
+    width: 800px;
+    margin-top: 90px;
+}
+
+.form-header {
+    background-color: rgb(15, 32, 95);
+    color: white;
+    font-size: 20px;
+    padding: 5px;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+    width: calc(100% + 40px);    /* Expand to account for padding in .form-container */
+    margin: -20px -20px 15px -20px;    /* Negative margins to offset container padding */
+    box-sizing: border-box;    /* Include padding in width calculation */
+    /* margin-top: 20px; */
+}
+
+.title {
+    background-color: hwb(219 49% 4%);
+    color: white;
+    font-size: 20px;
+    font-weight: bolder;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    /* Space between inputs */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center-align group elements */
+}
+
+label {
+    margin-bottom: 5px;
+    margin-top: 15px;
+    font-weight: bold;
+    text-align: left;
+    /* Align labels to the left */
+    width: 100%;
+    max-width: 400px;
+    /* Match input width */
+}
+
+select,
+input {
+    width: 90%;
+    /* Ensure consistent width */
+    max-width: 400px;
+    /* Prevent stretching */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    font-size: 16px;
+    outline: none;
+    margin: 0 auto;
+    /* Center elements */
+}
+
+input.error {
+    border-color: red;
+    box-shadow: 0 0 5px red;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: red;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tooltip.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+button {
+    padding: 5px 15px;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transition for hover/active effects */
+    margin-top: 15px;
+}
+
+button.register {
+    background-color: hsl(31, 82%, 64%);
+    color: white;
+}
+
+button.reset {
+    background-color: hsl(31, 82%, 64%);
+    color: white;
+}
+
+/* Hover Effects */
+button.register:hover, button.reset:hover {
+    background-color: hsl(31, 82%, 54%); /* Slightly darker shade on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add subtle shadow effect */
+    transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+button.reset:hover {
+    background-color: hsl(31, 82%, 54%); /* Same hover effect as "Register" */
+}
+
+/* Active States */
+button.register:active, button.reset:active {
+    background-color: hsl(31, 82%, 44%); /* Darker shade for active state */
+    transform: scale(0.98); /* Slightly shrink the button on press */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow intensity */
+}
+
+/* Header related Styling */
+header {
+    height: 100px;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Ensures items are aligned to the sides */
+    align-items: center; /* Center vertically */
+    padding: 8px 5px;
+    background: linear-gradient(to bottom, rgb(5, 5, 40), rgb(15, 32, 95));
+    color: white;
+    box-shadow: 0px 0px 10px 0px #0000001a;
+    position: fixed; /* Make the header fixed */
+
+}
+
+/* Header related Styling */
+header {
+    height: 100px;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Ensures items are aligned to the sides */
+    align-items: center; /* Center vertically */
+    padding: 8px 5px;
+    background: linear-gradient(to bottom, rgb(5, 5, 40), rgb(15, 32, 95));
+    color: white;
+    box-shadow: 0px 0px 10px 0px #0000001a;
+    position: fixed; /* Make the header fixed */
+
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1; /* Ensures it takes available space between Home and Logout */
+}
+
+header a.left {
+    margin-right: auto; /* Pushes Home to the extreme left */
+    padding-bottom: 15px;
+}
+
+header a.right {
+    margin-left: auto; /* Pushes Logout to the extreme right */
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* Header Home and Logout links style */
+header a:hover {
+    color: white;
+    transform: scale(1.1); /* Bulge/pop effect on hover */
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* White glow effect */
+}
+
+.logo {
+    height: 50%;
+    width: auto;
+    margin-right: 15px;
+}
+
+h1, .heading {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    margin: 0;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 6px 4px;
+    }
+    .logo {
+        height: 40px;
+    }
+    h1, .heading {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 5px 3px;
+    }
+    .logo {
+        height: 35px;
+    }
+    h1, .heading {
+        font-size: 20px;
+    }
+}
+
+/* Logged in User information styles */
+
+.right-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align items to the right */
+    gap: 10px;
+}
+
+/*Welcome message styling*/
+.welcome-container {
+    position: absolute; /* Place it relative to the nearest positioned ancestor */
+    bottom: 5px; /* Push it slightly above the bottom edge */
+    right: 10px; /* Align it to the right edge */
+}
+
+.welcome-text {
+    font-size: 14px;
+    color: white;
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Footer related Styling */
+
+footer {
+    background: linear-gradient(to bottom, rgb(15, 32, 95), rgb(5, 5, 40));
+    color: #fff;
+    padding: 1px 0;
+    text-align: center;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    position: fixed;
+    z-index: 1000;
+}
+
+footer p {
+    margin: 5px 0 10px 0;
+    color: #fff;
+}
+
+footer a, footer span {
+    color: #fff;
+    text-decoration: none;
+}
+
+.social-icons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.social-icons a {
+    color: #fff;
+    margin: 0 10px;
+    font-size: 20px;
+    transition: color 0.3s;
+}
+
+.social-icons a:hover {
+    color: #FFD700;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+}
+
+.header-content .logo {
+    margin-right: 20px;
+}
+
+/* 25.03.2025 */
+.role-fields {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between rows */
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px; /* Space between columns */
+}
+
+.form-row div {
+    flex: 1; /* Equal width for each column */
+}
+
+.form-row div input,
+.form-row div select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    box-sizing: border-box;
+}
+
+.role-fields {
+    overflow-y: auto; /* Add scrolling if needed */
+    max-height: calc(100vh - 200px); /* Ensure fields fit within the available space */
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column; /* Stacks fields vertically on smaller screens */
+    }
+
+    .form-row div {
+        width: 100%;
+    }
+}
+
+select.error {
+    border: 3px solid red; /* Highlight only the border in red */
+    background-color: transparent; /* Ensure the dropdown remains with no background color change */
+    /*box-shadow: none;  Remove any glow or shadow effects if added earlier */
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.5); /* Optional: Subtle glow effect */
+}
+
+.form-row:last-of-type {
+    margin-bottom: 15px; /* Add space below the last field row */
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Spacing between buttons */
+    margin-top: 15px; /* Add space above the buttons */
+}
+
+

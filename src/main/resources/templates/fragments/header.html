@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header th:fragment="header">
+    <a href="/home" class="left">Home</a>
+    <div class="header-content d-flex align-items-center">
+        <img src="../images/logo.png" alt="Logo" class="logo" style="height: 100px; width: auto; margin-right: 20px;">
+        <h1>Smart HealthCare Management System</h1>
+    </div>
+    <div class="right-links">
+        <a href="/logout" class="right">Logout</a>
+    </div>
+    <div class="welcome-container">
+        <h6 class="welcome-text" th:text="'Welcome ' + ${session.userName} + ' [' + ${session.roleName} + ']'"></h6>
+    </div>
+</header>
+</html>

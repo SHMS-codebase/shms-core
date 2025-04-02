@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administrator Dashboard</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/dashboardstyles.css}">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+</head>
+<body>
+		
+	<!-- Include Header Fragment -->
+    <div th:replace="fragments/header :: header"></div>
+    
+	<!-- Tab Navigation -->
+	<div class="tabs">
+		<button class="tablinks" onclick="openTab(event, 'UserManagement')">User
+			Management</button>
+		<button class="tablinks"
+			onclick="openTab(event, 'ScheduleManagement')">Schedule
+			Management</button>
+		<button class="tablinks"
+			onclick="openTab(event, 'AppointmentsOverview')">Appointments
+			Overview</button>
+		<button class="tablinks" onclick="openTab(event, 'BillingInvoices')">Billing
+			and Invoices</button>
+		<button class="tablinks" onclick="openTab(event, 'Reports')">Reports</button>
+		<button class="tablinks"
+			onclick="openTab(event, 'MessagesNotifications')">Messages
+			&amp; Notifications</button>
+	</div>
+
+	<!-- Tab Content -->
+	<div class="tab-content-container">
+
+		<!-- User Management -->
+		<div id="UserManagement" class="tabcontent">
+			<h3 class="centered-text">
+				User Management
+			</h3>
+			<p>Manage User Profiles</p>
+			<ul>
+				<li><a th:href="@{/users/register(source='admindashboard')}">User Registration</a></li>
+				<li><a th:href="@{/searchuser(source='admindashboard')}">Search/
+						Update Users</a></li>
+				<li><a href="#">Delete User</a></li>
+			</ul>
+		</div>
+
+		<!-- Schedule Management -->
+		<div id="ScheduleManagement" class="tabcontent">
+			<h3 class="centered-text">Schedule Management</h3>
+			<p>Manage Doctor Schedules</p>
+			<ul>
+				<li><a
+					th:href="@{/doctor/createschedule(source='admindashboard')}">Create
+						Schedules</a></li>
+				<li><a th:href="@{/searchschedule(source='admindashboard')}">Search/
+						Update Schedules</a></li>
+				<li><a
+					th:href="@{/doctor/approveschedule(source='admindashboard')}">Approve
+						Schedule</a></li>
+			</ul>
+		</div>
+
+		<!-- Appointments Overview -->
+		<div id="AppointmentsOverview" class="tabcontent">
+			<h3 class="centered-text">Appointments Overview</h3>
+			<!-- <p>Summary of scheduled, canceled, and no-show appointments</p> -->
+			<ul>
+				<li><a th:href="@{/appointments/createappointment(source='admindashboard')}">Book
+						Appointment</a></li>
+				<li><a th:href="@{/searchappointment(source='admindashboard')}">Search/ Update
+						Appointments</a></li>
+			</ul>
+		</div>
+
+		<!-- Billing and Invoices -->
+		<div id="BillingInvoices" class="tabcontent">
+			<h3 class="centered-text">Billing and Invoices</h3>
+			<p>Manage all invoices, payments, and outstanding amounts</p>
+			<ul>
+				<li><a th:href="@{/invoices/unbilledtreatments(source='admindashboard')}">Generate Invoices</a></li>
+				<li><a th:href="@{/searchinvoices(source='admindashboard')}">Search Invoices</a></li> <!-- Lists all invoices with filters for searching and categorization. -->
+				<li><a th:href="@{/invoices/viewtreatmentinvoices}">View Treatment Invoices</a></li>
+				<li><a th:href="@{/invoices/viewprescriptioninvoices}">View Prescription Invoices</a></li>
+				<li><a th:href="@{/billing/patientrecords}">Patient Billing Records</a></li> <!-- View specific patients’ billing histories. -->
+			</ul>
+		</div>
+
+		<!-- Reports -->
+		<div id="Reports" class="tabcontent">
+			<h3 class="centered-text">Reports</h3>
+			<p>Generate detailed reports on appointments, patient outcomes,
+				finances</p>
+			<ul>
+				<li><a th:href="@{/reports/appointmentreport(source='admindashboard')}">Appointments
+						Report</a></li>
+				<li><a href="/reports/patientreport">Patient Report</a></li>
+				<li><a th:href="@{/reports/billingreport}">Billing Reports</a></li> <!-- Generate financial summaries and payment reports. -->
+			</ul>
+		</div>
+
+		<!-- Messages & Notifications -->
+		<div id="MessagesNotifications" class="tabcontent">
+			<h3 class="centered-text">Messages &amp; Notifications</h3>
+			<p>System alerts and updates</p>
+			<ul>
+				<li><a href="#">System Alerts</a></li>
+				<li><a href="#">Notifications</a></li>
+			</ul>
+		</div>
+
+		<!-- System Analytics -->
+		<!-- <section class="system-analytics">
+			<h2>System Analytics</h2>
+			<p>KPIs, usage statistics, performance reports</p>
+		</section> -->
+
+	</div>
+	
+	<!-- Include Footer Fragment -->
+    <div th:replace="fragments/footer :: footer"></div>
+
+	<script src="../js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Details</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<style>
+/* Additional styles to make card look consistent with existing design */
+.card {
+	margin-top: 100px;
+	width: 100%;
+	max-width: 1000px;
+	margin: 100px auto 20px;
+	background-color: #fff;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	width: 100%;
+}
+
+.card-header {
+	background: linear-gradient(to top, rgb(5, 5, 40), rgb(15, 32, 95));
+	color: white;
+	padding: 10px 15px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.card-header h5 {
+	margin: 0;
+	text-align: center;
+}
+
+.card-body {
+	padding: 15px;
+}
+
+.card-body p {
+	margin: 10px 0;
+	display: flow-root;
+	justify-content: space-between;
+}
+
+.card-body strong {
+	width: 150px;
+	text-align: right;
+	margin-right: 10px;
+}
+
+form {
+	width: 100%; /* Set the form width to match the cards */
+	max-width: 1000px; /* Ensure it doesn't exceed the container width */
+	margin: 20px auto; /* Center it horizontally */
+	padding: 15px; /* Add padding for better spacing */
+	background-color: #fff; /* Match the card background */
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+	/* Add a card-like shadow */
+	border-radius: 8px; /* Match the card's border radius */
+}
+
+.container {
+	width: 70%;
+	margin-top: 500px;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-wrapper {
+	display: flex;
+	justify-content: space-between;
+	gap: 20px; /* Add spacing between cards */
+	margin-bottom: 30px; /* Create space below cards */
+}
+
+.card {
+	flex: 1;
+}
+
+.card-body {
+	padding: 15px 20px;
+}
+
+/* Add spacing for the "Treatment Details" section */
+.card.mb-4 {
+	margin-top: 20px;
+	/* Add top margin to separate from previous section */
+}
+
+.card h5 {
+	text-align: right; /* Center card headers for consistency */
+}
+
+.row {
+	display: flex;
+	flex-wrap: wrap; /* Ensures proper alignment on smaller screens */
+}
+
+.col-md-6 {
+	flex: 1; /* Ensure both columns take up equal space */
+	padding: 0 10px; /* Optional padding for visual clarity */
+}
+
+.row.mb-4 div {
+	font-size: 16px; /* Adjust font size if needed */
+}
+
+.invoice-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center; /* Ensures vertical alignment */
+	border-bottom: 1px solid var(--light-gray);
+	padding-bottom: 15px;
+	margin: 20px;
+}
+
+.details {
+	margin: 0px;
+}
+
+.invoice-title {
+	font-size: 22px;
+	font-weight: bold;
+	color: var(--primary-color);
+	text-align: left; /* Aligns content to the left */
+}
+
+.invoice-date {
+	display: flex;
+	justify-content: end;
+	font-size: 14px; /* Adjust font size as needed */
+	color: var(--secondary-color); /* Optional for differentiation */
+	text-align: right; /* Aligns content to the right */
+}
+
+.invoice-title, .invoice-date {
+	flex: 1; /* Ensures both divs occupy equal width if needed */
+}
+/* Common styling for section headings */
+.col-sm-6 h5 {
+	text-align: left; /* Left alignment for the heading */
+	font-size: 18px; /* Adjust size for prominence */
+}
+
+/* Styling for Patient/Doctor name */
+.patient-name, .doctor-name {
+	font-size: 20px; /* Slightly larger font size for emphasis */
+	font-weight: bold; /* Highlight the name */
+}
+
+/* Common styling for italics */
+.italic-text {
+	font-style: italic; /* Italics for additional information */
+	font-size: 15px; /* Adjust size for readability */
+}
+
+.mb-3 {
+	margin-bottom: 0rem !important;
+}
+
+/* Styling for Treatment Information heading */
+.treatment-info, .payment-info {
+	font-size: 18px; /* Adjust for heading prominence */
+	text-align: left !important; /* Ensure left alignment */
+}
+
+/* Styling for Diagnosis, Treatment Details, Status, and Payment Date */
+.row p span {
+	font-size: 14px; /* Regular font size */
+	font-weight: normal; /* Ensure the text is not bold */
+	font-style: normal;
+	/* Remove any italic styles (if applied elsewhere) */
+}
+
+@media print {
+	body * {
+		visibility: hidden;
+	}
+	.card.mb-4, .card.mb-4 * {
+		visibility: visible;
+	}
+	.card.mb-4 {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+	.btn {
+		display: none;
+	}
+}
+</style>
+
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container mt-4 mb-5">
+
+		<div class="card mb-4">
+			<div class="card-header">
+				<div class="row">
+					<div class="col-md-6">
+						<h4 class="mb-0">Smart HealthCare Management System</h4>
+					</div>
+					<div class="col-md-6 text-md-end">
+						<h5 class="mb-0"
+							th:text="${'Invoice Status: ' + invoice.invoiceStatus}"></h5>
+					</div>
+				</div>
+			</div>
+			<div class="invoice-header">
+				<div class="invoice-title">
+					Invoice <span th:text="${invoiceNumber}"></span>
+				</div>
+				<div class="invoice-date">
+					Generated on: &nbsp; <span th:text="${invoiceDate}"></span>
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="row mb-4">
+					<div class="col-sm-6">
+						<h5 class="mb-3">HealthCare Provider:</h5>
+						<div>
+							<strong class="doctor-name" th:text="${doctor.doctorName}"></strong>
+						</div>
+						<div class="italic-text" th:text="${doctor.specialization}"></div>
+						<div class="italic-text">Smart HealthCare Management System</div>
+						<div class="italic-text">Phone: +91 ***** *****</div>
+						<div class="italic-text">
+							Email: <a href="mailto:smarthealthcaremngntsystem@gmail.com">smarthealthcaremngntsystem@gmail.com</a>
+						</div>
+					</div>
+
+					<div class="col-sm-6">
+						<h5 class="mb-3">Patient Information:</h5>
+						<div>
+							<strong class="patient-name" th:text="${patient.patientName}"></strong>
+						</div>
+						<div class="italic-text" th:text="${patient.address}"></div>
+						<div class="italic-text"
+							th:text="${'Phone: ' + patient.contactNumber}"></div>
+						<div class="italic-text" th:text="${'Email: ' + user.emailID}"></div>
+					</div>
+
+				</div>
+
+				<div class="row mb-4">
+					<div class="col-sm-12">
+						<div class="invoice-header details">
+							<div class="treatment-date">
+								Treatment Date: &nbsp; <span th:text="${formattedTreatmentDate}"></span>
+							</div>
+							<div class="invoice-date">
+								Invoice Date: &nbsp; <span th:text="${formattedInvoiceDate}"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="table-responsive-sm">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th class="text-center">#</th>
+								<th>Item</th>
+								<th class="text-end">Price</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="text-center">1</td>
+								<td>Medical Consultation and Treatment</td>
+								<td class="text-end"
+									th:text="${'₹' + #numbers.formatDecimal(invoice.treatmentCost, 1, 2)}"></td>
+							</tr>
+							<tr
+								th:if="${invoice.prescriptionCost != null && invoice.prescriptionCost.compareTo(new java.math.BigDecimal(0)) > 0}">
+								<td class="text-center">2</td>
+								<td>Prescribed Medication(s)</td>
+								<td class="text-end"
+									th:text="${'₹' + #numbers.formatDecimal(invoice.prescriptionCost, 1, 2)}"></td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="2" class="text-end"><strong>Total:</strong></td>
+								<td class="text-end"><strong
+									th:text="${'₹' + #numbers.formatDecimal(invoice.totalAmount, 1, 2)}"></strong></td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-8">
+						<div class="mb-3">
+							<h5 class="treatment-info">Treatment Information:</h5>
+							<div class="italic-text">
+								Diagnosis: <span th:text="${invoice.treatment.diagnosis}"></span>
+								<br /> Treatment Details: <span
+									th:text="${invoice.treatment.treatmentDetails}"></span>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-4">
+						<div class="mb-3">
+							<h5 class="payment-info">Payment Details:</h5>
+							<div class="italic-text">
+								Status: <span th:text="${invoice.invoiceStatus}"></span>
+							</div>
+							<div class="italic-text"
+								th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).PAID}">
+								Payment Date: <span
+									th:text="${#temporals.format(invoice.updatedDate, 'dd-MM-yyyy HH:mm')}"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-12">
+						<div class="alert alert-info mt-3">
+							<h6>Notes:</h6>
+							<p>Thank you for choosing our Smart HealthCare Management
+								Services.</p>
+							<p>For any questions regarding this invoice, please contact
+								our billing department at smarthealthcaremngntsystem@gmail.com.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex justify-content-between">
+			<button class="btn btn-info me-2" onclick="window.print();">Print
+				Invoice</button>
+			<a
+				th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).FINALIZED}"
+				th:href="@{/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='PAID')}"
+				class="btn btn-success">Mark as Paid</a><a
+				th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).REVIEWED}"
+				th:href="@{/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='CANCELLED')}"
+				class="btn btn-secondary">Cancel Invoice</a>
+		</div>
+	</div>
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>

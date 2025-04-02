@@ -1,0 +1,133 @@
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.error {
+	color: red;
+}
+
+.error-message {
+	color: red;
+	font-size: x-small; /* Reduce the font size of error messages */
+}
+
+.required:before {
+	content: '* ';
+	color: red;
+}
+
+.header-content {
+	text-align: center;
+	flex-grow: 1;
+}
+
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.home-link, .logout-link {
+	color: white;
+	text-decoration: none;
+	margin: 0 20px;
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	flex-grow: 1;
+	padding: 20px;
+	margin-top: 200px; /* Adjust this value for more or less space */
+	width: 90%; /* Adjust this value for your needs */
+	max-width: 100%;
+}
+
+form {
+	width: 100%;
+	padding: 25px;
+	border: 2px solid #ddd;
+	border-radius: 75px; /* For rounded edges of the panel */
+	background-color: #fff;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+	width: 30%;
+}
+
+form label {
+	width: 30%;
+	margin-bottom: 10px;
+}
+
+input, select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+.full-width-inline-container {
+	/* To maintain the gap between User Roles and the Role dropdown*/
+	display: flex;
+	align-items: center;
+	gap: 10px; /* Adjust the gap as needed */
+}
+
+.wide-select { /* To maintain the width of Role dropdown*/
+	width: 175px; /* Adjust the width as needed */
+}
+
+.full-width {
+	flex-basis: 100%;
+}
+
+.button-group {
+	display: flex;
+	gap: 20px;
+	flex-basis: 100%;
+}
+
+.button-group button {
+	flex: 1;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 20px;
+	background-color: rgb(138, 6, 145);
+	color: white;
+	cursor: pointer;
+	transition: background-color 0.3s ease, box-shadow 0.3s ease;
+	transition: box-shadow 0.3s ease;
+	/* Add a transition for a smooth effect(for glow effect) */
+}
+
+.button-group button:hover {
+	background-color: rgb(158, 26, 165); /* Lighter shade */
+	transform: translateY(-2px); /* Move the button up a bit */
+	transition: transform 0.2s ease; /* Smooth the transform */
+	box-shadow: 0 0 15px rgba(138, 6, 145, 0.5);
+	/* Adjust color and blur radius (for glow effect)*/
+}
+
+.button-group button:active {
+	background-color: rgb(118, 0, 125); /* Darker shade when pressed */
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+	/* Inset shadow for pressed effect */
+	transform: scale(0.98); /* Slightly shrink the button */
+}
+
+.fields-container {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+}
