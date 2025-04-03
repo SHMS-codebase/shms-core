@@ -48,7 +48,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/forgot-password")
-	public String showForgotPasswordForm(Model model) {
+	public String viewForgotPasswordForm(Model model) {
 		logger.info("Forgot Password Form will be loaded");
 
 		if (!model.containsAttribute("forgotPasswordEmailForm")) {
@@ -139,7 +139,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/reset-password")
-	public String showResetPasswordForm(@RequestParam(RequestParamConstants.TOKEN) String token, Model model) {
+	public String viewResetPasswordForm(@RequestParam(RequestParamConstants.TOKEN) String token, Model model) {
 		logger.info("Reset Password Form will be loaded");
 		PasswordResetToken resetToken = tokenService.findByToken(token);
 
@@ -196,13 +196,13 @@ public class AuthController {
 	}
 
 	@GetMapping("/reset-password-success")
-	public String showResetPasswordSuccessPage() {
+	public String viewResetPasswordSuccessPage() {
 		logger.info("Reset Password Success Page is being loaded");
 		return "resetpasswordsuccess";
 	}
 
 	@GetMapping("/change-password")
-	public String showChangePasswordForm(@RequestParam(RequestParamConstants.USER_ID) Long userID,
+	public String viewChangePasswordForm(@RequestParam(RequestParamConstants.USER_ID) Long userID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Change Password Form will be loaded");
 		logger.debug("userID: {}", userID);

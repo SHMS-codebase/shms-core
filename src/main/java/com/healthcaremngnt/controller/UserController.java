@@ -49,7 +49,7 @@ public class UserController {
 	}
 
 	@GetMapping("/register")
-	public String showRegistrationForm(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+	public String viewRegistrationForm(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("The Registration Form is loaded");
 		model.addAttribute("user", new User());
 		model.addAttribute("source", source);
@@ -224,7 +224,7 @@ public class UserController {
 	}
 
 	@GetMapping("/viewuser")
-	public String showUserForm(@RequestParam(RequestParamConstants.USER_ID) Long userID,
+	public String viewUserForm(@RequestParam(RequestParamConstants.USER_ID) Long userID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("View User");
 

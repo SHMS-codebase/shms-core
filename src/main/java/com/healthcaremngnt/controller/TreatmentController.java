@@ -40,7 +40,7 @@ public class TreatmentController {
 	}
 
 	@GetMapping("/createtreatment")
-	public String showCreateTreatment(
+	public String viewCreateTreatment(
 			@RequestParam(value = RequestParamConstants.APPOINTMENT_ID, required = false) Long appointmentID,
 			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source, Model model) {
 		logger.info("Loading Create Treatment!!!");

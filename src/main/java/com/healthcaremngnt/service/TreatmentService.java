@@ -17,5 +17,7 @@ public interface TreatmentService {
 	Treatment updateTreatmentDetails(Treatment treatment);
 
 	List<Long> getTreatmentDetailsByDoctor(Long doctorID);
+
+	List<Long> getTreatmentDetailsByPatient(Long patientID);
 	
 }

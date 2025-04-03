@@ -29,6 +29,9 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
 	@Query("SELECT DISTINCT t.patientID FROM Treatment t WHERE t.doctorID = :doctorID")
 	List<Long> findPatientByDoctorID(Long doctorID);
 
+	@Query("SELECT DISTINCT t.doctorID FROM Treatment t WHERE t.patientID = :patientID")
+	List<Long> findDoctorByPatientID(Long patientID);
+	
 	// Example of derived queries (if needed):
 	// Optional<Treatment> findByDiagnosis(String diagnosis);
 

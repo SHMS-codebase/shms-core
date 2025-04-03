@@ -94,7 +94,9 @@
 				<div id="MedRecSummary" class="tabcontent">
 					<h3>Medical Summary</h3>
 					<ul>
-						<li><a href="#">Recent Visits</a></li>
+						<li><a
+							th:href="@{/patient/recentvisits(patientID=${patient.patientID}, source='patientdashboard')}">Recent
+								Visits</a></li>
 						<li><a href="#">Treatment Details</a></li>
 						<li><a href="#">Prescription Details</a></li>
 						<li><a href="#">Medical History</a></li>
@@ -103,9 +105,11 @@
 				<div id="DoctorProfiles" class="tabcontent">
 					<h3>View Doctor Profiles</h3>
 					<ul>
+						<li><a th:href="@{/searchuser(source='patientdashboard')}">Search
+								Doctors</a></li>
 						<li><a
-							th:href="@{/searchuser(source='patientdashboard')}">Search Doctors</a></li>
-						<li><a href="#">My Doctors</a></li>
+							th:href="@{/patient/mydoctors(patientID=${patient.patientID}, source='patientdashboard')}">My
+								Doctors</a></li>
 					</ul>
 				</div>
 				<div id="ActivePrescriptions" class="tabcontent">

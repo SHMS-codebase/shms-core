@@ -123,7 +123,7 @@ public class PrescriptionController {
 	}
 
 	@GetMapping("/createprescription")
-	public String showCreatePrescription(@ModelAttribute(RequestParamConstants.APPOINTMENT_ID) Long appointmentID,
+	public String viewCreatePrescription(@ModelAttribute(RequestParamConstants.APPOINTMENT_ID) Long appointmentID,
 			@ModelAttribute(RequestParamConstants.SAVED_TREATMENT) Treatment savedTreatment,
 			@ModelAttribute(RequestParamConstants.SOURCE) String source, Model model, Authentication authentication)
 			throws AppointmentNotFoundException, PatientNotFoundException {

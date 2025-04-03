@@ -1,5 +1,7 @@
 package com.healthcaremngnt.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +21,15 @@ import com.healthcaremngnt.constants.RequestParamConstants;
 import com.healthcaremngnt.exceptions.PatientNotFoundException;
 import com.healthcaremngnt.model.ActivePrescription;
 import com.healthcaremngnt.model.Appointment;
+import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.MedicalHistory;
 import com.healthcaremngnt.model.MedicalHistoryWrapper;
 import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.service.AppointmentService;
+import com.healthcaremngnt.service.DoctorService;
 import com.healthcaremngnt.service.PatientService;
 import com.healthcaremngnt.service.PrescriptionService;
+import com.healthcaremngnt.service.TreatmentService;
 
 @Controller
 @RequestMapping("/patient")
@@ -35,16 +40,22 @@ public class PatientController {
 	private final PatientService patientService;
 	private final AppointmentService appointmentService;
 	private final PrescriptionService prescriptionService;
+	private final DoctorService doctorService;
+	private final TreatmentService treatmentService;
 
 	public PatientController(PatientService patientService, AppointmentService appointmentService,
-			@Lazy PrescriptionService prescriptionService) {
+			@Lazy PrescriptionService prescriptionService, TreatmentService treatmentService,
+			DoctorService doctorService) {
 		this.patientService = patientService;
 		this.appointmentService = appointmentService;
 		this.prescriptionService = prescriptionService;
+		this.treatmentService = treatmentService;
+		this.doctorService = doctorService;
 	}
 
 	@GetMapping("/patientdashboard")
-	public String getPatientDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model) throws PatientNotFoundException {
+	public String getPatientDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model)
+			throws PatientNotFoundException {
 		logger.info("Loading Patient Dashboard!!!");
 
 		Patient patient = patientService.getPatientInfoCard(userName);
@@ -59,7 +70,7 @@ public class PatientController {
 		List<ActivePrescription> activePrescriptions = prescriptionService.getActivePrescriptions(patient);
 		model.addAttribute("activeprescriptions", activePrescriptions);
 		logger.debug("activePrescriptions: {}", activePrescriptions);
-		
+
 		return "patientdashboard";
 
 	}
@@ -181,6 +192,76 @@ public class PatientController {
 		model.addAttribute("message", MessageConstants.MEDICAL_HSTY_ADD_SUCCESS);
 		model.addAttribute("source", source);
 		return "viewmedicalhistory";
+	}
+
+	@GetMapping("/mydoctors")
+	public String viewMyDoctors(@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Loading Doctors treating the Patient ID: {}", patientID);
+
+		try {
+			List<Long> doctorIDs = treatmentService.getTreatmentDetailsByPatient(patientID);
+			if (doctorIDs == null || doctorIDs.isEmpty()) {
+				model.addAttribute("doctors", Collections.emptyList());
+				logger.debug("{}", MessageConstants.NO_DOCTORS_TREATING_PATIENT);
+				return "viewalldoctors";
+			}
+
+			// Initialize list to avoid NullPointerException
+			List<Doctor> doctors = new ArrayList<>();
+
+			for (Long doctorID : doctorIDs) {
+				Doctor doctor = doctorService.getDoctorDetails(doctorID);
+				doctors.add(doctor);
+			}
+
+			model.addAttribute("doctors", doctors);
+
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR, e);
+			model.addAttribute("errorMessage", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR);
+			return source;
+		}
+
+		model.addAttribute("patientID", patientID);
+		model.addAttribute("source", source);
+
+		return "viewmydoctors";
+	}
+	
+	@GetMapping("/recentvisits")
+	public String viewRecentVisits(@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Loading Recent Visits of the Patient ID: {}", patientID);
+
+		try {
+			List<Long> doctorIDs = treatmentService.getTreatmentDetailsByPatient(patientID);
+			if (doctorIDs == null || doctorIDs.isEmpty()) {
+				model.addAttribute("doctors", Collections.emptyList());
+				logger.debug("{}", MessageConstants.NO_DOCTORS_TREATING_PATIENT);
+				return "viewalldoctors";
+			}
+
+			// Initialize list to avoid NullPointerException
+			List<Doctor> doctors = new ArrayList<>();
+
+			for (Long doctorID : doctorIDs) {
+				Doctor doctor = doctorService.getDoctorDetails(doctorID);
+				doctors.add(doctor);
+			}
+
+			model.addAttribute("doctors", doctors);
+
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR, e);
+			model.addAttribute("errorMessage", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR);
+			return source;
+		}
+
+		model.addAttribute("patientID", patientID);
+		model.addAttribute("source", source);
+
+		return "recentvisits";
 	}
 
 }

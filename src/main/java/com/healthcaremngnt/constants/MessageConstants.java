@@ -107,5 +107,8 @@ public class MessageConstants {
 	public static final String TOKEN_GEN_ERROR = "Unable to generate token";
 	public static final String INVALID_TOKEN = "Invalid Token";
 	public static final String EXPIRED_TOKEN = "Expired Token";
+	
+	public static final String VIEW_MY_DOCTORS_LOAD_ERROR = "An error occurred while loading the My Doctors page.";
+	public static final String NO_DOCTORS_TREATING_PATIENT = "No Doctors";
 
 }

@@ -46,7 +46,7 @@ public class AppointmentController {
 	}
 
 	@GetMapping("/createappointment")
-	public String showCreateAppointment(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+	public String viewCreateAppointment(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading Create Appointment");
 		populateModelWithDoctorsAndPatients(model);
 		model.addAttribute("source", source);

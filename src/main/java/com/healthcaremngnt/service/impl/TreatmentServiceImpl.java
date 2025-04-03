@@ -102,4 +102,15 @@ public class TreatmentServiceImpl implements TreatmentService {
 		return treatmentRepository.findPatientByDoctorID(doctorID);
 	}
 	
+	@Override
+	public List<Long> getTreatmentDetailsByPatient(Long patientID) {
+		logger.info("Fetching treatment details for Patient ID: {}", patientID);
+
+		if (patientID == null || patientID <= 0) {
+			throw new IllegalArgumentException("Invalid Patient ID.");
+		}
+
+		return treatmentRepository.findDoctorByPatientID(patientID);
+	}
+	
 }
