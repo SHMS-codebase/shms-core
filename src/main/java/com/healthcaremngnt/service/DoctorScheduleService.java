@@ -2,7 +2,6 @@ package com.healthcaremngnt.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import com.healthcaremngnt.exceptions.DoctorNotFoundException;
 import com.healthcaremngnt.exceptions.InvalidInputException;
@@ -12,9 +11,9 @@ import com.healthcaremngnt.model.DoctorScheduleRequest;
 
 public interface DoctorScheduleService {
 
-	DoctorSchedule saveDoctorSchedule(DoctorSchedule doctorSchedule);
+	DoctorSchedule saveDoctorSchedule(DoctorSchedule doctorSchedule) throws InvalidInputException;
 
-	Optional<DoctorSchedule> findScheduleDetail(Long scheduleID);
+	DoctorSchedule findScheduleDetail(Long scheduleID) throws InvalidInputException;
 
 	List<DoctorSchedule> getAllSchedules();
 
@@ -24,7 +23,7 @@ public interface DoctorScheduleService {
 			throws InvalidInputException, DoctorNotFoundException, OverlappingScheduleException;
 
 	void updateDoctorSchedules(List<DoctorSchedule> doctorSchedulesList, Long doctorID, Long scheduleID)
-			throws DoctorNotFoundException;
+			throws DoctorNotFoundException, InvalidInputException;
 
 	List<LocalDate> getAvailableDatesByDoctorID(Long doctorID);
 

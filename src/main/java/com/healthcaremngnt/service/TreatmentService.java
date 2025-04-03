@@ -1,16 +1,16 @@
 package com.healthcaremngnt.service;
 
 import java.util.List;
-import java.util.Optional;
 
+import com.healthcaremngnt.exceptions.AppointmentNotFoundException;
 import com.healthcaremngnt.exceptions.DataPersistenceException;
 import com.healthcaremngnt.model.Treatment;
 
 public interface TreatmentService {
 
-	Treatment createTreatment(Treatment treatment) throws DataPersistenceException;
+	Treatment createTreatment(Treatment treatment) throws DataPersistenceException, AppointmentNotFoundException;
 
-	Optional<Treatment> getTreatmentDetails(Long treatmentID);
+	Treatment getTreatmentDetails(Long treatmentID) throws DataPersistenceException;
 
 	List<Treatment> getAllUnbilledTreatments();
 

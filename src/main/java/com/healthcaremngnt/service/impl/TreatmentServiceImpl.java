@@ -1,7 +1,6 @@
 package com.healthcaremngnt.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.healthcaremngnt.enums.TreatmentStatus;
+import com.healthcaremngnt.exceptions.AppointmentNotFoundException;
 import com.healthcaremngnt.exceptions.DataPersistenceException;
 import com.healthcaremngnt.model.Appointment;
 import com.healthcaremngnt.model.Treatment;
@@ -31,59 +31,73 @@ public class TreatmentServiceImpl implements TreatmentService {
 	}
 
 	@Override
-	public Treatment createTreatment(Treatment treatment) throws DataPersistenceException {
+	public Treatment createTreatment(Treatment treatment) throws AppointmentNotFoundException {
+		logger.info("Creating treatment for Appointment ID: {}", treatment.getAppointment().getAppointmentID());
 
-		logger.info("TreatmentServiceImpl::: createTreatment()");
-		logger.debug("treatment: {}", treatment);
+		validateTreatment(treatment);
 
-		try {
-			Optional<Appointment> appointmentOptional = appointmentService
-					.getAppointmentDetails(treatment.getAppointment().getAppointmentID());
+		Appointment appointment = appointmentService
+				.getAppointmentDetails(treatment.getAppointment().getAppointmentID());
 
-			if (appointmentOptional.isPresent()) {
-				treatment.setAppointment(appointmentOptional.get());
-			}
-			return treatmentRepository.save(treatment);
-		} catch (Exception e) {
+		treatment.setAppointment(appointment);
 
-			logger.error("Exception while saving treatment details to DB: {}", e.getMessage(), e);
+		Treatment savedTreatment = treatmentRepository.save(treatment);
+		logger.info("Successfully saved treatment with ID: {}", savedTreatment.getTreatmentID());
 
-			throw new DataPersistenceException("Failed to create treatment due to a data access error.", e);
+		return savedTreatment;
+	}
+
+	private void validateTreatment(Treatment treatment) {
+		if (treatment == null || treatment.getAppointment() == null
+				|| treatment.getAppointment().getAppointmentID() == null) {
+			throw new IllegalArgumentException("Invalid treatment data: Appointment details are missing.");
 		}
-
 	}
 
 	@Override
-	public Optional<Treatment> getTreatmentDetails(Long treatmentID) {
+	public Treatment getTreatmentDetails(Long treatmentID) throws DataPersistenceException {
+		logger.info("Fetching treatment details for ID: {}", treatmentID);
 
-		logger.info("TreatmentServiceImpl::: getTreatmentDetails()");
+		if (treatmentID == null || treatmentID <= 0) {
+			throw new IllegalArgumentException("Invalid treatment ID.");
+		}
 
-		return treatmentRepository.findById(treatmentID);
+		return treatmentRepository.findById(treatmentID)
+				.orElseThrow(() -> new DataPersistenceException("Treatment not found with ID: " + treatmentID));
 	}
 
 	@Override
 	public List<Treatment> getAllUnbilledTreatments() {
+		logger.info("Fetching all unbilled treatments with COMPLETED status.");
 
-		logger.info("TreatmentServiceImpl::: getAllUnbilledTreatments()");
+		List<Treatment> treatments = treatmentRepository.findTreatmentsByStatus(TreatmentStatus.COMPLETED);
 
-		return treatmentRepository.findTreatmentsByStatus(TreatmentStatus.COMPLETED);
+		if (treatments.isEmpty()) {
+			logger.warn("No unbilled treatments found.");
+		}
 
+		return treatments;
 	}
 
 	@Override
 	public Treatment updateTreatmentDetails(Treatment treatment) {
+		logger.info("Updating treatment details for ID: {}", treatment.getTreatmentID());
 
-		logger.info("TreatmentServiceImpl::: updateTreatmentOnInvoice()");
-		logger.debug("treatment: {}", treatment);
+		validateTreatment(treatment);
 
-		return treatmentRepository.save(treatment);
+		Treatment updatedTreatment = treatmentRepository.save(treatment);
+		logger.info("Successfully updated treatment with ID: {}", updatedTreatment.getTreatmentID());
 
+		return updatedTreatment;
 	}
 
 	@Override
 	public List<Long> getTreatmentDetailsByDoctor(Long doctorID) {
+		logger.info("Fetching treatment details for Doctor ID: {}", doctorID);
 
-		logger.info("TreatmentServiceImpl::: getTreatmentDetailsByDoctor()");
+		if (doctorID == null || doctorID <= 0) {
+			throw new IllegalArgumentException("Invalid Doctor ID.");
+		}
 
 		return treatmentRepository.findPatientByDoctorID(doctorID);
 	}

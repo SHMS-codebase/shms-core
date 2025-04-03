@@ -1,7 +1,6 @@
 package com.healthcaremngnt.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,18 +24,25 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Optional<Role> getRoleByName(String roleName) {
+	public Role getRoleByName(String roleName) {
+		logger.info("Retrieving role by name: {}", roleName);
 
-		logger.info("Retrieving Role ID for role name: {}", roleName);
+		validateRoleName(roleName);
 
-		return roleRepository.findByRoleNameIgnoreCase(roleName);
+		return roleRepository.findByRoleNameIgnoreCase(roleName)
+				.orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+	}
+
+	private void validateRoleName(String roleName) {
+		if (roleName == null || roleName.isBlank()) {
+			throw new IllegalArgumentException("Role name cannot be null or empty.");
+		}
 	}
 
 	@Override
 	public List<Role> getAllRoles() {
-
-		logger.info("Retrieving all roles from DB");
-
+		logger.info("Fetching all roles from database.");
+		
 		return roleRepository.findAll();
 	}
 

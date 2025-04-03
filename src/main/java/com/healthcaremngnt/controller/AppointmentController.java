@@ -106,9 +106,8 @@ public class AppointmentController {
 		});
 
 		try {
-			Optional<Appointment> appointmentOptional = appointmentService.getAppointmentDetails(appointmentID);
-			Appointment appointment = appointmentOptional.orElseGet(Appointment::new);
-
+			Appointment appointment = appointmentService.getAppointmentDetails(appointmentID);
+			
 			logger.debug("appointment: {}", appointment);
 			model.addAttribute("appointment", appointment);
 		} catch (NumberFormatException e) {

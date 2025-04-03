@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -41,68 +41,78 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
 	}
 
 	@Override
-	public DoctorSchedule saveDoctorSchedule(DoctorSchedule doctorSchedule) {
-		logger.info("DoctorScheduleServiceImpl::: saveDoctorSchedule()");
-		return doctorScheduleRepository.save(doctorSchedule);
+	public DoctorSchedule saveDoctorSchedule(DoctorSchedule doctorSchedule) throws InvalidInputException {
+		logger.info("Saving doctor schedule for Doctor ID: {}", doctorSchedule.getDoctor().getDoctorID());
+
+		validateDoctorSchedule(doctorSchedule);
+
+		DoctorSchedule savedSchedule = doctorScheduleRepository.save(doctorSchedule);
+
+		logger.info("Successfully saved doctor schedule with ID: {}", savedSchedule.getScheduleID());
+		return savedSchedule;
+	}
+
+	private void validateDoctorSchedule(DoctorSchedule doctorSchedule) throws InvalidInputException {
+		if (doctorSchedule == null || doctorSchedule.getDoctor() == null) {
+			throw new InvalidInputException("Doctor schedule or associated doctor cannot be null.");
+		}
+
+		if (doctorSchedule.getAvailableDate() == null || doctorSchedule.getStartTime() == null
+				|| doctorSchedule.getEndTime() == null) {
+			throw new InvalidInputException("Available date, start time, and end time must be provided.");
+		}
+
+		if (doctorSchedule.getStartTime().isAfter(doctorSchedule.getEndTime())) {
+			throw new InvalidInputException("Start time cannot be after end time.");
+		}
 	}
 
 	@Override
-	public Optional<DoctorSchedule> findScheduleDetail(Long scheduleID) {
-		logger.info("DoctorScheduleServiceImpl::: findScheduleDetail()");
-		return doctorScheduleRepository.findById(scheduleID);
+	public DoctorSchedule findScheduleDetail(Long scheduleID) throws InvalidInputException {
+		logger.info("Fetching schedule details for Schedule ID: {}", scheduleID);
+
+		return doctorScheduleRepository.findById(scheduleID)
+				.orElseThrow(() -> new InvalidInputException("Schedule not found with ID: " + scheduleID));
 	}
 
 	@Override
 	public List<DoctorSchedule> getAllSchedules() {
-		logger.info("DoctorScheduleServiceImpl::: getAllSchedules()");
-		return (List<DoctorSchedule>) doctorScheduleRepository.findAll();
+		logger.info("Fetching all doctor schedules.");
+
+		return doctorScheduleRepository.findAll();
 	}
 
 	@Override
 	public List<DoctorSchedule> getPendingSchedules() {
-		logger.info("DoctorScheduleServiceImpl::: getPendingSchedules()");
-//		String scheduleStatus = ScheduleStatus.PENDING.name();
-		ScheduleStatus scheduleStatus = ScheduleStatus.PENDING;
-		return doctorScheduleRepository.findByScheduleStatus(scheduleStatus);
+		logger.info("Fetching pending schedules.");
+
+		return doctorScheduleRepository.findByScheduleStatus(ScheduleStatus.PENDING);
 	}
 
 	@Override
 	public void createDoctorSchedule(DoctorScheduleRequest request)
-			throws InvalidInputException, DoctorNotFoundException, OverlappingScheduleException {
+			throws DoctorNotFoundException, InvalidInputException, OverlappingScheduleException {
+		logger.info("Creating doctor schedule for Doctor ID: {}", request.getDoctorID());
 
-		logger.info("DoctorScheduleServiceImpl::: createDoctorSchedule()");
+		Doctor doctor = doctorService.getDoctorDetails(request.getDoctorID());
 
-		try { // Add a try-catch block for proper exception handling
+		validateDateAndTime(request.getAvailableDate(), request.getStartTime(), request.getEndTime());
+		checkForOverlappingSchedules(request, request.getDoctorID());
 
-			Long doctorID = request.getDoctorID();
+		DoctorSchedule doctorSchedule = buildDoctorSchedule(request, doctor);
+		doctorScheduleRepository.save(doctorSchedule);
 
-			Optional<Doctor> doctorOptional = doctorService.getDoctorDetails(doctorID);
-
-			Doctor doctor = doctorOptional.orElseThrow(() -> new DoctorNotFoundException("Doctor not found"));
-			validateDateAndTime(request.getAvailableDate(), request.getStartTime(), request.getEndTime());
-
-			checkForOverlappingSchedules(request, doctorID); 
-
-			DoctorSchedule doctorSchedule = buildDoctorSchedule(request, doctor);
-			doctorScheduleRepository.save(doctorSchedule);
-
-		} catch (DoctorNotFoundException | InvalidInputException | OverlappingScheduleException e) {
-			logger.error("Error creating doctor schedule: {}", e.getMessage());
-			throw e; // Re-throw the specific exception
-		} catch (Exception e) {
-			logger.error("Unexpected error creating doctor schedule: {}", e.getMessage(), e);
-			throw new RuntimeException("Failed to create doctor schedule", e); // Wrap and re-throw
-		}
+		logger.info("Successfully created doctor schedule.");
 	}
 
 	private void validateDateAndTime(String availableDate, String startTime, String endTime)
 			throws InvalidInputException {
-
-		logger.info("DoctorScheduleServiceImpl::: validateDateAndTime()");
+		logger.info("Validating date and time for schedule.");
 
 		try {
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
 			LocalDate.parse(availableDate, dateFormatter);
 			LocalTime parsedStartTime = LocalTime.parse(startTime, timeFormatter);
 			LocalTime parsedEndTime = LocalTime.parse(endTime, timeFormatter);
@@ -117,124 +127,102 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
 
 	private void checkForOverlappingSchedules(DoctorScheduleRequest request, Long doctorID)
 			throws OverlappingScheduleException {
+		logger.info("Checking for overlapping schedules for Doctor ID: {}", doctorID);
 
-		logger.info("DoctorScheduleServiceImpl::: checkForOverlappingSchedules()");
+		LocalDate availableDate = LocalDate.parse(request.getAvailableDate());
+		LocalTime startTime = LocalTime.parse(request.getStartTime());
+		LocalTime endTime = LocalTime.parse(request.getEndTime());
 
-		LocalDate availableDateForm = LocalDate.parse(request.getAvailableDate());
-		LocalTime startTimeForm = LocalTime.parse(request.getStartTime());
-		LocalTime endTimeForm = LocalTime.parse(request.getEndTime());
-
-		List<DoctorSchedule> existingSchedules = doctorScheduleRepository
-				.findByDoctor_DoctorIDAndAvailableDate(doctorID, availableDateForm);
-
-		boolean overlapFound = existingSchedules.stream().anyMatch(schedule -> {
-			LocalTime startTimeDB = schedule.getStartTime();
-			LocalTime endTimeDB = schedule.getEndTime();
-
-			return (startTimeForm.isBefore(endTimeDB) && startTimeForm.isAfter(startTimeDB))
-					|| (endTimeForm.isBefore(endTimeDB) && endTimeForm.isAfter(startTimeDB))
-					|| (startTimeForm.isBefore(startTimeDB) && endTimeForm.isAfter(endTimeDB))
-					|| startTimeForm.equals(startTimeDB) || endTimeForm.equals(endTimeDB);
-		});
+		boolean overlapFound = doctorScheduleRepository.findByDoctor_DoctorIDAndAvailableDate(doctorID, availableDate)
+				.stream().anyMatch(schedule -> schedule.getStartTime().isBefore(endTime)
+						&& schedule.getEndTime().isAfter(startTime));
 
 		if (overlapFound) {
-			throw new OverlappingScheduleException(
-					"The schedule is overlapping with an existing Schedule. Please create a schedule with no overlapping.");
+			throw new OverlappingScheduleException("The schedule is overlapping with an existing schedule.");
 		}
 	}
 
-	private DoctorSchedule buildDoctorSchedule(DoctorScheduleRequest request, Doctor doctor) {
+	private DoctorSchedule buildDoctorSchedule(DoctorScheduleRequest request, Doctor doctor)
+			throws InvalidInputException {
 
-		logger.info("DoctorScheduleServiceImpl::: buildDoctorSchedule()");
+		logger.info("Building doctor schedule for Doctor ID: {}", doctor.getDoctorID());
+
+		validateDoctorScheduleRequest(request);
 
 		DoctorSchedule doctorSchedule = new DoctorSchedule();
 		doctorSchedule.setDoctor(doctor);
 		doctorSchedule.setAvailableDate(LocalDate.parse(request.getAvailableDate()));
 		doctorSchedule.setStartTime(LocalTime.parse(request.getStartTime()));
 		doctorSchedule.setEndTime(LocalTime.parse(request.getEndTime()));
-//		doctorSchedule.setAvailableCount(SmartHealthCareConstants.MAXIMUM_SLOTS);
 		doctorSchedule.setAvailableCount(request.getAvailableCount());
 		doctorSchedule.setScheduleStatus(request.getScheduleStatus());
 
+		logger.info("Doctor schedule built successfully: {}", doctorSchedule);
 		return doctorSchedule;
+	}
+
+	private void validateDoctorScheduleRequest(DoctorScheduleRequest request) throws InvalidInputException {
+		if (request.getAvailableDate() == null || request.getStartTime() == null || request.getEndTime() == null) {
+			throw new InvalidInputException("Available date, start time, and end time must be provided.");
+		}
+
+		LocalTime startTime = LocalTime.parse(request.getStartTime());
+		LocalTime endTime = LocalTime.parse(request.getEndTime());
+
+		if (startTime.isAfter(endTime)) {
+			throw new InvalidInputException("Start time cannot be after end time.");
+		}
 	}
 
 	@Override
 	public void updateDoctorSchedules(List<DoctorSchedule> doctorSchedulesList, Long doctorID, Long scheduleID)
-			throws DoctorNotFoundException {
+			throws InvalidInputException, DoctorNotFoundException {
+		logger.info("Updating doctor schedules. Doctor ID: {}, Schedule ID: {}", doctorID, scheduleID);
 
-		logger.info("DoctorScheduleServiceImpl::: updateDoctorSchedules()");
-
-		try {
-			if (doctorSchedulesList != null && !doctorSchedulesList.isEmpty()) {
-
-				doctorSchedulesList.forEach(doctorSchedule -> {
-					logger.debug("ScheduleID: {}", doctorSchedule.getScheduleID());
-					logger.debug("AvailableDate: {}", doctorSchedule.getAvailableDate());
-					logger.debug("StartTime: {}", doctorSchedule.getStartTime());
-					logger.debug("EndTime: {}", doctorSchedule.getEndTime());
-					logger.debug("ScheduleStatus: {}", doctorSchedule.getScheduleStatus());
-					logger.debug("createdDate: {}", doctorSchedule.getCreatedDate());
-					logger.debug("Doctor: {}", doctorSchedule.getDoctor());
-				});
-
-				Doctor doctorDetails = new Doctor();
-
-				if (scheduleID != null) {
-					logger.debug("Get the Doctor details using the scheduleID: {}", scheduleID);
-					DoctorSchedule schedule = doctorScheduleRepository.findByScheduleID(scheduleID);
-					doctorID = schedule.getDoctor().getDoctorID();
-				}
-
-				if (doctorID != null) {
-					logger.debug("Get the Doctor details using the doctorID: {}", doctorID);
-					Optional<Doctor> doctorOptionals = doctorService.getDoctorDetails(doctorID);
-					if (doctorOptionals.isPresent()) {
-						doctorDetails = doctorOptionals.get();
-						logger.debug("doctorDetails: {}", doctorDetails);
-					} else {
-						throw new DoctorNotFoundException("Doctor with ID " + doctorID + " not found");
-					}
-
-				}
-
-				for (DoctorSchedule schedule : doctorSchedulesList) {
-					logger.debug("schedule: {}", schedule);
-					schedule.setDoctor(doctorDetails);
-				}
-				logger.debug("doctorSchedulesList: {}", doctorSchedulesList);
-				doctorScheduleRepository.saveAll(doctorSchedulesList);
-			} else {
-				logger.warn("doctorSchedulesList is null or empty");
-			}
-		} catch (IllegalArgumentException e) {
-			logger.error("Validation failed: {}", e.getMessage());
-			throw e;
-		} catch (Exception e) {
-			logger.error("An unexpected error occurred: {}", e.getMessage());
-			throw new RuntimeException("Failed to update doctor schedule", e);
+		if (doctorSchedulesList == null || doctorSchedulesList.isEmpty()) {
+			logger.warn("Doctor schedules list is empty or null.");
+			throw new InvalidInputException("No schedules provided for update.");
 		}
 
+		Doctor doctor = getDoctorByDoctorOrScheduleID(doctorID, scheduleID);
+
+		doctorSchedulesList.forEach(schedule -> schedule.setDoctor(doctor));
+
+		doctorScheduleRepository.saveAll(doctorSchedulesList);
+		logger.info("Doctor schedules updated successfully.");
+	}
+
+	private Doctor getDoctorByDoctorOrScheduleID(Long doctorID, Long scheduleID) throws DoctorNotFoundException {
+		AtomicReference<Long> resolvedDoctorID = new AtomicReference<>(doctorID);
+
+		if (scheduleID != null) {
+			DoctorSchedule schedule = doctorScheduleRepository.findByScheduleID(scheduleID);
+			resolvedDoctorID.set(schedule.getDoctor().getDoctorID()); // Modify using `set()`
+		}
+
+		return doctorService.getDoctorDetails(resolvedDoctorID.get());
 	}
 
 	@Override
 	public List<LocalDate> getAvailableDatesByDoctorID(Long doctorID) {
-		logger.info("DoctorScheduleServiceImpl::: getAvailableDatesByDoctorID()");
+		logger.info("Fetching available dates for Doctor ID: {}", doctorID);
+
 		return doctorScheduleRepository.findAvailableDatesByDoctorID(doctorID);
 	}
 
 	@Override
 	public List<String> getAvailableTimeSlotsByDoctorIDAndDate(Long doctorID, LocalDate availableDate) {
 
-		logger.info("DoctorScheduleServiceImpl::: getAvailableTimeSlotsByDoctorIDAndDate()");
-		
-		int availableCount = SmartHealthCareConstants.MINIMUM_SLOT;
+		logger.info("Fetching available time slots for Doctor ID: {} on Date: {}", doctorID, availableDate);
 
-		return doctorScheduleRepository.findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThan(doctorID, availableDate, availableCount).stream()
-				.map(schedule -> {
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-					return schedule.getStartTime().format(formatter) + " - " + schedule.getEndTime().format(formatter);
-				}).collect(Collectors.toList());
+		return doctorScheduleRepository
+				.findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThan(doctorID, availableDate,
+						SmartHealthCareConstants.MINIMUM_SLOT)
+				.stream()
+				.map(schedule -> String.format("%s - %s",
+						schedule.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+						schedule.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"))))
+				.collect(Collectors.toList());
 	}
 
 }

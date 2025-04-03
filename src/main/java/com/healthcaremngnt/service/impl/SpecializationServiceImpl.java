@@ -25,10 +25,16 @@ public class SpecializationServiceImpl implements SpecializationService {
 
 	@Override
 	public List<Specialization> getAllSpecializations() {
+		logger.info("Fetching all specializations from the database.");
 
-		logger.info("Retrieving all Specializations from DB");
-		
-		return specializationRepository.findAll();
+		List<Specialization> specializations = specializationRepository.findAll();
+
+		if (specializations.isEmpty()) {
+			logger.warn("No specializations found in the database.");
+		} else {
+			logger.info("Retrieved {} specializations successfully.", specializations.size());
+		}
+
+		return specializations;
 	}
-
 }

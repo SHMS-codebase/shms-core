@@ -1,7 +1,6 @@
 package com.healthcaremngnt.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.healthcaremngnt.exceptions.PrescriptionNotFoundException;
 import com.healthcaremngnt.model.ActivePrescription;
@@ -16,12 +15,12 @@ public interface PrescriptionService {
 
 	List<ActivePrescription> getActivePrescriptions(Doctor doctor);
 
-	Optional<Prescription> getPrescriptionDetails(Long prescriptionID);
+	Prescription getPrescriptionDetails(Long prescriptionID) throws PrescriptionNotFoundException;
 
 	void updatePrescriptionDetails(Prescription prescription) throws PrescriptionNotFoundException;
 
 	List<ActivePrescription> getActivePrescriptions(Patient patient);
 
-	Optional<Prescription> getPrescriptionDetailsByTreatment(Long treatmentID);
+	Prescription getPrescriptionDetailsByTreatment(Long treatmentID) throws PrescriptionNotFoundException;
 
 }

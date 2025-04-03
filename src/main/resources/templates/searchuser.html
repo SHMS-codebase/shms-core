@@ -138,7 +138,7 @@ form {
 
 			<form id="searchForm" th:action="@{/searchuser}" method="POST">
 				<div class="form-row">
-					<div class="form-group" th:if="${source != 'doctordashboard'}">
+					<div class="form-group" th:if="${source != 'doctordashboard' and source != 'patientdashboard'}">
 						<label for="roleName">Role:</label> <select id="roleName"
 							name="roleName">
 							<option value="" disabled selected>Select Role</option>
@@ -150,7 +150,13 @@ form {
 
 					<!-- Hidden input when source is doctordashboard -->
 					<input th:if="${source == 'doctordashboard'}" type="hidden"
-						name="roleName" value="Patient"> <input type="hidden"
+						name="roleName" value="Patient"> 
+						
+					<!-- Hidden input when source is patientdashboard -->
+					<input th:if="${source == 'patientdashboard'}" type="hidden"
+						name="roleName" value="Doctor"> 
+						
+					<input type="hidden"
 						name="source" th:value="${source}">
 
 					<div class="form-group">
@@ -205,7 +211,7 @@ form {
 				<tbody id="resultsBody">
 					<tr th:each="result : ${searchResults}">
 						<td><a
-							th:href="@{'/users/viewuser'(userID=${result.userID}, source='admindashboard')}"
+							th:href="@{'/users/viewuser'(userID=${result.userID}, source=${source})}"
 							th:text="${result.userID}"></a></td>
 						<td th:text="${result.name}"></td>
 						<td th:text="${result.emailID}"></td>

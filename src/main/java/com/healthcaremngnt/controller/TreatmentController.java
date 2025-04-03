@@ -78,8 +78,7 @@ public class TreatmentController {
 
 		if (appointmentID != null) {
 			try {
-				Appointment appointment = appointmentService.getAppointmentDetails(appointmentID).orElseThrow(
-						() -> new AppointmentNotFoundException("Appointment not found with ID: " + appointmentID));
+				Appointment appointment = appointmentService.getAppointmentDetails(appointmentID);
 				treatment.setAppointment(appointment);
 			} catch (AppointmentNotFoundException e) {
 				logger.error("{}: {}", MessageConstants.APMNT_NOT_FOUND, e.getMessage());
@@ -151,8 +150,7 @@ public class TreatmentController {
 		});
 
 		try {
-			Optional<Treatment> treatmentOptional = treatmentService.getTreatmentDetails(treatmentID);
-			Treatment treatment = treatmentOptional.orElseGet(Treatment::new);
+			Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
 
 			logger.debug("treatment: {}", treatment);
 			model.addAttribute("treatment", treatment);

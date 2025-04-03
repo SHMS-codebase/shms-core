@@ -1,7 +1,5 @@
 package com.healthcaremngnt.service.impl;
 
-import java.util.Optional;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,120 +42,179 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User register(User user) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+	public User register(User user) throws UsernameAlreadyExistsException {
+		logger.info("Registering user: {}", user.getUserName());
 
-		logger.info("Registering user: {}", user);
-
-		if (userRepository.findByUserName(user.getUserName()).isPresent()) {
-			throw new UsernameAlreadyExistsException("Username already exists");
-		}
+		validateUserData(user);
 
 		user.setPassword(encoder.encode(user.getPassword()));
-		logger.debug("Encoded Generated Password::: {}", user.getPassword());
+		logger.debug("Encoded Generated Password: {}", user.getPassword());
 
+		return saveUser(user);
+	}
+
+	private void validateUserData(User user) throws UsernameAlreadyExistsException {
+		if (user == null) {
+			throw new IllegalArgumentException("User object cannot be null.");
+		}
+
+		if (userRepository.findByUserName(user.getUserName()).isPresent()) {
+			throw new UsernameAlreadyExistsException("Username already exists.");
+		}
+	}
+
+	private User saveUser(User user) {
 		try {
 			return userRepository.save(user);
 		} catch (DataIntegrityViolationException e) {
 			if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-				throw new EmailAlreadyExistsException("Email ID already exists");
+				throw new EmailAlreadyExistsException("Email ID already exists.");
 			}
+			logger.error("Unexpected error while registering user: {}", e.getMessage(), e);
 			throw new RuntimeException("An unexpected error occurred while registering the user", e);
 		}
 	}
 
 	@Override
-	public Optional<User> findByEmailID(String email) {
+	public User findByEmailID(String email) {
+		logger.info("Fetching user by email ID: {}", email);
 
-		logger.info("Retrieving user by email ID: {}", email);
+		validateEmail(email);
 
-		return userRepository.findByEmailID(email);
+		return userRepository.findByEmailID(email)
+				.orElseThrow(() -> new RuntimeException("User not found with email ID: " + email));
+	}
+
+	private void validateEmail(String email) {
+		if (email == null || email.isBlank()) {
+			throw new IllegalArgumentException("Email ID cannot be null or empty.");
+		}
 	}
 
 	@Override
-	public Optional<UserDetails> findUserDetailsByID(Long userID) {
+	public UserDetails findUserDetailsByID(Long userID) {
+		logger.info("Fetching user details for User ID: {}", userID);
 
-		logger.info("Retrieving user details by user ID: {}", userID);
+		validateUserID(userID);
 
-		return userRepository.findById(userID).map(user -> {
-			UserDetails userDetails = new UserDetails();
-			userDetails.setUserID(user.getUserID());
-			userDetails.setRoleID(user.getRole().getRoleID());
-			userDetails.setUserName(user.getUserName());
-			userDetails.setEmailID(user.getEmailID());
+		User user = userRepository.findById(userID)
+				.orElseThrow(() -> new RuntimeException("User not found with ID: " + userID));
 
-			Optional<Role> role = roleRepository.findById(user.getRole().getRoleID());
-			role.ifPresent(r -> {
-				switch (r.getRoleName().toUpperCase()) {
-				case "DOCTOR":
-					Optional<Doctor> doctorOptional = doctorRepository.findByUser(user);
-					if (doctorOptional.isPresent())
-						userDetails.setDoctor(doctorOptional.get());
-					break;
-				case "PATIENT":
-					Optional<Patient> patientOptional = patientRepository.findByUser(user);
-					if (patientOptional.isPresent())
-						userDetails.setPatient(patientOptional.get());
-					break;
-				}
-			});
-			logger.debug("User Details::: {}", userDetails);
-			return userDetails;
-		});
+		UserDetails userDetails = mapUserToUserDetails(user);
+
+		logger.debug("Retrieved User Details: {}", userDetails);
+		return userDetails;
+	}
+
+	private void validateUserID(Long userID) {
+		if (userID == null || userID <= 0) {
+			throw new IllegalArgumentException("Invalid User ID provided.");
+		}
+	}
+
+	private UserDetails mapUserToUserDetails(User user) {
+		UserDetails userDetails = new UserDetails();
+		userDetails.setUserID(user.getUserID());
+		userDetails.setRoleID(user.getRole().getRoleID());
+		userDetails.setUserName(user.getUserName());
+		userDetails.setEmailID(user.getEmailID());
+
+		Role role = roleRepository.findById(user.getRole().getRoleID())
+				.orElseThrow(() -> new RuntimeException("Role not found for User ID: " + user.getUserID()));
+
+		setRoleSpecificDetails(userDetails, role, user);
+		return userDetails;
+	}
+
+	private void setRoleSpecificDetails(UserDetails userDetails, Role role, User user) {
+		switch (role.getRoleName().toUpperCase()) {
+		case "DOCTOR":
+			doctorRepository.findByUser(user).ifPresent(userDetails::setDoctor);
+			break;
+		case "PATIENT":
+			patientRepository.findByUser(user).ifPresent(userDetails::setPatient);
+			break;
+		default:
+			logger.warn("No specific details found for role: {}", role.getRoleName());
+			break;
+		}
 	}
 
 	@Override
 	public void updateUserDetails(UserDetails userDetails) {
-		logger.info("Updating user details: {}", userDetails);
+		logger.info("Updating user details for User ID: {}", userDetails.getUserID());
 
-		try {
-			validateUserDetails(userDetails);
+		validateUserDetails(userDetails);
 
-			User user = userRepository.findById(userDetails.getUserID())
-					.orElseThrow(() -> new IllegalArgumentException("User not found: " + userDetails.getUserID()));
+		User user = userRepository.findById(userDetails.getUserID())
+				.orElseThrow(() -> new IllegalArgumentException("User not found: " + userDetails.getUserID()));
 
-			user.setUserName(userDetails.getUserName());
-			user.setEmailID(userDetails.getEmailID());
+		updateBasicUserDetails(user, userDetails);
+		userRepository.save(user);
 
-			userRepository.save(user);
+		updateRoleSpecificDetails(userDetails);
+	}
 
-			if (userDetails.getDoctor() != null) {
-				Doctor existingDoctor = doctorRepository.findById(userDetails.getDoctor().getDoctorID())
-						.orElseThrow(() -> new IllegalArgumentException(
-								"Doctor not found: " + userDetails.getDoctor().getDoctorID()));
+	private void updateBasicUserDetails(User user, UserDetails userDetails) {
+		user.setUserName(userDetails.getUserName());
+		user.setEmailID(userDetails.getEmailID());
+	}
 
-				existingDoctor.setDoctorName(userDetails.getDoctor().getDoctorName());
-				existingDoctor.setContactNumber(userDetails.getDoctor().getContactNumber());
-				existingDoctor.setAddress(userDetails.getDoctor().getAddress());
-				existingDoctor.setQualification(userDetails.getDoctor().getQualification());
-				existingDoctor.setSpecialization(userDetails.getDoctor().getSpecialization());
-				existingDoctor.setExperience(userDetails.getDoctor().getExperience());
+	private void updateRoleSpecificDetails(UserDetails userDetails) {
+		if (userDetails.getDoctor() != null) {
+			Doctor existingDoctor = doctorRepository.findById(userDetails.getDoctor().getDoctorID()).orElseThrow(
+					() -> new IllegalArgumentException("Doctor not found: " + userDetails.getDoctor().getDoctorID()));
 
-				doctorRepository.save(existingDoctor);
-			}
+			updateDoctorDetails(existingDoctor, userDetails.getDoctor());
+			doctorRepository.save(existingDoctor);
+		}
 
-			if (userDetails.getPatient() != null) {
-				Patient existingPatient = patientRepository.findById(userDetails.getPatient().getPatientID())
-						.orElseThrow(() -> new IllegalArgumentException(
-								"Patient not found: " + userDetails.getPatient().getPatientID()));
+		if (userDetails.getPatient() != null) {
+			Patient existingPatient = patientRepository.findById(userDetails.getPatient().getPatientID())
+					.orElseThrow(() -> new IllegalArgumentException(
+							"Patient not found: " + userDetails.getPatient().getPatientID()));
 
-				existingPatient.setPatientName(userDetails.getPatient().getPatientName());
-				existingPatient.setDob(userDetails.getPatient().getDob());
-				existingPatient.setGender(userDetails.getPatient().getGender());
-				existingPatient.setContactNumber(userDetails.getPatient().getContactNumber());
-				existingPatient.setAddress(userDetails.getPatient().getAddress());
-
-				patientRepository.save(existingPatient);
-			}
-		} catch (IllegalArgumentException e) {
-			logger.error("Validation failed::: {}", e.getMessage());
-			throw e;
-		} catch (Exception e) {
-			logger.error("An unexpected error occurred::: {}", e.getMessage());
-			throw new RuntimeException("Failed to update user details", e);
+			updatePatientDetails(existingPatient, userDetails.getPatient());
+			patientRepository.save(existingPatient);
 		}
 	}
 
+	private void updateDoctorDetails(Doctor doctor, Doctor updatedDoctor) {
+		doctor.setDoctorName(updatedDoctor.getDoctorName());
+		doctor.setContactNumber(updatedDoctor.getContactNumber());
+		doctor.setAddress(updatedDoctor.getAddress());
+		doctor.setQualification(updatedDoctor.getQualification());
+		doctor.setSpecialization(updatedDoctor.getSpecialization());
+		doctor.setExperience(updatedDoctor.getExperience());
+	}
+
+	private void updatePatientDetails(Patient patient, Patient updatedPatient) {
+		patient.setPatientName(updatedPatient.getPatientName());
+		patient.setDob(updatedPatient.getDob());
+		patient.setGender(updatedPatient.getGender());
+		patient.setContactNumber(updatedPatient.getContactNumber());
+		patient.setAddress(updatedPatient.getAddress());
+	}
+
 	private void validateUserDetails(UserDetails userDetails) {
+		logger.info("Validating user details: {}", userDetails);
+
+		if (userDetails == null) {
+			throw new IllegalArgumentException("UserDetails object cannot be null.");
+		}
+
+		validateUserBasicInfo(userDetails);
+
+		if (userDetails.getDoctor() != null) {
+			validateDoctorDetails(userDetails.getDoctor());
+		}
+
+		if (userDetails.getPatient() != null) {
+			validatePatientDetails(userDetails.getPatient());
+		}
+	}
+
+	private void validateUserBasicInfo(UserDetails userDetails) {
 		if (userDetails.getUserName() == null || userDetails.getUserName().trim().isEmpty()) {
 			throw new IllegalArgumentException("User name is required.");
 		}
@@ -173,112 +230,104 @@ public class UserServiceImpl implements UserService {
 		if (!userDetails.getEmailID().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
 			throw new IllegalArgumentException("Email ID must be a valid email address.");
 		}
-		if (userDetails.getDoctor() != null) {
-			validateDoctorDetails(userDetails.getDoctor());
-		}
-		if (userDetails.getPatient() != null) {
-			validatePatientDetails(userDetails.getPatient());
-		}
 	}
 
 	private void validateDoctorDetails(Doctor doctor) {
-		if (doctor.getDoctorName() == null || doctor.getDoctorName().trim().isEmpty()) {
-			throw new IllegalArgumentException("Doctor name is required.");
+		logger.info("Validating doctor details: {}", doctor);
+
+		if (doctor == null) {
+			throw new IllegalArgumentException("Doctor object cannot be null.");
 		}
-		if (doctor.getDoctorName().length() < 3 || doctor.getDoctorName().length() > 50) {
-			throw new IllegalArgumentException("Doctor name must be between 3 and 50 characters.");
-		}
-		if (!doctor.getDoctorName().matches("^Dr\\.\\s?[a-zA-Z0-9 ]+$")) {
-		    throw new IllegalArgumentException("Doctor name must start with 'Dr.' and can contain alphanumeric characters and spaces thereafter.");
-		}
-		if (doctor.getContactNumber() == null || doctor.getContactNumber().trim().isEmpty()) {
-			throw new IllegalArgumentException("Contact number is required.");
-		}
-		if (!doctor.getContactNumber().matches("^[0-9]{10}$")) {
-			throw new IllegalArgumentException("Contact number must be a valid 10-digit number.");
-		}
-		if (doctor.getQualification() == null || doctor.getQualification().trim().isEmpty()) {
-			throw new IllegalArgumentException("Qualification is required.");
-		}
-		if (doctor.getSpecialization() == null || doctor.getSpecialization().trim().isEmpty()) {
-			throw new IllegalArgumentException("Specialization is required.");
-		}
+
+		validateDoctorName(doctor.getDoctorName());
+		validateContactNumber(doctor.getContactNumber());
+		validateRequiredField(doctor.getQualification(), "Qualification");
+		validateRequiredField(doctor.getSpecialization(), "Specialization");
+
 		if (doctor.getExperience() < 0) {
 			throw new IllegalArgumentException("Experience must be a non-negative number.");
 		}
 	}
 
-	private void validatePatientDetails(Patient patient) {
-		if (patient.getPatientName() == null || patient.getPatientName().trim().isEmpty()) {
-			throw new IllegalArgumentException("Patient name is required.");
+	private void validateDoctorName(String doctorName) {
+		if (doctorName == null || doctorName.trim().isEmpty()) {
+			throw new IllegalArgumentException("Doctor name is required.");
 		}
-		if (patient.getPatientName().length() < 3 || patient.getPatientName().length() > 50) {
-			throw new IllegalArgumentException("Patient name must be between 3 and 50 characters.");
+		if (!doctorName.matches("^Dr\\.\\s?[a-zA-Z0-9 ]+$")) {
+			throw new IllegalArgumentException(
+					"Doctor name must start with 'Dr.' and contain alphanumeric characters.");
 		}
-		if (!patient.getPatientName().matches("^[a-zA-Z0-9 ]+$")) {
-			throw new IllegalArgumentException("Patient name can only contain alphanumeric characters and spaces.");
-		}
-		if (patient.getContactNumber() == null || patient.getContactNumber().trim().isEmpty()) {
+	}
+
+	private void validateContactNumber(String contactNumber) {
+		if (contactNumber == null || contactNumber.trim().isEmpty()) {
 			throw new IllegalArgumentException("Contact number is required.");
 		}
-		if (!patient.getContactNumber().matches("^[0-9]{10}$")) {
+		if (!contactNumber.matches("^[0-9]{10}$")) {
 			throw new IllegalArgumentException("Contact number must be a valid 10-digit number.");
 		}
+	}
+
+	private void validateRequiredField(String fieldValue, String fieldName) {
+		if (fieldValue == null || fieldValue.trim().isEmpty()) {
+			throw new IllegalArgumentException(fieldName + " is required.");
+		}
+	}
+
+	private void validatePatientDetails(Patient patient) {
+		logger.info("Validating patient details: {}", patient);
+
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient object cannot be null.");
+		}
+
+		validatePatientName(patient.getPatientName());
+		validateContactNumber(patient.getContactNumber());
+		validateRequiredField(patient.getAddress(), "Address");
+
 		if (patient.getDob() == null) {
 			throw new IllegalArgumentException("Date of birth is required.");
 		}
-		/*
-		 * if (patient.getGender() == null || patient.getGender().trim().isEmpty()) {
-		 * throw new IllegalArgumentException("Gender is required."); }
-		 */
-		/*
-		 * if (!patient.getGender().matches("^[MFmf]$")) { throw new
-		 * IllegalArgumentException("Gender must be 'M' or 'F'."); }
-		 */
-		if (patient.getAddress() == null || patient.getAddress().trim().isEmpty()) {
-			throw new IllegalArgumentException("Address is required.");
+	}
+
+	private void validatePatientName(String patientName) {
+		if (patientName == null || patientName.trim().isEmpty()) {
+			throw new IllegalArgumentException("Patient name is required.");
+		}
+		if (!patientName.matches("^[a-zA-Z0-9 ]+$")) {
+			throw new IllegalArgumentException("Patient name can only contain alphanumeric characters and spaces.");
 		}
 	}
 
 	@Override
-	public Optional<UserDetails> findUserDetailsByName(String userName) {
+	public UserDetails findUserDetailsByName(String userName) {
+		logger.info("Fetching user details for username: {}", userName);
 
-		logger.info("Retrieving user details by userName: {}", userName);
+		validateUserName(userName);
 
-		return userRepository.findByUserName(userName).map(user -> {
-			UserDetails userDetails = new UserDetails();
-			userDetails.setUserID(user.getUserID());
-			userDetails.setPassword(user.getPassword());
-			userDetails.setRoleID(user.getRole().getRoleID());
-			userDetails.setUserName(user.getUserName());
-			userDetails.setEmailID(user.getEmailID());
+		User user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new RuntimeException("User not found with username: " + userName));
 
-			Optional<Role> role = roleRepository.findById(user.getRole().getRoleID());
-			role.ifPresent(r -> {
-				switch (r.getRoleName().toUpperCase()) {
-				case "DOCTOR":
-					Optional<Doctor> doctorOptional = doctorRepository.findByUser(user);
-					if (doctorOptional.isPresent())
-						userDetails.setDoctor(doctorOptional.get());
-					break;
-				case "PATIENT":
-					Optional<Patient> patientOptional = patientRepository.findByUser(user);
-					if (patientOptional.isPresent())
-						userDetails.setPatient(patientOptional.get());
-					break;
-				}
-			});
-			logger.debug("User Details::: {}", userDetails);
-			return userDetails;
-		});
+		UserDetails userDetails = mapUserToUserDetails(user);
+
+		logger.debug("Retrieved User Details: {}", userDetails);
+		return userDetails;
+	}
+
+	private void validateUserName(String userName) {
+		if (userName == null || userName.trim().isEmpty()) {
+			throw new IllegalArgumentException("Username cannot be null or empty.");
+		}
 	}
 
 	@Override
-	public Optional<User> findByUserName(String userName) {
+	public User findByUserName(String userName) {
+		logger.info("Fetching user by User Name: {}", userName);
 
-		logger.info("Retrieving user by User Name: {}", userName);
+		validateUserName(userName);
 
-		return userRepository.findByUserName(userName);
+		return userRepository.findByUserName(userName)
+				.orElseThrow(() -> new RuntimeException("User not found with username: " + userName));
 	}
 
 }

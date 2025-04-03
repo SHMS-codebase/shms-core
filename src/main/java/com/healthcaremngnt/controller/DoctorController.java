@@ -58,27 +58,23 @@ public class DoctorController {
 	}
 
 	@GetMapping("/doctordashboard")
-	public String getDoctorDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model) {
+	public String getDoctorDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model) throws DoctorNotFoundException {
 		logger.info("Loading Doctor Dashboard");
-		Optional<Doctor> doctorOptional = doctorService.getDoctorInfoCard(userName);
-		Doctor doctor = new Doctor();
+		Doctor doctor = doctorService.getDoctorInfoCard(userName);
 
-		if (doctorOptional.isPresent()) {
-			doctor = doctorOptional.get();
-			logger.debug("Doctor Details: {}", doctor);
-			model.addAttribute("doctor", doctor);
+		logger.debug("Doctor Details: {}", doctor);
+		model.addAttribute("doctor", doctor);
 
-			List<Appointment> appointments = appointmentService.getTodaysAppointments(doctor);
-			logger.debug("appointments: {}", appointments);
-			model.addAttribute("appointments", appointments);
+		List<Appointment> appointments = appointmentService.getTodaysAppointments(doctor);
+		logger.debug("appointments: {}", appointments);
+		model.addAttribute("appointments", appointments);
 
-			List<ActivePrescription> activePrescriptions = prescriptionService.getActivePrescriptions(doctor);
-			logger.debug("activePrescriptions: {}", activePrescriptions);
-			model.addAttribute("activeprescriptions", activePrescriptions);
-
-		}
+		List<ActivePrescription> activePrescriptions = prescriptionService.getActivePrescriptions(doctor);
+		logger.debug("activePrescriptions: {}", activePrescriptions);
+		model.addAttribute("activeprescriptions", activePrescriptions);
 
 		return "doctordashboard";
+
 	}
 
 	@GetMapping("/viewdoctorschedule")
@@ -272,11 +268,8 @@ public class DoctorController {
 		logger.info("Updating Schedule Status");
 
 		try {
-			Optional<DoctorSchedule> scheduleOptional = doctorScheduleService.findScheduleDetail(scheduleID);
+			DoctorSchedule schedule = doctorScheduleService.findScheduleDetail(scheduleID);
 
-			DoctorSchedule schedule = new DoctorSchedule();
-			if (scheduleOptional.isPresent())
-				schedule = scheduleOptional.get();
 			schedule.setScheduleStatus(scheduleStatus);
 			doctorScheduleService.saveDoctorSchedule(schedule);
 

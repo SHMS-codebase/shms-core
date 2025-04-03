@@ -1,8 +1,5 @@
 package com.healthcaremngnt.controller;
 
-import java.util.Optional;
-import java.util.function.Function;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -70,13 +67,33 @@ public class AuthController {
 			@Valid @ModelAttribute("forgotPasswordEmailForm") ForgotPasswordEmailForm form, BindingResult bindingResult,
 			RedirectAttributes redirectAttributes) {
 
-		logger.info("Processing forgot password by email: {}", form);
+		logger.info("Processing forgot password request for email: {}", form.getEmail());
 
 		if (bindingResult.hasErrors()) {
 			return handleValidationErrors("forgotPasswordEmailForm", form, bindingResult, redirectAttributes);
 		}
 
-		return processPasswordReset(form.getEmail(), userService::findByEmailID, "Email", redirectAttributes);
+		return processPasswordResetByEmail(form.getEmail(), redirectAttributes);
+	}
+
+	private String processPasswordResetByEmail(String email, RedirectAttributes redirectAttributes) {
+		try {
+			User user = userService.findByEmailID(email);
+
+			if (user != null) {
+				logger.debug("User found with email: {}", email);
+				emailService.sendPasswordResetEmail(user.getEmailID(), user);
+				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_MSG);
+			} else {
+				logger.error("{}: {}", MessageConstants.USER_NOT_FOUND, email);
+				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_GENERIC_MSG);
+			}
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.PWD_LINK_ERROR, e);
+			redirectAttributes.addFlashAttribute("errorMessage", MessageConstants.PWD_LINK_ERROR);
+		}
+
+		return "redirect:/auth/forgot-password";
 	}
 
 	@PostMapping("/forgot-password/username")
@@ -84,13 +101,13 @@ public class AuthController {
 			@Valid @ModelAttribute("forgotPasswordUsernameForm") ForgotPasswordUsernameForm form,
 			BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
-		logger.info("Processing forgot password by username: {}", form);
+		logger.info("Processing forgot password request for username: {}", form.getUsername());
 
 		if (bindingResult.hasErrors()) {
 			return handleValidationErrors("forgotPasswordUsernameForm", form, bindingResult, redirectAttributes);
 		}
 
-		return processPasswordReset(form.getUsername(), userService::findByUserName, "Username", redirectAttributes);
+		return processPasswordReset(form.getUsername(), redirectAttributes);
 	}
 
 	// Helper method to handle validation errors
@@ -101,18 +118,18 @@ public class AuthController {
 		return "redirect:/auth/forgot-password";
 	}
 
-	// Generic method to process password reset for both email and username paths
-	private <T> String processPasswordReset(T identifier, Function<T, Optional<User>> userFinder, String identifierType,
-			RedirectAttributes redirectAttributes) {
+	private String processPasswordReset(String username, RedirectAttributes redirectAttributes) {
 		try {
-			userFinder.apply(identifier).ifPresentOrElse(user -> {
-				logger.debug("User found in system with {}: {}", identifierType.toLowerCase(), identifier);
+			User user = userService.findByUserName(username);
+
+			if (user != null) {
+				logger.debug("User found in system with username: {}", username);
 				emailService.sendPasswordResetEmail(user.getEmailID(), user);
 				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_MSG);
-			}, () -> {
-				logger.error("{}: {}", MessageConstants.USER_NOT_FOUND, identifier);
+			} else {
+				logger.error("{}: {}", MessageConstants.USER_NOT_FOUND, username);
 				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_GENERIC_MSG);
-			});
+			}
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.PWD_LINK_ERROR, e);
 			redirectAttributes.addFlashAttribute("errorMessage", MessageConstants.PWD_LINK_ERROR);
@@ -124,10 +141,10 @@ public class AuthController {
 	@GetMapping("/reset-password")
 	public String showResetPasswordForm(@RequestParam(RequestParamConstants.TOKEN) String token, Model model) {
 		logger.info("Reset Password Form will be loaded");
-		Optional<PasswordResetToken> resetToken = tokenService.findByToken(token);
+		PasswordResetToken resetToken = tokenService.findByToken(token);
 
-		if (resetToken.isPresent()) {
-			String validationError = TokenValidator.validateResetToken(resetToken.get(), model);
+		if (resetToken != null) {
+			String validationError = TokenValidator.validateResetToken(resetToken, model);
 			if (validationError != null) {
 				logger.error("{}: {}", MessageConstants.TOKEN_INVALID_OR_EXPIRED, token);
 				model.addAttribute("tokenError", MessageConstants.TOKEN_INVALID_OR_EXPIRED);
@@ -149,10 +166,10 @@ public class AuthController {
 			@RequestParam(RequestParamConstants.PASSWORD) String password, Model model)
 			throws InvalidTokenException, TokenExpiredException {
 		logger.info("Reset Password form is being processed");
-		Optional<PasswordResetToken> resetToken = tokenService.findByToken(token);
+		PasswordResetToken resetToken = tokenService.findByToken(token);
 
-		if (resetToken.isPresent()) {
-			String validationError = TokenValidator.validateResetToken(resetToken.get(), model);
+		if (resetToken != null) {
+			String validationError = TokenValidator.validateResetToken(resetToken, model);
 			if (validationError != null) {
 				logger.error("{}: {}", MessageConstants.TOKEN_INVALID_OR_EXPIRED, token);
 				model.addAttribute("tokenError", MessageConstants.TOKEN_INVALID_OR_EXPIRED);
@@ -162,7 +179,7 @@ public class AuthController {
 			logger.debug("Reset the User's Password in the Users table");
 
 			try {
-				passwordService.resetPassword(resetToken.get().getToken(), password);
+				passwordService.resetPassword(resetToken.getToken(), password);
 				logger.debug("{}", MessageConstants.PASSWORD_RESET_SUCCESS);
 				model.addAttribute("message", MessageConstants.PASSWORD_RESET_SUCCESS);
 				return "resetpasswordsuccess";

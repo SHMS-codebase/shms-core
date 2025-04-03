@@ -1,7 +1,6 @@
 package com.healthcaremngnt.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.healthcaremngnt.exceptions.PatientNotFoundException;
 import com.healthcaremngnt.model.MedicalHistory;
@@ -11,7 +10,7 @@ public interface PatientService {
 
 	Patient register(Patient patient);
 
-	Optional<Patient> getPatientInfoCard(String userName);
+	Patient getPatientInfoCard(String userName) throws PatientNotFoundException;
 
 	List<MedicalHistory> findMedicalHistory(Long patientID) throws PatientNotFoundException;;
 
@@ -21,6 +20,6 @@ public interface PatientService {
 
 	List<Patient> getAllPatients();
 
-	Optional<Patient> getPatientDetails(Long patientID);
+	Patient getPatientDetails(Long patientID) throws PatientNotFoundException;
 
 }

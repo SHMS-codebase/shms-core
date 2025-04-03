@@ -5,7 +5,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +21,7 @@ import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.enums.InvoiceStatus;
 import com.healthcaremngnt.enums.ScheduleStatus;
 import com.healthcaremngnt.enums.TreatmentStatus;
+import com.healthcaremngnt.exceptions.PatientNotFoundException;
 import com.healthcaremngnt.model.Appointment;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.DoctorSchedule;
@@ -289,26 +289,25 @@ public class SearchController {
 
 	@GetMapping("/searchtreatments")
 	public String viewSearchTreatments(@RequestParam(RequestParamConstants.DOCTOR_ID) Long doctorID,
-			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) throws PatientNotFoundException {
 		logger.info("View Search Treatments!!!");
 
 		// Ensure patientIDs list is not null
-	    List<Long> patientIDs = treatmentService.getTreatmentDetailsByDoctor(doctorID);
-	    if (patientIDs == null || patientIDs.isEmpty()) {
-	        model.addAttribute("patients", Collections.emptyList());
-	        model.addAttribute("source", source);
-	        return "searchtreatments";
-	    }
+		List<Long> patientIDs = treatmentService.getTreatmentDetailsByDoctor(doctorID);
+		if (patientIDs == null || patientIDs.isEmpty()) {
+			model.addAttribute("patients", Collections.emptyList());
+			model.addAttribute("source", source);
+			return "searchtreatments";
+		}
 
-	    // Initialize list to avoid NullPointerException
-	    List<Patient> patients = new ArrayList<>();
-	    
-	    for (Long patientID : patientIDs) {
-	        Optional<Patient> patientOptional = patientService.getPatientDetails(patientID);
-	        // Ensure Optional has a value before accessing it
-	        patientOptional.ifPresent(patients::add);
-	    }
-					
+		// Initialize list to avoid NullPointerException
+		List<Patient> patients = new ArrayList<>();
+
+		for (Long patientID : patientIDs) {
+			Patient patient = patientService.getPatientDetails(patientID);
+			patients.add(patient);
+		}
+
 		model.addAttribute("patients", patients);
 		model.addAttribute("source", source);
 

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
+import com.healthcaremngnt.exceptions.DoctorNotFoundException;
+import com.healthcaremngnt.exceptions.PatientNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,7 +56,7 @@ public class HomeController {
 	}
 
 	@GetMapping("/dashboard")
-	public String dashboard(Authentication authentication, Model model, HttpSession session) {
+	public String dashboard(Authentication authentication, Model model, HttpSession session) throws DoctorNotFoundException, PatientNotFoundException {
 		logger.info("Login Successful and displaying the respective Dashboard Page");
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 

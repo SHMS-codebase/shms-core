@@ -7,4 +7,8 @@ public class DataPersistenceException extends Exception {
 	public DataPersistenceException(String message, Exception e) {
 		super(message);
 	}
+
+	public DataPersistenceException(String message) {
+		super(message);
+	}
 }

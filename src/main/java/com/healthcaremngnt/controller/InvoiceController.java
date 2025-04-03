@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +19,8 @@ import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
 import com.healthcaremngnt.enums.InvoiceStatus;
 import com.healthcaremngnt.enums.TreatmentStatus;
+import com.healthcaremngnt.exceptions.DataPersistenceException;
+import com.healthcaremngnt.exceptions.PrescriptionNotFoundException;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Invoice;
 import com.healthcaremngnt.model.Patient;
@@ -75,24 +76,22 @@ public class InvoiceController {
 
 	@GetMapping("/generate-invoice")
 	public String viewGenerateInvoice(@RequestParam(RequestParamConstants.TREATMENT_ID) Long treatmentID,
-			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model)
+			throws PrescriptionNotFoundException, DataPersistenceException {
 		logger.info("Loading the Generate Invoice Page!!");
 
-		Optional<Treatment> treatmentOptional = treatmentService.getTreatmentDetails(treatmentID);
-		if (!treatmentOptional.isPresent()) {
+		Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
+		if (treatment != null) {
+			model.addAttribute("treatment", treatment);
+			model.addAttribute("source", source);
+		} else {
 			model.addAttribute("errorMessage", MessageConstants.TREATMENT_NOT_FOUND);
 			return source;
 		}
 
-		Treatment treatment = treatmentOptional.get();
-		model.addAttribute("treatment", treatment);
-		model.addAttribute("source", source);
+		Prescription prescription = prescriptionService.getPrescriptionDetailsByTreatment(treatmentID);
 
-		Optional<Prescription> prescriptionOptional = prescriptionService
-				.getPrescriptionDetailsByTreatment(treatmentID);
-
-		if (prescriptionOptional.isPresent()) {
-			Prescription prescription = prescriptionOptional.get();
+		if (prescription != null) {
 			model.addAttribute("prescription", prescription);
 		} else {
 			// Either add an empty prescription or add a flag indicating no prescription
@@ -111,8 +110,8 @@ public class InvoiceController {
 			@RequestParam(value = RequestParamConstants.PRESCRIPTION_COST, required = false) BigDecimal prescriptionCost,
 			@RequestParam(RequestParamConstants.TOTAL_AMOUNT) BigDecimal totalAmount,
 			@RequestParam(RequestParamConstants.INVOICE_STATUS) InvoiceStatus invoiceStatus,
-			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source, RedirectAttributes redirectAttributes,
-			Model model) {
+			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source,
+			RedirectAttributes redirectAttributes, Model model) throws PrescriptionNotFoundException, DataPersistenceException {
 
 		logger.info("Generating Invoice!!");
 
@@ -137,26 +136,19 @@ public class InvoiceController {
 			invoice.setInvoiceDate(LocalDateTime.now());
 
 			// Retrieve the treatment entity
-			Optional<Treatment> treatmentOptional = treatmentService.getTreatmentDetails(treatmentID);
-			Treatment treatment = new Treatment();
+			Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
 
-			if (treatmentOptional.isPresent()) {
-				treatment = treatmentOptional.get();
-				logger.debug("treatment: {}", treatment);
-				invoice.setTreatment(treatment);
-			}
+			logger.debug("treatment: {}", treatment);
+			invoice.setTreatment(treatment);
 
 			// Retrieve the prescription entity if prescriptionID is not null or empty
-			Optional<Prescription> prescriptionOptional = null;
 			Prescription prescription = new Prescription();
 
 			if (prescriptionID != null && prescriptionID > 0) {
-				prescriptionOptional = prescriptionService.getPrescriptionDetails(prescriptionID);
-				if (prescriptionOptional.isPresent()) {
-					prescription = prescriptionOptional.get();
-					logger.debug("prescription: {}", prescription);
-					invoice.setPrescription(prescription);
-				}
+				prescription = prescriptionService.getPrescriptionDetails(prescriptionID);
+
+				logger.debug("prescription: {}", prescription);
+				invoice.setPrescription(prescription);
 			}
 
 			logger.debug("invoice: {}", invoice);
@@ -188,25 +180,16 @@ public class InvoiceController {
 			redirectAttributes.addFlashAttribute("errorMessage", MessageConstants.INVOICE_CREATED_FAILURE);
 
 			// Repopulate the form data in case of error
-			Optional<Treatment> treatmentOptional = treatmentService.getTreatmentDetails(treatmentID);
-			Treatment treatment = new Treatment();
+			Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
+			logger.debug("treatment: {}", treatment);
+			model.addAttribute("treatment", treatment);
 
-			if (treatmentOptional.isPresent()) {
-				treatment = treatmentOptional.get();
-				logger.debug("treatment: {}", treatment);
-				model.addAttribute("treatment", treatment);
-			}
-
-			Optional<Prescription> prescriptionOptional = null;
 			Prescription prescription = new Prescription();
 
 			if (prescriptionID != null && prescriptionID > 0) {
-				prescriptionOptional = prescriptionService.getPrescriptionDetails(prescriptionID);
-				if (prescriptionOptional.isPresent()) {
-					prescription = prescriptionOptional.get();
-					logger.debug("prescription: {}", prescription);
-					model.addAttribute("prescription", prescription);
-				}
+				prescription = prescriptionService.getPrescriptionDetails(prescriptionID);
+				logger.debug("prescription: {}", prescription);
+				model.addAttribute("prescription", prescription);
 			}
 
 			return "redirect:/invoices/generate-invoice?treatmentID=" + treatmentID;
@@ -221,57 +204,45 @@ public class InvoiceController {
 
 		try {
 
-			Optional<Invoice> invoiceOptional = invoiceService.getInvoiceDetails(invoiceID);
-			Invoice invoice = new Invoice();
+			Invoice invoice = invoiceService.getInvoiceDetails(invoiceID);
 
-			if (invoiceOptional.isPresent()) {
+			String year = String.valueOf(java.time.Year.now());
+			String invoiceNumber = "#INV-" + year + "-" + invoiceID;
+			String currentDate = java.time.LocalDateTime.now().toString().replace("T", " ");
 
-				String year = String.valueOf(java.time.Year.now());
-				String invoiceNumber = "#INV-" + year + "-" + invoiceID;
-				String currentDate = java.time.LocalDateTime.now().toString().replace("T", " ");
+			logger.debug("invoice: {}", invoice);
+			model.addAttribute("invoice", invoice);
 
-				invoice = invoiceOptional.get();
-				logger.debug("invoice: {}", invoice);
-				model.addAttribute("invoice", invoice);
+			String formattedInvoiceDate = DateFormatter.formatWithOrdinalSuffix(invoice.getInvoiceDate());
+			String formattedTreatmentDate = null;
 
-				String formattedInvoiceDate = DateFormatter.formatWithOrdinalSuffix(invoice.getInvoiceDate());
-				String formattedTreatmentDate = null;
+			if (invoice.getTreatment() != null) {
 
-				if (invoice.getTreatment() != null) {
+				Treatment treatment = invoice.getTreatment();
 
-					Treatment treatment = invoice.getTreatment();
+				LocalDate treatmentDate = treatment.getTreatmentDate();
+				LocalDateTime treatmentDateTime = treatmentDate.atStartOfDay();
+				formattedTreatmentDate = DateFormatter.formatWithOrdinalSuffix(treatmentDateTime);
 
-					LocalDate treatmentDate = treatment.getTreatmentDate();
-					LocalDateTime treatmentDateTime = treatmentDate.atStartOfDay();
-					formattedTreatmentDate = DateFormatter.formatWithOrdinalSuffix(treatmentDateTime);
+				Doctor doctor = doctorService.getDoctorDetails(treatment.getDoctorID());
 
-					Optional<Doctor> doctorOptional = doctorService.getDoctorDetails(treatment.getDoctorID());
-					Doctor doctor = new Doctor();
-					if (doctorOptional.isPresent()) {
-						doctor = doctorOptional.get();
-						logger.debug("doctor: {}", doctor);
-						model.addAttribute("doctor", doctor);
-					}
+				logger.debug("doctor: {}", doctor);
+				model.addAttribute("doctor", doctor);
 
-					Optional<Patient> patientOptional = patientService.getPatientDetails(treatment.getPatientID());
-					Patient patient = new Patient();
-					if (patientOptional.isPresent()) {
-						patient = patientOptional.get();
-						logger.debug("patient: {}", patient);
-						model.addAttribute("patient", patient);
+				Patient patient = patientService.getPatientDetails(treatment.getPatientID());
+				logger.debug("patient: {}", patient);
+				model.addAttribute("patient", patient);
 
-						User user = patient.getUser();
-						logger.debug("user: {}", user);
-						model.addAttribute("user", user);
-					}
-				}
-
-				model.addAttribute("invoiceNumber", invoiceNumber);
-				model.addAttribute("invoiceDate", currentDate);
-				model.addAttribute("formattedInvoiceDate", formattedInvoiceDate);
-				model.addAttribute("formattedTreatmentDate", formattedTreatmentDate);
+				User user = patient.getUser();
+				logger.debug("user: {}", user);
+				model.addAttribute("user", user);
 
 			}
+
+			model.addAttribute("invoiceNumber", invoiceNumber);
+			model.addAttribute("invoiceDate", currentDate);
+			model.addAttribute("formattedInvoiceDate", formattedInvoiceDate);
+			model.addAttribute("formattedTreatmentDate", formattedTreatmentDate);
 
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.INVOICE_LOAD_ERROR, e);
@@ -299,23 +270,18 @@ public class InvoiceController {
 		String treatmentID = null;
 		try {
 
-			Optional<Invoice> invoiceOptional = invoiceService.getInvoiceDetails(invoiceID);
-			Invoice invoice = new Invoice();
+			Invoice invoice = invoiceService.getInvoiceDetails(invoiceID);
 
-			if (invoiceOptional.isPresent()) {
+			if (invoiceStatus.equals(InvoiceStatus.PAID.name()))
+				invoice.setInvoiceStatus(InvoiceStatus.PAID);
+			else if (invoiceStatus.equals(InvoiceStatus.CANCELLED.name()))
+				invoice.setInvoiceStatus(InvoiceStatus.CANCELLED);
 
-				invoice = invoiceOptional.get();
-				if (invoiceStatus.equals(InvoiceStatus.PAID.name()))
-					invoice.setInvoiceStatus(InvoiceStatus.PAID);
-				else if (invoiceStatus.equals(InvoiceStatus.CANCELLED.name()))
-					invoice.setInvoiceStatus(InvoiceStatus.CANCELLED);
+			invoiceService.updateInvoiceStatus(invoice);
 
-				invoiceService.updateInvoiceStatus(invoice);
-
-				if (invoice.getTreatment() != null) {
-					Treatment treatment = invoice.getTreatment();
-					treatmentID = treatment.getTreatmentID().toString();
-				}
+			if (invoice.getTreatment() != null) {
+				Treatment treatment = invoice.getTreatment();
+				treatmentID = treatment.getTreatmentID().toString();
 			}
 
 		} catch (Exception e) {

@@ -1,7 +1,5 @@
 package com.healthcaremngnt.controller;
 
-import java.util.Optional;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -80,8 +78,7 @@ public class UserController {
 		String emailID = getEmailID(form, roleName);
 
 		// Validate role
-		Role role = roleService.getRoleByName(roleName)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid role: " + roleName));
+		Role role = roleService.getRoleByName(roleName);
 
 		// Create user
 		String generatedUserName = UserDetailsGenerator.generateUserName(userName, roleName);
@@ -232,9 +229,8 @@ public class UserController {
 		logger.info("View User");
 
 		try {
-			Optional<UserDetails> optionalUserDetails = userService.findUserDetailsByID(userID);
-			if (optionalUserDetails.isPresent()) {
-				UserDetails userDetails = optionalUserDetails.get();
+			UserDetails userDetails = userService.findUserDetailsByID(userID);
+			if (userDetails != null) {
 				model.addAttribute("userDetails", userDetails);
 			} else {
 				model.addAttribute("errorMessage", MessageConstants.USER_NOT_FOUND);
@@ -279,10 +275,10 @@ public class UserController {
 		logger.debug("source: {}", source);
 
 		try {
-			Optional<UserDetails> optionalUserDetails = userService.findUserDetailsByName(userName);
+			UserDetails userDetails = userService.findUserDetailsByName(userName);
 
-			if (optionalUserDetails.isPresent()) {
-				model.addAttribute("userDetails", optionalUserDetails.get());
+			if (userDetails != null) {
+				model.addAttribute("userDetails", userDetails);
 				logger.debug("{}", MessageConstants.EDIT_USER_FETCH_SUCCESS);
 			} else {
 				logger.error("{}", MessageConstants.USER_NOT_FOUND);

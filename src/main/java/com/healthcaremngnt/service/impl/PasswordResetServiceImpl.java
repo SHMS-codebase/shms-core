@@ -1,7 +1,6 @@
 package com.healthcaremngnt.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.healthcaremngnt.exceptions.InvalidTokenException;
 import com.healthcaremngnt.exceptions.TokenExpiredException;
 import com.healthcaremngnt.model.PasswordResetToken;
-import com.healthcaremngnt.model.Role;
 import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.PasswordResetTokenRepository;
 import com.healthcaremngnt.repository.UserRepository;
@@ -35,83 +33,53 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 	}
 
 	@Override
-	public void resetPassword(String token, String newpassword) throws InvalidTokenException, TokenExpiredException {
-
+	public void resetPassword(String token, String newPassword) throws InvalidTokenException, TokenExpiredException {
 		logger.info("Resetting password for token: {}", token);
 
-		try {
-			Optional<PasswordResetToken> tokenOptional = tokenRepository.findByToken(token);
+		PasswordResetToken resetToken = validateToken(token);
+		User user = resetToken.getUser();
 
-			PasswordResetToken resetToken = tokenOptional
-					.orElseThrow(() -> new InvalidTokenException("Invalid password reset token."));
+		logger.debug("Token is valid. Updating password for user ID: {}", user.getUserID());
 
-			if (resetToken.getExpirationTime().isBefore(LocalDateTime.now())) {
-				throw new TokenExpiredException("Password reset token has expired.");
-			}
+		updateUserPassword(user, newPassword);
 
-			logger.debug("Token is available in the DB and is valid");
+		logger.debug("Deleting token after password reset.");
+		tokenRepository.delete(resetToken);
+	}
 
-			User user = resetToken.getUser();
+	private PasswordResetToken validateToken(String token) throws InvalidTokenException, TokenExpiredException {
+		PasswordResetToken resetToken = tokenRepository.findByToken(token)
+				.orElseThrow(() -> new InvalidTokenException("Invalid password reset token."));
 
-			Role role = user.getRole();
-			if (role != null) {
-				logger.debug("Role Name: {}", role.getRoleName());
-			}
-
-			user.setPassword(encoder.encode(newpassword));
-
-			logger.debug("Updating user details in Users table");
-			userRepository.save(user);
-
-			logger.debug("Deleting token details from PwdResetTokens table");
-			tokenRepository.delete(resetToken); // Invalidate the token after use
-
-		} catch (InvalidTokenException | TokenExpiredException e) {
-			logger.error("Password reset failed: {}", e.getMessage());
-			throw e;
-		} catch (Exception e) {
-			logger.error("Unexpected error during password reset: {}", e.getMessage(), e);
-			throw new RuntimeException("Failed to reset password", e);
+		if (resetToken.getExpirationTime().isBefore(LocalDateTime.now())) {
+			throw new TokenExpiredException("Password reset token has expired.");
 		}
+
+		return resetToken;
 	}
 
 	@Override
 	public void resetPassword(Long userID, String oldPassword, String newPassword) {
+		logger.info("Resetting password for User ID: {}", userID);
 
-		logger.info("Resetting old password: {} with: {}", oldPassword, newPassword);
+		User user = userRepository.findById(userID)
+				.orElseThrow(() -> new RuntimeException("User not found with ID: " + userID));
 
-		try {
+		validateOldPassword(user, oldPassword);
+		updateUserPassword(user, newPassword);
+	}
 
-			Optional<User> userOptional = userRepository.findById(userID);
-
-			if (userOptional.isPresent()) {
-			
-				logger.debug("userOptional: {}", userOptional);
-				User user = userOptional.get();
-				Role role = user.getRole();
-
-				if (role != null) {
-					logger.debug("Role Name: {}", role.getRoleName());
-				}
-				
-				logger.debug("Validate the old password with the Users table");
-				
-				if (!encoder.matches(oldPassword, user.getPassword())) {
-					logger.debug("Failed to authenticate since password does not match stored value");
-					throw new RuntimeException("Failed to authenticate since password does not match stored value");
-				}
-
-				user.setPassword(encoder.encode(newPassword));
-
-				logger.debug("Updating user details in Users table");
-				userRepository.save(user);
-
-			}
-
-		} catch (Exception e) {
-			logger.error("Unexpected error during password reset: {}", e.getMessage(), e);
-			throw new RuntimeException("Failed to reset password", e);
+	private void validateOldPassword(User user, String oldPassword) {
+		if (!encoder.matches(oldPassword, user.getPassword())) {
+			logger.debug("Password mismatch for User ID: {}", user.getUserID());
+			throw new RuntimeException("Failed to authenticate: Incorrect old password.");
 		}
+	}
+
+	private void updateUserPassword(User user, String newPassword) {
+		user.setPassword(encoder.encode(newPassword));
+		userRepository.save(user);
+		logger.info("Password successfully updated for User ID: {}", user.getUserID());
 	}
 
 }

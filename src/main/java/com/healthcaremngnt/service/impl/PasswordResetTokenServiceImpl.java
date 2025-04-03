@@ -1,7 +1,5 @@
 package com.healthcaremngnt.service.impl;
 
-import java.util.Optional;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -24,19 +22,19 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
 	}
 
 	@Override
-	public Optional<PasswordResetToken> findByToken(String token) {
+	public PasswordResetToken findByToken(String token) {
+		logger.info("Fetching password reset token: {}", token);
 
-		logger.info("Finding PasswordResetToken by token: {}", token);
-
-		return tokenRepository.findByToken(token);
+		return tokenRepository.findByToken(token)
+				.orElseThrow(() -> new RuntimeException("Invalid password reset token: " + token));
 	}
 
 	@Override
-	public Optional<PasswordResetToken> getLatestTokenForUser(String emailID) {
+	public PasswordResetToken getLatestTokenForUser(String emailID) {
+		logger.info("Fetching latest password reset token for user with email: {}", emailID);
 
-		logger.info("Getting latest PasswordResetToken for user with email: {}", emailID);
-
-		return tokenRepository.findFirstByEmailIDOrderByTokenIDDesc(emailID);
+		return tokenRepository.findFirstByEmailIDOrderByTokenIDDesc(emailID)
+				.orElseThrow(() -> new RuntimeException("No password reset token found for email: " + emailID));
 	}
 
 }

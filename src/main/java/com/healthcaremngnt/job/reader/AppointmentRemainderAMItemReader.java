@@ -9,11 +9,9 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.healthcaremngnt.model.Appointment;
-import com.healthcaremngnt.repository.AppointmentRepository;
 
 @Component
 @StepScope
@@ -21,8 +19,8 @@ public class AppointmentRemainderAMItemReader implements ItemReader<Appointment>
 
 	private static final Logger logger = LogManager.getLogger(AppointmentRemainderAMItemReader.class);
 
-	@Autowired
-	private AppointmentRepository appointmentRepository;
+//	@Autowired
+//	private AppointmentRepository appointmentRepository;
 
 	private Iterator<Appointment> appointmentIterator;
 

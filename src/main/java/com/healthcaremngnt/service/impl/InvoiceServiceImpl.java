@@ -1,16 +1,16 @@
 package com.healthcaremngnt.service.impl;
 
-import java.util.Optional;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.healthcaremngnt.model.Invoice;
 import com.healthcaremngnt.repository.InvoiceRepository;
 import com.healthcaremngnt.service.InvoiceService;
 
 @Service
+@Transactional
 public class InvoiceServiceImpl implements InvoiceService {
 
 	private static final Logger logger = LogManager.getLogger(InvoiceServiceImpl.class);
@@ -23,27 +23,40 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 	@Override
 	public Invoice generateInvoice(Invoice invoice) {
+		logger.info("Generating invoice for ID: {}", invoice.getInvoiceID());
 
-		logger.info("InvoiceServiceImpl::: generateInvoice()");
-		
-		return invoiceRepository.save(invoice);
+		validateInvoice(invoice);
+
+		Invoice savedInvoice = invoiceRepository.save(invoice);
+		logger.info("Invoice successfully generated with ID: {}", savedInvoice.getInvoiceID());
+
+		return savedInvoice;
+	}
+
+	private void validateInvoice(Invoice invoice) {
+		if (invoice == null) {
+			throw new IllegalArgumentException("Invoice cannot be null.");
+		}
 	}
 
 	@Override
-	public Optional<Invoice> getInvoiceDetails(Long invoiceID) {
-		
-		logger.info("InvoiceServiceImpl::: getInvoiceDetails()");
-		
-		return invoiceRepository.findById(invoiceID);
+	public Invoice getInvoiceDetails(Long invoiceID) {
+		logger.info("Fetching invoice details for ID: {}", invoiceID);
 
+		return invoiceRepository.findById(invoiceID)
+				.orElseThrow(() -> new RuntimeException("Invoice not found with ID: " + invoiceID));
 	}
 
 	@Override
 	public Invoice updateInvoiceStatus(Invoice invoice) {
+		logger.info("Updating status for Invoice ID: {}", invoice.getInvoiceID());
 
-		logger.info("InvoiceServiceImpl::: updateInvoiceStatus()");
-		
-		return invoiceRepository.save(invoice);
+		validateInvoice(invoice);
+
+		Invoice updatedInvoice = invoiceRepository.save(invoice);
+		logger.info("Invoice status successfully updated for ID: {}", updatedInvoice.getInvoiceID());
+
+		return updatedInvoice;
 	}
 
 }

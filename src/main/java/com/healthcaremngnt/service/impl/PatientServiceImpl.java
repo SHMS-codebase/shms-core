@@ -1,7 +1,6 @@
 package com.healthcaremngnt.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,69 +35,88 @@ public class PatientServiceImpl implements PatientService {
 
 	@Override
 	public Patient register(Patient patient) {
-
 		logger.info("Registering patient: {}", patient);
 
-		return patientRepository.save(patient);
+		validatePatient(patient);
+
+		Patient savedPatient = patientRepository.save(patient);
+		logger.info("Patient successfully registered with ID: {}", savedPatient.getPatientID());
+
+		return savedPatient;
+	}
+
+	private void validatePatient(Patient patient) {
+		if (patient == null) {
+			throw new IllegalArgumentException("Patient object cannot be null.");
+		}
 	}
 
 	@Override
-	public Optional<Patient> getPatientInfoCard(String userName) {
+	public Patient getPatientInfoCard(String userName) throws PatientNotFoundException {
+		logger.info("Retrieving patient info card for username: {}", userName);
 
-		logger.info("Retrieving patient info card for user: {}", userName);
+		User user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new PatientNotFoundException("User not found with username: " + userName));
 
-		Optional<User> user = userRepository.findByUserName(userName);
-		return user.flatMap(u -> patientRepository.findByUser(u));
+		return patientRepository.findByUser(user).orElseThrow(
+				() -> new PatientNotFoundException("Patient information not found for username: " + userName));
 	}
 
 	@Override
 	public List<MedicalHistory> findMedicalHistory(Long patientID) throws PatientNotFoundException {
-
-		logger.info("Finding medical history for patient ID: {}", patientID);
+		logger.info("Finding medical history for Patient ID: {}", patientID);
 
 		Patient patient = patientRepository.findById(patientID)
-				.orElseThrow(() -> new PatientNotFoundException("Patient not found"));
+				.orElseThrow(() -> new PatientNotFoundException("Patient not found with ID: " + patientID));
 
-		return medicalHistoryRepository.findByPatient(patient);
+		List<MedicalHistory> medicalHistory = medicalHistoryRepository.findByPatient(patient);
+		logger.info("Found {} medical history records for Patient ID: {}", medicalHistory.size(), patientID);
+
+		return medicalHistory;
 	}
 
 	@Override
 	public void updateMedicalHistory(List<MedicalHistory> medicalHistoryList) {
+		logger.info("Updating medical history records.");
 
-		logger.info("Updating medical history");
+		if (medicalHistoryList == null || medicalHistoryList.isEmpty()) {
+			throw new IllegalArgumentException("Medical history list cannot be null or empty.");
+		}
 
 		medicalHistoryRepository.saveAll(medicalHistoryList);
+		logger.info("Medical history updated successfully.");
 	}
 
 	@Override
 	public MedicalHistory addMedicalHistory(String newMedicalHistory, Long patientID) throws PatientNotFoundException {
-
-		logger.info("Adding medical history for patient ID: {}", patientID);
+		logger.info("Adding medical history for Patient ID: {}", patientID);
 
 		Patient patient = patientRepository.findById(patientID)
-				.orElseThrow(() -> new PatientNotFoundException("Patient not found")); // Handle Optional
+				.orElseThrow(() -> new PatientNotFoundException("Patient not found with ID: " + patientID));
 
 		MedicalHistory medicalHistory = new MedicalHistory();
 		medicalHistory.setPatient(patient);
 		medicalHistory.setMedicalHistory(newMedicalHistory);
 
-		return medicalHistoryRepository.save(medicalHistory);
+		MedicalHistory savedHistory = medicalHistoryRepository.save(medicalHistory);
+		logger.info("Medical history successfully added for Patient ID: {}", savedHistory.getPatient().getPatientID());
+
+		return savedHistory;
 	}
 
 	@Override
 	public List<Patient> getAllPatients() {
-
-		logger.info("Retrieving all patients from DB");
-
-		return patientRepository.findAll();
+	    logger.info("Fetching all patients from database.");
+	    
+	    return patientRepository.findAll();
 	}
 
 	@Override
-	public Optional<Patient> getPatientDetails(Long patientID) {
+	public Patient getPatientDetails(Long patientID) throws PatientNotFoundException {
+	    logger.info("Fetching patient details for ID: {}", patientID);
 
-		logger.info("Retrieving patient details for ID: {}", patientID);
-
-		return patientRepository.findById(patientID);
+	    return patientRepository.findById(patientID)
+	            .orElseThrow(() -> new PatientNotFoundException("Patient not found with ID: " + patientID));
 	}
 
 }

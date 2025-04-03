@@ -3,7 +3,6 @@ package com.healthcaremngnt.service.impl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,70 +61,67 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public List<SearchResult> searchUsers(String roleName, String name, String emailID, String contactNumber,
 			String specializationName) {
-
-		logger.info("SearchServiceImpl::: searchUsers()");
+		logger.info("Executing user search. Role: {}, Name: {}, Email: {}, Contact: {}, Specialization: {}", roleName,
+				name, emailID, contactNumber, specializationName);
 
 		List<SearchResult> searchResults = new ArrayList<>();
 
-		if (roleName != null) {
+		if (roleName != null && !roleName.isBlank()) {
+			logger.debug("Performing role-based search.");
+			Role role = roleRepository.findByRoleNameIgnoreCase(roleName)
+					.orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
 
-			logger.debug("Role-Based Search");
-
-			Optional<Role> role = roleRepository.findByRoleNameIgnoreCase(roleName);
-
-			role.ifPresent(r -> {
-				switch (r.getRoleName().toLowerCase()) {
-				case "admin":
-					userRepository.searchAdminUsers(name, emailID)
-							.forEach(user -> searchResults.add(new SearchResult(user.getUserID(), r.getRoleName(),
-									user.getUserName(), user.getEmailID(), "", "")));
-					break;
-				case "doctor":
-					doctorRepository.searchDoctors(name, emailID, contactNumber, specializationName)
-							.forEach(doc -> searchResults.add(new SearchResult(doc.getUser().getUserID(),
-									r.getRoleName(), doc.getDoctorName(), doc.getUser().getEmailID(),
-									doc.getContactNumber(), doc.getSpecialization())));
-					break;
-				case "patient":
-					patientRepository.searchPatients(name, emailID, contactNumber).forEach(
-							pat -> searchResults.add(new SearchResult(pat.getUser().getUserID(), r.getRoleName(),
-									pat.getPatientName(), pat.getUser().getEmailID(), pat.getContactNumber(), "")));
-					break;
-				}
-			});
+			searchResults = performRoleBasedSearch(role, name, emailID, contactNumber, specializationName);
 		} else {
-			// Other search cases
-
-			logger.debug("Other Search Cases");
-
-			if (name != null && !name.isEmpty()) {
-				performSearch(name, emailID, contactNumber, specializationName, searchResults);
-			} else if (emailID != null && !emailID.isEmpty()) {
-				performSearch(name, emailID, contactNumber, specializationName, searchResults);
-			} else if (contactNumber != null && !contactNumber.isEmpty()) {
-				performSearch(name, emailID, contactNumber, specializationName, searchResults);
-			} else if (specializationName != null && !specializationName.isEmpty()) {
-				performSearch(name, emailID, contactNumber, specializationName, searchResults);
-			} else {
-				performSearch(name, emailID, contactNumber, specializationName, searchResults);
-			}
-
-			// Old Working Code
-//			logger.debug("Other Search Cases");
-//			if (StringUtils.hasText(name)) {
-//				performNameBasedSearch(name, emailID, contactNumber, specializationName, searchResults);
-//			} else if (StringUtils.hasText(emailID)) {
-//				performEmailBasedSearch(name, emailID, contactNumber, specializationName, searchResults);
-//			} else if (StringUtils.hasText(contactNumber)) {
-//				performContactNumberBasedSearch(name, emailID, contactNumber, specializationName, searchResults);
-//			} else if (StringUtils.hasText(specializationName)) {
-//				performSpecializationBasedSearch(name, emailID, contactNumber, specializationName, searchResults);
-//			} else {
-//				performNoCriteriaSearch(searchResults);
-//			}
+			logger.debug("Performing general search.");
+			performGeneralSearch(name, emailID, contactNumber, specializationName, searchResults);
 		}
 
+		logger.info("Search completed. Total results found: {}", searchResults.size());
 		return searchResults;
+	}
+
+	private List<SearchResult> performRoleBasedSearch(Role role, String name, String emailID, String contactNumber,
+			String specializationName) {
+		List<SearchResult> results = new ArrayList<>();
+		switch (role.getRoleName().toLowerCase()) {
+		case "admin":
+			userRepository.searchAdminUsers(name, emailID)
+					.forEach(user -> results.add(new SearchResult(user.getUserID(), role.getRoleName(),
+							user.getUserName(), user.getEmailID(), "", "")));
+			break;
+		case "doctor":
+			doctorRepository.searchDoctors(name, emailID, contactNumber, specializationName)
+					.forEach(doc -> results
+							.add(new SearchResult(doc.getUser().getUserID(), role.getRoleName(), doc.getDoctorName(),
+									doc.getUser().getEmailID(), doc.getContactNumber(), doc.getSpecialization())));
+			break;
+		case "patient":
+			patientRepository.searchPatients(name, emailID, contactNumber)
+					.forEach(pat -> results.add(new SearchResult(pat.getUser().getUserID(), role.getRoleName(),
+							pat.getPatientName(), pat.getUser().getEmailID(), pat.getContactNumber(), "")));
+			break;
+		default:
+			logger.warn("Unsupported role: {}", role.getRoleName());
+			break;
+		}
+		return results;
+	}
+
+	private void performGeneralSearch(String name, String emailID, String contactNumber, String specializationName,
+			List<SearchResult> searchResults) {
+		logger.debug("Performing general search with criteria.");
+		if (name != null && !name.isBlank()) {
+			performSearch(name, emailID, contactNumber, specializationName, searchResults);
+		} else if (emailID != null && !emailID.isBlank()) {
+			performSearch(name, emailID, contactNumber, specializationName, searchResults);
+		} else if (contactNumber != null && !contactNumber.isBlank()) {
+			performSearch(name, emailID, contactNumber, specializationName, searchResults);
+		} else if (specializationName != null && !specializationName.isBlank()) {
+			performSearch(name, emailID, contactNumber, specializationName, searchResults);
+		} else {
+			performSearch(name, emailID, contactNumber, specializationName, searchResults);
+		}
 	}
 
 	private void performSearch(String name, String email, String contactNumber, String specialization,
@@ -145,86 +141,13 @@ public class SearchServiceImpl implements SearchService {
 						pat.getPatientName(), pat.getUser().getEmailID(), pat.getContactNumber(), "")));
 	}
 
-	// Old Working Code
-//	private void performNameBasedSearch(String name, String emailID, String contactNumber, String specialization,
-//			List<SearchResult> searchResults) {
-//		logger.debug("Name-Based Search");
-//		userRepository.searchAdminUsers(name, emailID).forEach(user -> searchResults
-//				.add(new SearchResult(user.getUserID(), "Admin", user.getUserName(), user.getEmailID(), "", "")));
-//
-//		doctorRepository.searchDoctors(name, emailID, contactNumber, specialization).forEach(
-//				doc -> searchResults.add(new SearchResult(doc.getUser().getUserID(), "Doctor", doc.getDoctorName(),
-//						doc.getUser().getEmailID(), doc.getContactNumber(), doc.getSpecialization())));
-//
-//		patientRepository.searchPatients(name, emailID, contactNumber)
-//				.forEach(pat -> searchResults.add(new SearchResult(pat.getUser().getUserID(), "Patient",
-//						pat.getPatientName(), pat.getUser().getEmailID(), pat.getContactNumber(), "")));
-//	}
-//
-//	private void performEmailBasedSearch(String name, String emailID, String contactNumber, String specialization,
-//			List<SearchResult> searchResults) {
-//		logger.debug("EmailID-Based Search");
-//		userRepository.searchAdminUsers(name, emailID).forEach(user -> searchResults
-//				.add(new SearchResult(user.getUserID(), "Admin", user.getUserName(), user.getEmailID(), "", "")));
-//
-//		doctorRepository.searchDoctors(name, emailID, contactNumber, specialization).forEach(
-//				doc -> searchResults.add(new SearchResult(doc.getUser().getUserID(), "Doctor", doc.getDoctorName(),
-//						doc.getUser().getEmailID(), doc.getContactNumber(), doc.getSpecialization())));
-//
-//		patientRepository.searchPatients(name, emailID, contactNumber)
-//				.forEach(pat -> searchResults.add(new SearchResult(pat.getUser().getUserID(), "Patient",
-//						pat.getPatientName(), pat.getUser().getEmailID(), pat.getContactNumber(), "")));
-//	}
-//
-//	private void performContactNumberBasedSearch(String name, String emailID, String contactNumber,
-//			String specialization, List<SearchResult> searchResults) {
-//		logger.debug("ContactNumber-Based Search");
-//		doctorRepository.searchDoctors(name, emailID, contactNumber, specialization).forEach(
-//				doc -> searchResults.add(new SearchResult(doc.getUser().getUserID(), "Doctor", doc.getDoctorName(),
-//						doc.getUser().getEmailID(), doc.getContactNumber(), doc.getSpecialization())));
-//
-//		patientRepository.searchPatients(name, emailID, contactNumber)
-//				.forEach(pat -> searchResults.add(new SearchResult(pat.getUser().getUserID(), "Patient",
-//						pat.getPatientName(), pat.getUser().getEmailID(), pat.getContactNumber(), "")));
-//	}
-//
-//	private void performSpecializationBasedSearch(String name, String emailID, String contactNumber,
-//			String specialization, List<SearchResult> searchResults) {
-//		logger.debug("Specialization-Based Search");
-//		doctorRepository.searchDoctors(name, emailID, contactNumber, specialization).forEach(
-//				doc -> searchResults.add(new SearchResult(doc.getUser().getUserID(), "Doctor", doc.getDoctorName(),
-//						doc.getUser().getEmailID(), doc.getContactNumber(), doc.getSpecialization())));
-//	}
-//
-//	private void performNoCriteriaSearch(List<SearchResult> searchResults) {
-//		logger.debug("No Search Criteria - Displaying all records");
-//		userRepository.findAll().forEach(user -> {
-//			final String[] uName = { user.getUserName() };
-//			final String[] contact = { "" };
-//			final String[] spec = { "" };
-//			String role = roleRepository.findById(user.getRole().getRoleID()).map(Role::getRoleName).orElse("Unknown");
-//			if ("Doctor".equalsIgnoreCase(role)) {
-//				Optional.ofNullable(doctorRepository.findByUser(user)).ifPresent(doctor -> {
-//					uName[0] = doctor.getDoctorName();
-//					contact[0] = doctor.getContactNumber();
-//					spec[0] = doctor.getSpecialization();
-//				});
-//			} else if ("Patient".equalsIgnoreCase(role)) {
-//				Optional.ofNullable(patientRepository.findByUser(user)).ifPresent(patient -> {
-//					uName[0] = patient.getPatientName();
-//					contact[0] = patient.getContactNumber();
-//				});
-//			}
-//			searchResults
-//					.add(new SearchResult(user.getUserID(), role, uName[0], user.getEmailID(), contact[0], spec[0]));
-//		});
-//	}
-
 	@Override
 	public List<DoctorSchedule> searchSchedules(Long doctorID, LocalDate availableDate, String specialization,
 			ScheduleStatus scheduleStatus) {
+		logger.info("Searching doctor schedules with criteria: Doctor ID: {}, Date: {}, Specialization: {}, Status: {}",
+				doctorID, availableDate, specialization, scheduleStatus);
 
-		logger.info("SearchServiceImpl::: searchSchedules()");
+		validateSearchInputs(doctorID, availableDate);
 
 		return doctorScheduleRepository.findSchedules(doctorID, availableDate, specialization, scheduleStatus);
 	}
@@ -232,8 +155,10 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public List<Appointment> searchAppointments(Long patientID, Long doctorID, LocalDate appointmentDate,
 			AppointmentStatus appointmentStatus) {
+		logger.info("Searching appointments with criteria: Patient ID: {}, Doctor ID: {}, Date: {}, Status: {}",
+				patientID, doctorID, appointmentDate, appointmentStatus);
 
-		logger.info("SearchServiceImpl::: searchAppointments()");
+		validateSearchInputs(patientID, appointmentDate);
 
 		return appointmentRepository.findAppointments(patientID, doctorID, appointmentDate, appointmentStatus);
 	}
@@ -241,8 +166,10 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public List<Invoice> searchInvoices(Long patientID, Long invoiceID, LocalDate invoiceDate,
 			InvoiceStatus invoiceStatus) {
+		logger.info("Searching invoices with criteria: Patient ID: {}, Invoice ID: {}, Date: {}, Status: {}", patientID,
+				invoiceID, invoiceDate, invoiceStatus);
 
-		logger.info("SearchServiceImpl::: searchAppointments()");
+		validateSearchInputs(patientID, invoiceDate);
 
 		return invoiceRepository.findInvoices(patientID, invoiceID, invoiceDate, invoiceStatus);
 	}
@@ -250,10 +177,21 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public List<Treatment> searchTreatments(Long patientID, Long treatmentID, LocalDate treatmentDate,
 			TreatmentStatus treatmentStatus) {
+		logger.info("Searching treatments with criteria: Patient ID: {}, Treatment ID: {}, Date: {}, Status: {}",
+				patientID, treatmentID, treatmentDate, treatmentStatus);
 
-		logger.info("SearchServiceImpl::: searchTreatments()");
+		validateSearchInputs(patientID, treatmentDate);
 
 		return treatmentRepository.findTreatments(patientID, treatmentID, treatmentDate, treatmentStatus);
+	}
+
+	private void validateSearchInputs(Long id, LocalDate date) {
+		if (id == null || id <= 0) {
+			throw new IllegalArgumentException("Invalid ID provided for search.");
+		}
+		if (date != null && date.isAfter(LocalDate.now().plusYears(1))) {
+			throw new IllegalArgumentException("Search date cannot be beyond one year in the future.");
+		}
 	}
 
 }

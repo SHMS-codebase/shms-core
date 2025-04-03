@@ -1,13 +1,13 @@
 package com.healthcaremngnt.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.healthcaremngnt.exceptions.PrescriptionNotFoundException;
 import com.healthcaremngnt.model.ActivePrescription;
@@ -20,8 +20,8 @@ import com.healthcaremngnt.repository.ActivePrescriptionRepository;
 import com.healthcaremngnt.repository.PrescriptionRespository;
 import com.healthcaremngnt.service.PrescriptionDetailService;
 import com.healthcaremngnt.service.PrescriptionService;
-
 @Service
+@Transactional
 public class PrescriptionServiceImpl implements PrescriptionService {
 
 	private static final Logger logger = LogManager.getLogger(PrescriptionServiceImpl.class);
@@ -46,97 +46,107 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 	@Override
 	public Prescription createPrescription(Prescription prescription, List<PrescriptionDetail> prescriptionDetails) {
 
-		logger.info("PrescriptionServiceImpl::: createPrescription()");
+		logger.info("Creating prescription with details.");
 
-		logger.debug("prescription: {}", prescription);
-		logger.debug("prescriptionDetails: {}", prescriptionDetails);
+		validatePrescriptionData(prescription, prescriptionDetails);
 
-		if (!prescriptionDetails.isEmpty()) {
-			Prescription savedPrescription = prescriptionRepository.save(prescription);
-			logger.debug("savedPrescription: {}", savedPrescription);
-			logger.debug("prescriptionDetails: {}", prescriptionDetails);
+		Prescription savedPrescription = prescriptionRepository.save(prescription);
+		logger.debug("Prescription saved: {}", savedPrescription);
 
-			List<PrescriptionDetail> savedPrescriptionDetails = prescriptionDetailService.createPrescriptionDetails(savedPrescription, prescriptionDetails);
-			
-			logger.debug("savedPrescriptionDetails: {}", savedPrescriptionDetails);
-			if(!savedPrescriptionDetails.isEmpty())
-				prescription.setPrescriptionDetails(savedPrescriptionDetails);
-			
-			return savedPrescription;
+		List<PrescriptionDetail> savedDetails = prescriptionDetailService.createPrescriptionDetails(savedPrescription,
+				prescriptionDetails);
+
+		if (!savedDetails.isEmpty()) {
+			savedPrescription.setPrescriptionDetails(savedDetails);
 		}
-		return null;
+
+		return savedPrescription;
+	}
+
+	private void validatePrescriptionData(Prescription prescription, List<PrescriptionDetail> prescriptionDetails) {
+		if (prescription == null || prescriptionDetails == null || prescriptionDetails.isEmpty()) {
+			throw new IllegalArgumentException("Prescription or prescription details cannot be null or empty.");
+		}
 	}
 
 	@Override
 	public List<ActivePrescription> getActivePrescriptions(Doctor doctor) {
+		logger.info("Fetching active prescriptions for Doctor ID: {}", doctor.getDoctorID());
 
-		logger.info("PrescriptionServiceImpl::: getActivePrescriptions(doctor)");
-
-		List<ActivePrescriptionProjection> projections = activePrescriptionRepository
-				.findActivePrescriptionsByDoctor(doctor.getDoctorID());
-		List<ActivePrescription> activePrescriptions = new ArrayList<>();
-		for (ActivePrescriptionProjection projection : projections) {
-			activePrescriptions.add(new ActivePrescription(projection.getPrescriptionID(), projection.getPatientName(),
-					projection.getDiagnosis(), projection.getPrescriptionDetailCount(),
-					projection.getPrescriptionDate(), projection.getTreatmentStatus(),
-					projection.getFollowupNeeded()));
+		if (doctor.getDoctorID() == null) {
+			throw new IllegalArgumentException("Doctor ID cannot be null.");
 		}
-		return activePrescriptions;
+
+		return convertToActivePrescriptionList(
+				activePrescriptionRepository.findActivePrescriptionsByDoctor(doctor.getDoctorID()));
+	}
+
+	private List<ActivePrescription> convertToActivePrescriptionList(List<ActivePrescriptionProjection> projections) {
+		return projections.stream()
+				.map(projection -> new ActivePrescription(projection.getPrescriptionID(), projection.getPatientName(),
+						projection.getDiagnosis(), projection.getPrescriptionDetailCount(),
+						projection.getPrescriptionDate(), projection.getTreatmentStatus(),
+						projection.getFollowupNeeded()))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Optional<Prescription> getPrescriptionDetails(Long prescriptionID) {
-		
-		logger.info("PrescriptionServiceImpl::: getPrescriptionDetails()");
+	public Prescription getPrescriptionDetails(Long prescriptionID) throws PrescriptionNotFoundException {
+		logger.info("Fetching prescription details for ID: {}", prescriptionID);
 
-		return prescriptionRepository.findById(prescriptionID);
+		if (prescriptionID == null || prescriptionID <= 0) {
+			throw new IllegalArgumentException("Invalid prescription ID.");
+		}
+
+		return prescriptionRepository.findById(prescriptionID).orElseThrow(
+				() -> new PrescriptionNotFoundException("Prescription not found with ID: " + prescriptionID));
 	}
 
 	@Override
 	public void updatePrescriptionDetails(Prescription prescription) throws PrescriptionNotFoundException {
-		
-		logger.info("PrescriptionServiceImpl::: updatePrescriptionDetails()");
+		logger.info("Updating prescription details for ID: {}", prescription.getPrescriptionID());
 
-		try {
-			if (!prescriptionRepository.existsById(prescription.getPrescriptionID())) {
-				throw new PrescriptionNotFoundException(
-						"Prescription not found with ID: " + prescription.getPrescriptionID());
-			}
-			prescriptionRepository.save(prescription);
-			if(!prescription.getPrescriptionDetails().isEmpty())
-				prescriptionDetailService.updatePrescriptionDetails(prescription);
-		} catch (PrescriptionNotFoundException e) {
-			logger.error("Prescription not found: {}", e.getMessage());
-			throw e;
-		} catch (Exception e) {
-			logger.error("Error updating Prescription details: {}", e.getMessage(), e);
-			throw new RuntimeException("Failed to update Prescription details", e);
+		validatePrescription(prescription);
+
+		prescriptionRepository.save(prescription);
+		if (!prescription.getPrescriptionDetails().isEmpty()) {
+			prescriptionDetailService.updatePrescriptionDetails(prescription);
+		}
+	}
+
+	private void validatePrescription(Prescription prescription) throws PrescriptionNotFoundException {
+		if (prescription == null || prescription.getPrescriptionID() == null) {
+			throw new IllegalArgumentException("Prescription or ID cannot be null.");
+		}
+
+		if (!prescriptionRepository.existsById(prescription.getPrescriptionID())) {
+			throw new PrescriptionNotFoundException(
+					"Prescription not found with ID: " + prescription.getPrescriptionID());
 		}
 	}
 
 	@Override
 	public List<ActivePrescription> getActivePrescriptions(Patient patient) {
+		logger.info("Fetching active prescriptions for Patient ID: {}", patient.getPatientID());
 
-		logger.info("PrescriptionServiceImpl::: getActivePrescriptions(patient)");
-
-		List<ActivePrescriptionProjection> projections = activePrescriptionRepository
-				.findActivePrescriptionsByPatient(patient.getPatientID());
-		List<ActivePrescription> activePrescriptions = new ArrayList<>();
-		for (ActivePrescriptionProjection projection : projections) {
-			activePrescriptions.add(new ActivePrescription(projection.getPrescriptionID(), projection.getPatientName(),
-					projection.getDiagnosis(), projection.getPrescriptionDetailCount(),
-					projection.getPrescriptionDate(), projection.getTreatmentStatus(),
-					projection.getFollowupNeeded()));
+		if (patient.getPatientID() == null) {
+			throw new IllegalArgumentException("Patient ID cannot be null.");
 		}
-		return activePrescriptions;
+
+		return convertToActivePrescriptionList(
+				activePrescriptionRepository.findActivePrescriptionsByPatient(patient.getPatientID()));
 	}
 
 	@Override
-	public Optional<Prescription> getPrescriptionDetailsByTreatment(Long treatmentID) {
-		
-		logger.info("PrescriptionServiceImpl::: getPrescriptionDetailsByTreatment()");
+	public Prescription getPrescriptionDetailsByTreatment(Long treatmentID) throws PrescriptionNotFoundException {
+		logger.info("Fetching prescription details for Treatment ID: {}", treatmentID);
 
-		return prescriptionRepository.findByTreatment_TreatmentID(treatmentID);
+		if (treatmentID == null || treatmentID <= 0) {
+			throw new IllegalArgumentException("Invalid treatment ID.");
+		}
+
+		return prescriptionRepository.findByTreatment_TreatmentID(treatmentID).orElseThrow(
+				() -> new PrescriptionNotFoundException("No prescription found for treatment ID: " + treatmentID));
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.healthcaremngnt.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,25 +44,22 @@ public class PatientController {
 	}
 
 	@GetMapping("/patientdashboard")
-	public String getPatientDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model) {
+	public String getPatientDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model) throws PatientNotFoundException {
 		logger.info("Loading Patient Dashboard!!!");
-		Optional<Patient> patientOptional = patientService.getPatientInfoCard(userName);
-		Patient patient = new Patient();
 
-		if (patientOptional.isPresent()) {
-			patient = patientOptional.get();
-			logger.debug("Patient Details: {}", patient);
-			model.addAttribute("patient", patient);
+		Patient patient = patientService.getPatientInfoCard(userName);
 
-			List<Appointment> appointments = appointmentService.getUpcomingAppointments(patient);
-			model.addAttribute("appointments", appointments);
-			logger.debug("appointments: {}", appointments);
+		logger.debug("Patient Details: {}", patient);
+		model.addAttribute("patient", patient);
 
-			List<ActivePrescription> activePrescriptions = prescriptionService.getActivePrescriptions(patient);
-			model.addAttribute("activeprescriptions", activePrescriptions);
-			logger.debug("activePrescriptions: {}", activePrescriptions);
+		List<Appointment> appointments = appointmentService.getUpcomingAppointments(patient);
+		model.addAttribute("appointments", appointments);
+		logger.debug("appointments: {}", appointments);
 
-		}
+		List<ActivePrescription> activePrescriptions = prescriptionService.getActivePrescriptions(patient);
+		model.addAttribute("activeprescriptions", activePrescriptions);
+		logger.debug("activePrescriptions: {}", activePrescriptions);
+		
 		return "patientdashboard";
 
 	}

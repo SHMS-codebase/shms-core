@@ -23,6 +23,8 @@ import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
 import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.exceptions.AppointmentNotFoundException;
+import com.healthcaremngnt.exceptions.DataPersistenceException;
+import com.healthcaremngnt.exceptions.PatientNotFoundException;
 import com.healthcaremngnt.exceptions.TreatmentNotFoundException;
 import com.healthcaremngnt.model.MedicineDetail;
 import com.healthcaremngnt.model.Patient;
@@ -69,23 +71,17 @@ public class PrescriptionController {
 		logger.info("Loading Prescription Details!!!");
 
 		try {
-			Optional<Prescription> prescriptionOptional = prescriptionService.getPrescriptionDetails(prescriptionID);
+			Prescription prescription = prescriptionService.getPrescriptionDetails(prescriptionID);
 
-			if (prescriptionOptional.isPresent()) {
-				Prescription prescription = prescriptionOptional.get();
-				List<PrescriptionDetail> prescriptionDetails = prescriptionDetailService
-						.getPrescriptionDetails(prescription.getPrescriptionID());
+			List<PrescriptionDetail> prescriptionDetails = prescriptionDetailService
+					.getPrescriptionDetails(prescription.getPrescriptionID());
 
-				if (prescriptionDetails != null && !prescriptionDetails.isEmpty()) {
-					prescription.setPrescriptionDetails(prescriptionDetails);
-				}
-
-				model.addAttribute("prescription", prescription);
-				logger.debug("prescription: {}", prescription);
-			} else {
-				logger.warn("{}: {}", MessageConstants.PRESCRIPTION_NOT_FOUND, prescriptionID);
-				model.addAttribute("errorMessage", MessageConstants.PRESCRIPTION_NOT_FOUND);
+			if (prescriptionDetails != null && !prescriptionDetails.isEmpty()) {
+				prescription.setPrescriptionDetails(prescriptionDetails);
 			}
+
+			model.addAttribute("prescription", prescription);
+			logger.debug("prescription: {}", prescription);
 
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.PRESCRIPTION_LOAD_ERROR, e.getLocalizedMessage());
@@ -130,7 +126,7 @@ public class PrescriptionController {
 	public String showCreatePrescription(@ModelAttribute(RequestParamConstants.APPOINTMENT_ID) Long appointmentID,
 			@ModelAttribute(RequestParamConstants.SAVED_TREATMENT) Treatment savedTreatment,
 			@ModelAttribute(RequestParamConstants.SOURCE) String source, Model model, Authentication authentication)
-			throws AppointmentNotFoundException {
+			throws AppointmentNotFoundException, PatientNotFoundException {
 
 		logger.info("Loading Create Prescription!!!");
 
@@ -147,12 +143,8 @@ public class PrescriptionController {
 			patientID = savedTreatment.getPatientID();
 			logger.debug("patientID: {}", patientID);
 
-			Optional<Patient> patientOptional = patientService.getPatientDetails(patientID);
-			if (patientOptional.isPresent()) {
-				patient = patientOptional.get();
-				logger.debug("patient: {}", patient);
-			} else
-				logger.debug("Patient Details not found for patientID");
+			patient = patientService.getPatientDetails(patientID);
+			logger.debug("patient: {}", patient);
 
 		}
 
@@ -200,7 +192,7 @@ public class PrescriptionController {
 			@ModelAttribute PrescriptionForm prescriptionForm,
 			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source,
 			RedirectAttributes redirectAttributes, Model model, Authentication authentication)
-			throws AppointmentNotFoundException {
+			throws AppointmentNotFoundException, TreatmentNotFoundException, DataPersistenceException {
 		logger.info("Creating Prescriptions!!!");
 
 		if (logger.isDebugEnabled()) {
@@ -209,18 +201,10 @@ public class PrescriptionController {
 		}
 
 		Prescription prescription = new Prescription();
-//		Long prescriptionID = null;
 
 		if (treatmentID != null) {
-			try {
-				Treatment treatment = treatmentService.getTreatmentDetails(treatmentID).orElseThrow(
-						() -> new TreatmentNotFoundException("Treatment not found with ID: " + treatmentID));
-				prescription.setTreatment(treatment);
-			} catch (TreatmentNotFoundException e) {
-				logger.error("{}: {}", MessageConstants.TREATMENT_NOT_FOUND, e.getMessage());
-				model.addAttribute("errorMessage", MessageConstants.TREATMENT_NOT_FOUND);
-				return "createtreatment";
-			}
+			Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
+			prescription.setTreatment(treatment);
 		}
 
 		if (prescriptionForm != null) {

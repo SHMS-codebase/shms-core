@@ -36,59 +36,69 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public boolean sendPasswordResetEmail(String emailID, User user) {
-
 		logger.info("Sending password reset email to: {}", emailID);
 
 		try {
-			String token = TokenGenerator.generateToken();
-
-			PasswordResetToken resetToken = new PasswordResetToken();
-			resetToken.setToken(token);
-			resetToken.setEmailID(emailID);
-			resetToken.setExpirationTime(
-					LocalDateTime.now().plusMinutes(SmartHealthCareConstants.EMAIL_EXPIRATION_LIMIT));
-			resetToken.setUser(user);
-
-			tokenRepository.save(resetToken);
+			PasswordResetToken resetToken = generateAndSavePasswordResetToken(emailID, user);
 
 			String subject = "Password Reset Request";
 			String text = String.format(
 					"To reset your password, click the link below:\nhttp://localhost:8080/auth/reset-password?token=%s",
-					token);
+					resetToken.getToken());
 
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(emailID);
-			message.setSubject(subject);
-			message.setText(text);
-			mailSender.send(message);
+			sendSimpleEmail(emailID, subject, text);
 			return true;
 
 		} catch (Exception e) {
 			logger.error("Error sending password reset email: {}", e.getMessage(), e);
 			throw new RuntimeException("Failed to send password reset email", e);
 		}
-		
+	}
+
+	private PasswordResetToken generateAndSavePasswordResetToken(String emailID, User user) {
+		String token = TokenGenerator.generateToken();
+
+		PasswordResetToken resetToken = new PasswordResetToken();
+		resetToken.setToken(token);
+		resetToken.setEmailID(emailID);
+		resetToken.setExpirationTime(LocalDateTime.now().plusMinutes(SmartHealthCareConstants.EMAIL_EXPIRATION_LIMIT));
+		resetToken.setUser(user);
+
+		return tokenRepository.save(resetToken);
 	}
 
 	@Override
 	public void sendRegistrationEmail(String emailID, String userName, String generatedUserName,
 			String generatedPassword) {
-
 		logger.info("Sending registration email to: {}", emailID);
 
 		try {
+			String subject = "Registration Successful";
 			String text = String.format(
 					"Dear %s,\n\nYour registration is successful!\nUsername: %s\nPassword: %s\n\nBest regards,\nSmart HealthCare Management System",
 					userName, generatedUserName, generatedPassword);
 
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setTo(emailID);
-			message.setSubject("Registration Successful");
-			message.setText(text);
-			mailSender.send(message);
+			sendSimpleEmail(emailID, subject, text);
 		} catch (Exception e) {
 			logger.error("Error sending registration email: {}", e.getMessage(), e);
-			throw new RuntimeException("Failed to send registration email", e); // Wrap and re-throw
+			throw new RuntimeException("Failed to send registration email", e);
+		}
+	}
+
+	private void sendSimpleEmail(String recipient, String subject, String text) {
+		logger.info("Sending email to: {}", recipient);
+
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(recipient);
+		message.setSubject(subject);
+		message.setText(text);
+
+		try {
+			mailSender.send(message);
+			logger.info("Email successfully sent to: {}", recipient);
+		} catch (Exception e) {
+			logger.error("Error sending email to {}: {}", recipient, e.getMessage(), e);
+			throw new RuntimeException("Failed to send email to: " + recipient, e);
 		}
 	}
 
@@ -96,10 +106,9 @@ public class EmailServiceImpl implements EmailService {
 	public void sendAppointmentEmail(String reportFilePath, String emailID) {
 
 		logger.info("Sending Appointment Report email to: {}", emailID);
-		logger.debug("reportFilePath: {}", reportFilePath);
+		logger.debug("Report file path: {}", reportFilePath);
 
 		try {
-
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
@@ -107,14 +116,21 @@ public class EmailServiceImpl implements EmailService {
 			helper.setSubject("Appointment Report for Smart Healthcare Management System");
 			helper.setText("Please find the Appointment Report in the attachment.");
 
-			File attachment = new File(reportFilePath);
-			helper.addAttachment(attachment.getName(), attachment);
-			mailSender.send(message);
+			attachFile(helper, reportFilePath);
 
+			mailSender.send(message);
 		} catch (Exception e) {
 			logger.error("Error sending Appointment Report email: {}", e.getMessage(), e);
-			throw new RuntimeException("Failed to send Appointment Report email", e); // Wrap and re-throw
+			throw new RuntimeException("Failed to send Appointment Report email", e);
 		}
+	}
+
+	private void attachFile(MimeMessageHelper helper, String filePath) throws Exception {
+		File attachment = new File(filePath);
+		if (!attachment.exists()) {
+			throw new RuntimeException("Attachment file not found: " + filePath);
+		}
+		helper.addAttachment(attachment.getName(), attachment);
 	}
 
 	// Appointment Reports sent via Email

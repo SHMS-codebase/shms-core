@@ -1,7 +1,6 @@
 package com.healthcaremngnt.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.exceptions.AppointmentNotFoundException;
@@ -14,7 +13,7 @@ public interface AppointmentService {
 
 	Appointment bookAppointment(AppointmentRequest appointmentRequest);
 
-	Optional<Appointment> getAppointmentDetails(Long appointmentID) throws AppointmentNotFoundException;
+	Appointment getAppointmentDetails(Long appointmentID) throws AppointmentNotFoundException;
 
 	void updateAppointmentDetails(Appointment appointment) throws AppointmentNotFoundException;
 
@@ -22,13 +21,7 @@ public interface AppointmentService {
 
 	List<Appointment> getUpcomingAppointments(Patient patient);
 
-	void updateAppointmentStatus(Long appointmentID, AppointmentStatus appointmentStatus);
-
-//	List<Appointment> getAppointmentsBetweenDates(LocalDate startDate, LocalDate endDate);
-
-//	List<Appointment> searchAppointments(Long patientID, Long doctorID, LocalDate appointmentDate,
-//			String appointmentStatus);
-
-//	List<Appointment> getAppointmentsByPatientID(Long patientID);
+	void updateAppointmentStatus(Long appointmentID, AppointmentStatus appointmentStatus)
+			throws AppointmentNotFoundException;
 
 }
