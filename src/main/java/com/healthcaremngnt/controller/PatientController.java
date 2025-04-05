@@ -25,6 +25,8 @@ import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.MedicalHistory;
 import com.healthcaremngnt.model.MedicalHistoryWrapper;
 import com.healthcaremngnt.model.Patient;
+import com.healthcaremngnt.model.Prescription;
+import com.healthcaremngnt.model.Treatment;
 import com.healthcaremngnt.service.AppointmentService;
 import com.healthcaremngnt.service.DoctorService;
 import com.healthcaremngnt.service.PatientService;
@@ -77,7 +79,7 @@ public class PatientController {
 
 	@GetMapping("/viewmedicalhistory")
 	public String viewMedicalHistory(@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
-			@RequestParam(RequestParamConstants.USER_ID) Long userID,
+			@RequestParam(value = RequestParamConstants.USER_ID, required = false) Long userID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) throws PatientNotFoundException {
 		logger.info("Loading Medical History of patient");
 
@@ -109,7 +111,7 @@ public class PatientController {
 	@PostMapping("/updatemedicalhistory")
 	public String updateMedicalHistory(@ModelAttribute MedicalHistoryWrapper medicalHistoryWrapper,
 			@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
-			@RequestParam(RequestParamConstants.USER_ID) Long userID,
+			@RequestParam(value = RequestParamConstants.USER_ID, required = false) Long userID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Update Medical History");
 		List<MedicalHistory> medicalHistory = medicalHistoryWrapper.getMedicalHistoryList();
@@ -150,7 +152,7 @@ public class PatientController {
 	@PostMapping("/addmedicalhistory")
 	public String addMedicalHistory(@RequestParam(RequestParamConstants.NEW_MEDICAL_HISTORY) String newMedicalHistory,
 			@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
-			@RequestParam(RequestParamConstants.USER_ID) Long userID,
+			@RequestParam(value = RequestParamConstants.USER_ID, required = false) Long userID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) throws PatientNotFoundException {
 		logger.info("Add Medical History");
 
@@ -200,7 +202,7 @@ public class PatientController {
 		logger.info("Loading Doctors treating the Patient ID: {}", patientID);
 
 		try {
-			List<Long> doctorIDs = treatmentService.getTreatmentDetailsByPatient(patientID);
+			List<Long> doctorIDs = treatmentService.getDoctorListByPatient(patientID);
 			if (doctorIDs == null || doctorIDs.isEmpty()) {
 				model.addAttribute("doctors", Collections.emptyList());
 				logger.debug("{}", MessageConstants.NO_DOCTORS_TREATING_PATIENT);
@@ -228,33 +230,21 @@ public class PatientController {
 
 		return "viewmydoctors";
 	}
-	
+
 	@GetMapping("/recentvisits")
 	public String viewRecentVisits(@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading Recent Visits of the Patient ID: {}", patientID);
 
 		try {
-			List<Long> doctorIDs = treatmentService.getTreatmentDetailsByPatient(patientID);
-			if (doctorIDs == null || doctorIDs.isEmpty()) {
-				model.addAttribute("doctors", Collections.emptyList());
-				logger.debug("{}", MessageConstants.NO_DOCTORS_TREATING_PATIENT);
-				return "viewalldoctors";
-			}
 
-			// Initialize list to avoid NullPointerException
-			List<Doctor> doctors = new ArrayList<>();
-
-			for (Long doctorID : doctorIDs) {
-				Doctor doctor = doctorService.getDoctorDetails(doctorID);
-				doctors.add(doctor);
-			}
-
-			model.addAttribute("doctors", doctors);
+			List<Appointment> recentVisits = appointmentService.getRecentVisits(patientID);
+			logger.debug("recentVisits: {}", recentVisits);
+			model.addAttribute("recentvisits", recentVisits);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.VIEW_RECENT_VISITS_LOAD_ERROR, e);
+			model.addAttribute("errorMessage", MessageConstants.VIEW_RECENT_VISITS_LOAD_ERROR);
 			return source;
 		}
 
@@ -262,6 +252,52 @@ public class PatientController {
 		model.addAttribute("source", source);
 
 		return "recentvisits";
+	}
+	
+	@GetMapping("/treatmentdetails")
+	public String viewTreatmentDetails(@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Loading Treatment Details of the Patient ID: {}", patientID);
+
+		try {
+
+			List<Treatment> treatmentDetails = treatmentService.getTreatmentDetailsByPatient(patientID);
+			logger.debug("treatmentDetails: {}", treatmentDetails);
+			model.addAttribute("treatmentdetails", treatmentDetails);
+
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.VIEW_TREATMENT_DETAILS_LOAD_ERROR, e);
+			model.addAttribute("errorMessage", MessageConstants.VIEW_TREATMENT_DETAILS_LOAD_ERROR);
+			return source;
+		}
+
+		model.addAttribute("patientID", patientID);
+		model.addAttribute("source", source);
+
+		return "treatmentdetails";
+	}
+	
+	@GetMapping("/prescriptiondetails")
+	public String viewPrescriptionDetails(@RequestParam(RequestParamConstants.PATIENT_ID) Long patientID,
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Loading Prescription Details of the Patient ID: {}", patientID);
+
+		try {
+
+			List<Prescription> prescriptionDetails = prescriptionService.getPrescriptionByPatientID(patientID);
+			logger.debug("prescriptionDetails: {}", prescriptionDetails);
+			model.addAttribute("prescriptiondetails", prescriptionDetails);
+
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.VIEW_PRESC_DETAILS_LOAD_ERROR, e);
+			model.addAttribute("errorMessage", MessageConstants.VIEW_PRESC_DETAILS_LOAD_ERROR);
+			return source;
+		}
+
+		model.addAttribute("patientID", patientID);
+		model.addAttribute("source", source);
+
+		return "prescriptiondetails";
 	}
 
 }

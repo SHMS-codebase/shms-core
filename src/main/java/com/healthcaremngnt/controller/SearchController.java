@@ -293,7 +293,7 @@ public class SearchController {
 		logger.info("View Search Treatments!!!");
 
 		// Ensure patientIDs list is not null
-		List<Long> patientIDs = treatmentService.getTreatmentDetailsByDoctor(doctorID);
+		List<Long> patientIDs = treatmentService.getPatientListByDoctor(doctorID);
 		if (patientIDs == null || patientIDs.isEmpty()) {
 			model.addAttribute("patients", Collections.emptyList());
 			model.addAttribute("source", source);

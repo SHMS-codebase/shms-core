@@ -24,4 +24,6 @@ public interface AppointmentService {
 	void updateAppointmentStatus(Long appointmentID, AppointmentStatus appointmentStatus)
 			throws AppointmentNotFoundException;
 
+	List<Appointment> getRecentVisits(Long patientID);
+
 }

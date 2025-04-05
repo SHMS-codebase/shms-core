@@ -110,5 +110,9 @@ public class MessageConstants {
 	
 	public static final String VIEW_MY_DOCTORS_LOAD_ERROR = "An error occurred while loading the My Doctors page.";
 	public static final String NO_DOCTORS_TREATING_PATIENT = "No Doctors";
+	
+	public static final String VIEW_RECENT_VISITS_LOAD_ERROR = "An error occurred while loading the Recent Visits page.";
+	public static final String VIEW_TREATMENT_DETAILS_LOAD_ERROR = "An error occurred while loading the Treatment Details page.";
+	public static final String VIEW_PRESC_DETAILS_LOAD_ERROR = "An error occurred while loading the Prescription Details page.";
 
 }

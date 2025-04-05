@@ -3,7 +3,9 @@ package com.healthcaremngnt.service.impl;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +23,7 @@ import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.repository.AppointmentRepository;
 import com.healthcaremngnt.repository.DoctorScheduleRepository;
+import com.healthcaremngnt.repository.PatientRepository;
 import com.healthcaremngnt.service.AppointmentService;
 
 @Service
@@ -34,6 +37,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private DoctorScheduleRepository doctorScheduleRepository;
+
+	@Autowired
+	private PatientRepository patientRepository;
 
 	@Override
 	public Appointment bookAppointment(AppointmentRequest appointmentRequest) {
@@ -124,6 +130,24 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 
 		appointmentRepository.updateAppointmentStatus(appointmentID, appointmentStatus);
+	}
+
+	@Override
+	public List<Appointment> getRecentVisits(Long patientID) {
+		logger.info("Fetching Recent Visits for the Patient ID: {}", patientID);
+
+		Optional<Patient> patientOptional = patientRepository.findById(patientID);
+		List<Appointment> recentVisits = new ArrayList<>();
+
+		LocalDate dateLimit = LocalDate.now().minusMonths(3);
+		logger.debug("dateLimit: {}", dateLimit);
+
+		if (patientOptional.isPresent()) {
+			recentVisits = appointmentRepository.findByPatientAndAppointmentStatusAndAppointmentDateGreaterThanEqual(
+					patientOptional.get(), AppointmentStatus.COMPLETED, dateLimit);
+		}
+		
+		return recentVisits;
 	}
 
 }

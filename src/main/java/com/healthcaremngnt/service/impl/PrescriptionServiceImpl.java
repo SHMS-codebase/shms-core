@@ -1,6 +1,7 @@
 package com.healthcaremngnt.service.impl;
 
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +21,7 @@ import com.healthcaremngnt.repository.ActivePrescriptionRepository;
 import com.healthcaremngnt.repository.PrescriptionRespository;
 import com.healthcaremngnt.service.PrescriptionDetailService;
 import com.healthcaremngnt.service.PrescriptionService;
+
 @Service
 @Transactional
 public class PrescriptionServiceImpl implements PrescriptionService {
@@ -147,6 +149,17 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
 		return prescriptionRepository.findByTreatment_TreatmentID(treatmentID).orElseThrow(
 				() -> new PrescriptionNotFoundException("No prescription found for treatment ID: " + treatmentID));
+	}
+
+	@Override
+	public List<Prescription> getPrescriptionByPatientID(Long patientID) {
+		logger.info("Fetching prescription details for Patient ID: {}", patientID);
+
+		if (patientID == null || patientID <= 0) {
+			throw new IllegalArgumentException("Invalid Patient ID.");
+		}
+
+		return prescriptionRepository.findPrescriptionByPatientID(patientID);
 	}
 
 }

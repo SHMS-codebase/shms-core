@@ -97,9 +97,15 @@
 						<li><a
 							th:href="@{/patient/recentvisits(patientID=${patient.patientID}, source='patientdashboard')}">Recent
 								Visits</a></li>
-						<li><a href="#">Treatment Details</a></li>
-						<li><a href="#">Prescription Details</a></li>
-						<li><a href="#">Medical History</a></li>
+						<li><a
+							th:href="@{/patient/treatmentdetails(patientID=${patient.patientID}, source='patientdashboard')}">Treatment
+								Details</a></li>
+						<li><a
+							th:href="@{/patient/prescriptiondetails(patientID=${patient.patientID}, source='patientdashboard')}">Prescription
+								Details</a></li>
+						<li><a
+							th:href="@{/patient/viewmedicalhistory(patientID=${patient.patientID}, source='patientdashboard')}">Medical
+								History</a></li>
 					</ul>
 				</div>
 				<div id="DoctorProfiles" class="tabcontent">

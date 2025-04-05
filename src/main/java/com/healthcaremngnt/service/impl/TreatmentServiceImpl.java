@@ -92,8 +92,8 @@ public class TreatmentServiceImpl implements TreatmentService {
 	}
 
 	@Override
-	public List<Long> getTreatmentDetailsByDoctor(Long doctorID) {
-		logger.info("Fetching treatment details for Doctor ID: {}", doctorID);
+	public List<Long> getPatientListByDoctor(Long doctorID) {
+		logger.info("Fetching Patient IDs for Doctor ID: {}", doctorID);
 
 		if (doctorID == null || doctorID <= 0) {
 			throw new IllegalArgumentException("Invalid Doctor ID.");
@@ -103,14 +103,25 @@ public class TreatmentServiceImpl implements TreatmentService {
 	}
 	
 	@Override
-	public List<Long> getTreatmentDetailsByPatient(Long patientID) {
-		logger.info("Fetching treatment details for Patient ID: {}", patientID);
+	public List<Long> getDoctorListByPatient(Long patientID) {
+		logger.info("Fetching Doctor IDs for Patient ID: {}", patientID);
 
 		if (patientID == null || patientID <= 0) {
 			throw new IllegalArgumentException("Invalid Patient ID.");
 		}
 
 		return treatmentRepository.findDoctorByPatientID(patientID);
+	}
+
+	@Override
+	public List<Treatment> getTreatmentDetailsByPatient(Long patientID) {
+		logger.info("Fetching treatment details for Patient ID: {}", patientID);
+
+		if (patientID == null || patientID <= 0) {
+			throw new IllegalArgumentException("Invalid Patient ID.");
+		}
+
+		return treatmentRepository.findByPatient(patientID);
 	}
 	
 }

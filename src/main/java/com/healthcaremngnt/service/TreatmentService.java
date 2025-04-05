@@ -16,8 +16,10 @@ public interface TreatmentService {
 
 	Treatment updateTreatmentDetails(Treatment treatment);
 
-	List<Long> getTreatmentDetailsByDoctor(Long doctorID);
+	List<Long> getPatientListByDoctor(Long doctorID);
 
-	List<Long> getTreatmentDetailsByPatient(Long patientID);
+	List<Long> getDoctorListByPatient(Long patientID);
+
+	List<Treatment> getTreatmentDetailsByPatient(Long patientID);
 	
 }

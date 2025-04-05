@@ -23,4 +23,6 @@ public interface PrescriptionService {
 
 	Prescription getPrescriptionDetailsByTreatment(Long treatmentID) throws PrescriptionNotFoundException;
 
+	List<Prescription> getPrescriptionByPatientID(Long patientID);
+
 }
