@@ -26,6 +26,10 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 	// If findByPatientID is just an alias for findById, remove it and use the inherited findById
     // Optional<Patient> findByPatientID(Long id);  <- Remove if redundant, use findById
 
+	@Query("SELECT p FROM Patient p WHERE FUNCTION('YEAR', p.createdDate) = :admissionYear")
+	List<Patient> findPatientsByYear(@Param("admissionYear") int admissionYear);
+
+
     // Example of a derived query (if needed):
     // Optional<Patient> findByContactNumber(String contactNumber);
 

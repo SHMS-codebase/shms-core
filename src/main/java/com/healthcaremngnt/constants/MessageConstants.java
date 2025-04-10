@@ -55,6 +55,14 @@ public class MessageConstants {
 	public static final String REPORT_FILE_NOT_FOUND = "Report file not found";
 	public static final String APMNT_REPORT_GENERATED = "Appointment Report is generated Successfully!!!";
 	public static final String APMNT_REPORT_FAILURE = "Error generating appointment report";
+	
+	public static final String NO_PATIENT_REPORT_ERROR = "No Patients found for the selected criteria.";
+	public static final String PATIENT_REPORT_GENERATED = "Patient Report is generated Successfully!!!";
+	public static final String PATIENT_REPORT_FAILURE = "Error generating Patient report";
+	
+	public static final String NO_BILLING_REPORT_ERROR = "No billing information found for the selected criteria.";
+	public static final String BILLING_REPORT_GENERATED = "Billing Report is generated Successfully!!!";
+	public static final String BILLING_REPORT_FAILURE = "Error generating billing report";
 
 	public static final String JOB_FAILURE = "Job did not complete successfully.";
 

@@ -57,7 +57,7 @@ public class Treatment {
 	@Column(name = "treatment_date")
 	private LocalDate treatmentDate;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "appointment_id", unique = true, nullable = false)
 	Appointment appointment;
 

@@ -103,9 +103,9 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendAppointmentEmail(String reportFilePath, String emailID) {
+	public void sendReportsEmail(String jobName, String reportFilePath, String emailID) {
 
-		logger.info("Sending Appointment Report email to: {}", emailID);
+		logger.info("Sending Report email to: {}", emailID);
 		logger.debug("Report file path: {}", reportFilePath);
 
 		try {
@@ -113,15 +113,25 @@ public class EmailServiceImpl implements EmailService {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
 			helper.setTo(emailID);
-			helper.setSubject("Appointment Report for Smart Healthcare Management System");
-			helper.setText("Please find the Appointment Report in the attachment.");
-
+			if (jobName.equalsIgnoreCase("appointmentReportJob")) {
+				helper.setSubject("Smart Healthcare Management System - Appointment Report Attached!");
+				helper.setText("Please find the Appointment Report in the attachment.");
+			} else if (jobName.equalsIgnoreCase("patientReportJob")) {
+				helper.setSubject("Smart Healthcare Management System - Patient Report Attached!");
+				helper.setText("Please find the Patient Report in the attachment.");
+			} else if (jobName.equalsIgnoreCase("billingReportJob")) {
+				helper.setSubject("Smart Healthcare Management System - Billing Report Attached!");
+				helper.setText("Please find the Billing Report in the attachment.");
+			} else {
+				helper.setSubject("Smart Healthcare Management System - Report Attached!");
+				helper.setText("Please find the Report in the attachment.");
+			}
 			attachFile(helper, reportFilePath);
 
 			mailSender.send(message);
 		} catch (Exception e) {
-			logger.error("Error sending Appointment Report email: {}", e.getMessage(), e);
-			throw new RuntimeException("Failed to send Appointment Report email", e);
+			logger.error("Error sending Report email: {}", e.getMessage(), e);
+			throw new RuntimeException("Failed to send Report email", e);
 		}
 	}
 

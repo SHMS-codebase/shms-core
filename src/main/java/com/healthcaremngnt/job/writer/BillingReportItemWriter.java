@@ -33,13 +33,13 @@ import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
-import com.healthcaremngnt.model.Appointment;
+import com.healthcaremngnt.model.Invoice;
 
 @Component
 @StepScope
-public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
+public class BillingReportItemWriter implements ItemWriter<Invoice> {
 
-	private static final Logger logger = LogManager.getLogger(AppointmentReportItemWriter.class);
+	private static final Logger logger = LogManager.getLogger(BillingReportItemWriter.class);
 
 	private boolean reportGenerated = false;
 	private int totalItemsWritten = 0;
@@ -52,14 +52,14 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 	private LocalDate today = LocalDate.now();
 
 	@Override
-	public void write(Chunk<? extends Appointment> chunk) throws Exception {
+	public void write(Chunk<? extends Invoice> chunk) throws Exception {
 
-		logger.info("AppointmentReportItemWriter::: write() with {} items", chunk.getItems().size());
+		logger.info("BillingReportItemWriter::: write() with {} items", chunk.getItems().size());
 		totalItemsWritten += chunk.getItems().size();
 		logger.info("Total items written so far: {}", totalItemsWritten);
 
 		if (chunk == null || chunk.getItems().isEmpty()) {
-			logger.info("No appointments found to generate report");
+			logger.info("No billing info found to generate report");
 			reportGenerated = false;
 			return;
 		}
@@ -78,8 +78,8 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 	}
 
 	@SuppressWarnings("resource")
-	private void generateReport(List<? extends Appointment> appointments) throws IOException {
-		logger.info("AppointmentReportItemWriter::: generateReport()");
+	private void generateReport(List<? extends Invoice> invoices) throws IOException {
+		logger.info("BillingReportItemWriter::: generateReport()");
 
 		logger.debug("now: {}", now);
 		logger.debug("formattedNow: {}", formattedNow);
@@ -88,25 +88,25 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 		Files.createDirectories(Paths.get(directory));
 
 		// Generate text report
-		String txtFilename = directory + "/appointment/appointment_report_" + formattedNow + ".txt";
+		String txtFilename = directory + "/billing/billing_report_" + formattedNow + ".txt";
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(txtFilename, true))) {
-			writer.write("Appointment Report generated on::: " + today + "\n\n");
-			for (Appointment appointment : appointments) {
-				writer.write("Appointment ID: " + appointment.getAppointmentID() + "\n");
-				writer.write("Appointment Date: " + appointment.getAppointmentDate() + "\n");
-				writer.write("Appointment Time: " + appointment.getAppointmentTime() + "\n");
-				writer.write("Patient: " + appointment.getPatient().getPatientName() + "\n");
-				writer.write("Doctor: " + appointment.getDoctor().getDoctorName() + "\n");
-				writer.write("Appointment Status: " + appointment.getAppointmentStatus() + "\n");
-				writer.write("Priority: " + appointment.getPriority() + "\n");
-				writer.write("Needs Reminder: " + appointment.isNeedsReminder() + "\n");
+			writer.write("Billing Report generated on::: " + today + "\n\n");
+			for (Invoice invoice : invoices) {
+				writer.write("Invoice ID: " + invoice.getInvoiceID() + "\n");
+				writer.write("Invoice Date: " + invoice.getInvoiceDate() + "\n");
+				writer.write(
+						"Patient: " + invoice.getTreatment().getAppointment().getPatient().getPatientName() + "\n");
+				writer.write("Treatment Cost: ₹" + invoice.getTreatmentCost() + "\n");
+				writer.write("Prescription Cost: ₹" + invoice.getPrescriptionCost() + "\n");
+				writer.write("Total Cost: ₹" + invoice.getTotalAmount() + "\n");
+				writer.write("Invoice Status: " + invoice.getInvoiceStatus() + "\n");
 				writer.write("\n");
 			}
 		}
 		logger.info("Text report generated successfully: " + txtFilename);
 
 		// Generate PDF report
-		String pdfFilename = directory + "/appointment/appointment_report_" + formattedNow + ".pdf";
+		String pdfFilename = directory + "/billing/billing_report_" + formattedNow + ".pdf";
 
 		File file = new File(pdfFilename);
 		boolean appendMode = file.exists(); // Check if the file exists
@@ -131,7 +131,7 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 				contentStream.beginText();
 				contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
 				contentStream.newLineAtOffset(25, 700);
-				contentStream.showText("Appointment Report generated on: " + today);
+				contentStream.showText("Billing Report generated on: " + today);
 				contentStream.newLine();
 				contentStream.newLine();
 				contentStream.endText();
@@ -142,8 +142,8 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 			contentStream.setFont(PDType1Font.HELVETICA, 12);
 			contentStream.newLineAtOffset(25, yPosition);
 
-			// Process each appointment
-			for (Appointment appointment : appointments) {
+			// Process each invoice
+			for (Invoice invoice : invoices) {
 				if (yPosition < 50 + (7 * 14.5f)) { // Check if we need a new page
 					contentStream.endText();
 					contentStream.close();
@@ -159,32 +159,30 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 					contentStream.newLineAtOffset(25, yPosition);
 				}
 
-				// Write appointment details correctly
+				// Write invoice details correctly
 				contentStream.newLine();
-				contentStream.showText("Appointment ID: " + appointment.getAppointmentID());
+				contentStream.showText("Invoice ID: " + invoice.getInvoiceID());
 				contentStream.newLine();
-				contentStream.showText("Appointment Date: " + appointment.getAppointmentDate());
+				contentStream.showText("Invoice Date: " + invoice.getInvoiceDate());
 				contentStream.newLine();
-				contentStream.showText("Appointment Time: " + appointment.getAppointmentTime());
+				contentStream
+						.showText("Patient: " + invoice.getTreatment().getAppointment().getPatient().getPatientName());
 				contentStream.newLine();
-				contentStream.showText("Patient: " + appointment.getPatient().getPatientName());
+				contentStream.showText("Treatment Cost: " + invoice.getTreatmentCost());
 				contentStream.newLine();
-				contentStream.showText("Doctor: " + appointment.getDoctor().getDoctorName());
+				contentStream.showText("Prescription Cost: " + invoice.getPrescriptionCost());
 				contentStream.newLine();
-				contentStream.showText("Appointment Status: " + appointment.getAppointmentStatus());
+				contentStream.showText("Total Cost: " + invoice.getTotalAmount());
 				contentStream.newLine();
-				contentStream.showText("Priority: " + appointment.getPriority());
-				contentStream.newLine();
-				contentStream.showText("Needs Reminder: " + appointment.isNeedsReminder());
+				contentStream.showText("Invoice Status: " + invoice.getInvoiceStatus());
 				contentStream.newLine();
 				contentStream.showText("--------------------------------------------"); // Separator
 				contentStream.newLine();
 
-				logger.debug("Processing appointment: " + appointment.getAppointmentID() + ", Patient: "
-						+ appointment.getPatient().getPatientName() + ", Doctor: "
-						+ appointment.getDoctor().getDoctorName());
+				logger.debug("Processing invoice: " + invoice.getInvoiceID() + ", Patient: "
+						+ invoice.getTreatment().getAppointment().getPatient().getPatientName());
 
-				yPosition -= (9 * 14.5f); // Adjust downward after writing each appointment
+				yPosition -= (9 * 14.5f); // Adjust downward after writing each invoice
 			}
 			contentStream.endText();
 			contentStream.close();
@@ -204,7 +202,7 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 		}
 
 		// Generate Word report
-		String wordFilename = directory + "/appointment/appointment_report_" + formattedNow + ".docx";
+		String wordFilename = directory + "/billing/billing_report_" + formattedNow + ".docx";
 
 		XWPFDocument document;
 		File wordFile = new File(wordFilename);
@@ -221,32 +219,30 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 
 		if (!wordFile.exists()) {
 			run.setBold(true);
-			run.setText("Appointment Report generated on::: " + today);
-			run.addBreak();
-			run.addBreak();
-		}		
-
-		for (Appointment appointment : appointments) {
-			run = paragraph.createRun();
-			
-			run.setText("Appointment ID: " + appointment.getAppointmentID());
-			run.addBreak();
-			run.setText("Appointment Date: " + appointment.getAppointmentDate());
-			run.addBreak();
-			run.setText("Appointment Time: " + appointment.getAppointmentTime());
-			run.addBreak();
-			run.setText("Patient: " + appointment.getPatient().getPatientName());
-			run.addBreak();
-			run.setText("Doctor: " + appointment.getDoctor().getDoctorName());
-			run.addBreak();
-			run.setText("Appointment Status: " + appointment.getAppointmentStatus());
-			run.addBreak();
-			run.setText("Priority: " + appointment.getPriority());
-			run.addBreak();
-			run.setText("Needs Reminder: " + appointment.isNeedsReminder());
+			run.setText("Billing Report generated on::: " + today);
 			run.addBreak();
 			run.addBreak();
 		}
+
+		for (Invoice invoice : invoices) {
+			run = paragraph.createRun();
+			run.setText("Invoice ID: " + invoice.getInvoiceID());
+			run.addBreak();
+			run.setText("Invoice Date: " + invoice.getInvoiceDate());
+			run.addBreak();
+			run.setText("Patient: " + invoice.getTreatment().getAppointment().getPatient().getPatientName());
+			run.addBreak();
+			run.setText("Treatment Cost: ₹" + invoice.getTreatmentCost());
+			run.addBreak();
+			run.setText("Prescription Cost: ₹" + invoice.getPrescriptionCost());
+			run.addBreak();
+			run.setText("Total Cost: ₹" + invoice.getTotalAmount());
+			run.addBreak();
+			run.setText("Invoice Status: " + invoice.getInvoiceStatus());
+			run.addBreak();
+			run.addBreak();
+		}
+
 		try (FileOutputStream out = new FileOutputStream(wordFilename)) {
 			document.write(out);
 		}
@@ -254,7 +250,7 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 		logger.info("Word report generated successfully: " + wordFilename);
 
 		// Generate Excel report
-		String excelFilename = directory + "/appointment/appointment_report_" + formattedNow + ".xlsx";
+		String excelFilename = directory + "/billing/billing_report_" + formattedNow + ".xlsx";
 		Workbook workbook;
 		Sheet sheet;
 		int rowNum;
@@ -264,16 +260,17 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 			try (FileInputStream fis = new FileInputStream(excelFile)) {
 				workbook = new XSSFWorkbook(fis);
 			}
-			sheet = workbook.getSheet("Appointments");
+			sheet = workbook.getSheet("Invoices");
 			rowNum = sheet.getLastRowNum() + 1;
 		} else {
 			workbook = new XSSFWorkbook();
-			sheet = workbook.createSheet("Appointments");
+			sheet = workbook.createSheet("Invoices");
 
 			// Create header row
 			Row headerRow = sheet.createRow(0);
 			Cell headerCell;
-			String[] headers = { "Appointment ID", "Appointment Date", "Appointment Time", "Patient", "Doctor", "Appointment Status", "Priority", "Needs Reminder" };
+			String[] headers = { "Invoice ID", "Invoice Date", "Patient", "Treatment Cost (₹)", "Prescription Cost (₹)",
+					"Total Cost (₹)", "Invoice Status" };
 			for (int i = 0; i < headers.length; i++) {
 				headerCell = headerRow.createCell(i);
 				headerCell.setCellValue(headers[i]);
@@ -282,16 +279,15 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 		}
 
 		// Create data rows
-		for (Appointment appointment : appointments) {
+		for (Invoice invoice : invoices) {
 			Row row = sheet.createRow(rowNum++);
-			row.createCell(0).setCellValue(appointment.getAppointmentID().toString());
-			row.createCell(1).setCellValue(appointment.getAppointmentDate().toString());
-			row.createCell(2).setCellValue(appointment.getAppointmentTime().toString());
-			row.createCell(3).setCellValue(appointment.getPatient().getPatientName());
-			row.createCell(4).setCellValue(appointment.getDoctor().getDoctorName());
-			row.createCell(5).setCellValue(appointment.getAppointmentStatus().name());
-			row.createCell(6).setCellValue(appointment.getPriority().name());
-			row.createCell(7).setCellValue(appointment.isNeedsReminder());
+			row.createCell(0).setCellValue(invoice.getInvoiceID().toString());
+			row.createCell(1).setCellValue(invoice.getInvoiceDate().toString());
+			row.createCell(2).setCellValue(invoice.getTreatment().getAppointment().getPatient().getPatientName());
+			row.createCell(3).setCellValue(invoice.getTreatmentCost().toString());
+			row.createCell(4).setCellValue(invoice.getPrescriptionCost().toString());
+			row.createCell(5).setCellValue(invoice.getTotalAmount().toString());
+			row.createCell(6).setCellValue(invoice.getInvoiceStatus().name());
 		}
 
 		try (FileOutputStream fileOut = new FileOutputStream(excelFilename)) {

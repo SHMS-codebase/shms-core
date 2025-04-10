@@ -16,9 +16,9 @@ import com.healthcaremngnt.service.EmailService;
 
 @Component
 @StepScope
-public class FinanceReportEmailTasklet implements Tasklet {
+public class ReportsSendEmailTasklet implements Tasklet {
 
-	private static final Logger logger = LogManager.getLogger(FinanceReportEmailTasklet.class);
+	private static final Logger logger = LogManager.getLogger(ReportsSendEmailTasklet.class);
 
 	@Autowired
 	private EmailService emailService;
@@ -29,41 +29,51 @@ public class FinanceReportEmailTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-		logger.info("FinanceReportEmailTasklet::: execute()");
+		logger.info("ReportsSendEmailTasklet::: execute()");
 
+		
 		JobExecution jobExecution = chunkContext.getStepContext().getStepExecution().getJobExecution();
+		String jobName = jobExecution.getJobInstance().getJobName();
+		logger.debug("Job Name: {}", jobName);
+
 		String reportGenerated = jobExecution.getExecutionContext().getString("reportGenerated");
 
 		if (Boolean.parseBoolean(reportGenerated)) {
 			String reportFormat = jobExecution.getJobParameters().getString("reportFormat");
 			String formattedNow = jobExecution.getJobParameters().getString("formattedNow");
-			String reportFilePath = getReportFilePath(reportFormat, formattedNow);
+
+			// Send Job Name as well!!
+			String reportFilePath = getReportFilePath(jobName, reportFormat, formattedNow);
 
 			logger.debug("reportGenerated: {}", reportGenerated);
 			logger.debug("reportFormat: {}", reportFormat);
 			logger.debug("formattedNow: {}", formattedNow);
 			logger.debug("reportFilePath: {}", reportFilePath);
 
-			emailService.sendAppointmentEmail(reportFilePath, recipient);
+			emailService.sendReportsEmail(jobName, reportFilePath, recipient);
 		}
 		return RepeatStatus.FINISHED;
 	}
 
-	private String getReportFilePath(String reportFormat, String formattedNow) {
+	private String getReportFilePath(String jobName, String reportFormat, String formattedNow) {
 
-		logger.info("FinanceReportEmailTasklet::: getReportFilePath()");
+		logger.info("ReportsSendEmailTasklet::: getReportFilePath()");
 
-		String baseFilePath = "reports/finances/finance_report_" + formattedNow;
-		switch (reportFormat) {
-		case "pdf":
-			return baseFilePath + ".pdf";
-		case "word":
-			return baseFilePath + ".docx";
-		case "excel":
-			return baseFilePath + ".xlsx";
-		default:
-			return baseFilePath + ".txt";
-		}
+		String baseFilePath = "";
+
+		if (jobName.equalsIgnoreCase("appointmentReportJob"))
+			baseFilePath = "reports/appointment/appointment_report_" + formattedNow;
+		else if (jobName.equalsIgnoreCase("patientReportJob"))
+			baseFilePath = "reports/patient/patient_report_" + formattedNow;
+		else if (jobName.equalsIgnoreCase("billingReportJob"))
+			baseFilePath = "reports/billing/billing_report_" + formattedNow;
+
+		return switch (reportFormat.toLowerCase()) {
+		case "pdf" -> baseFilePath + ".pdf";
+		case "word" -> baseFilePath + ".docx";
+		case "excel" -> baseFilePath + ".xlsx";
+		default -> baseFilePath + ".txt";
+		};
 	}
 
 }

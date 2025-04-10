@@ -1,164 +1,164 @@
 /* Header related Styling */
 header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between; /* Ensures items are aligned to the sides */
-    align-items: center; /* Center vertically */
-    padding: 8px 5px;
-    background: linear-gradient(to bottom, rgb(5, 5, 40), rgb(15, 32, 95));
-    color: white;
-    box-shadow: 0px 0px 10px 0px #0000001a;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	/* Ensures items are aligned to the sides */
+	align-items: center; /* Center vertically */
+	padding: 8px 5px;
+	background: linear-gradient(to bottom, rgb(5, 5, 40), rgb(15, 32, 95));
+	color: white;
+	box-shadow: 0px 0px 10px 0px #0000001a;
 }
 
 .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1; /* Ensures it takes available space between Home and Logout */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-grow: 1;
+	/* Ensures it takes available space between Home and Logout */
 }
 
 header a.left {
-    margin-right: auto; /* Pushes Home to the extreme left */
-    padding-bottom: 15px;
+	margin-right: auto; /* Pushes Home to the extreme left */
+	padding-bottom: 15px;
 }
 
 header a.right {
-    margin-left: auto; /* Pushes Logout to the extreme right */
+	margin-left: auto; /* Pushes Logout to the extreme right */
 }
 
 header a {
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    font-size: 14px;
+	color: white;
+	text-decoration: none;
+	padding: 10px;
+	font-size: 14px;
 }
 
 /* Header Home and Logout links style */
 header a:hover {
-    color: white;
-    transform: scale(1.1); /* Bulge/pop effect on hover */
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* White glow effect */
+	color: white;
+	transform: scale(1.1); /* Bulge/pop effect on hover */
+	text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* White glow effect */
 }
 
 .logo {
-    height: 50%;
-    width: auto;
-    margin-right: 15px;
+	height: 50%;
+	width: auto;
+	margin-right: 15px;
 }
 
 h1, .heading {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 700;
-    font-size: 30px;
-    margin: 0;
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 700;
+	font-size: 30px;
+	margin: 0;
 }
 
 header a {
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    font-size: 14px;
+	color: white;
+	text-decoration: none;
+	padding: 10px;
+	font-size: 14px;
 }
 
-@media (max-width: 768px) {
-    header {
-        padding: 6px 4px;
-    }
-    .logo {
-        height: 40px;
-    }
-    h1, .heading {
-        font-size: 24px;
-    }
+@media ( max-width : 768px) {
+	header {
+		padding: 6px 4px;
+	}
+	.logo {
+		height: 40px;
+	}
+	h1, .heading {
+		font-size: 24px;
+	}
 }
 
-@media (max-width: 480px) {
-    header {
-        padding: 5px 3px;
-    }
-    .logo {
-        height: 35px;
-    }
-    h1, .heading {
-        font-size: 20px;
-    }
+@media ( max-width : 480px) {
+	header {
+		padding: 5px 3px;
+	}
+	.logo {
+		height: 35px;
+	}
+	h1, .heading {
+		font-size: 20px;
+	}
 }
 
 /* Logged in User information styles */
-
 .right-links {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; /* Align items to the right */
-    gap: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end; /* Align items to the right */
+	gap: 10px;
 }
 
 /*Welcome message styling*/
 .welcome-container {
-    position: absolute; /* Place it relative to the nearest positioned ancestor */
-    bottom: 5px; /* Push it slightly above the bottom edge */
-    right: 10px; /* Align it to the right edge */
+	position: absolute;
+	/* Place it relative to the nearest positioned ancestor */
+	bottom: 5px; /* Push it slightly above the bottom edge */
+	right: 10px; /* Align it to the right edge */
 }
 
 .welcome-text {
-    font-size: 14px;
-    color: white;
-    margin: 0;
-    font-weight: bold;
+	font-size: 14px;
+	color: white;
+	margin: 0;
+	font-weight: bold;
 }
 
 header {
-    position: relative; /* Make the header the positioned ancestor */
-}
-
-
-/* Footer related Styling */
-
-footer {
-    background: linear-gradient(to bottom, rgb(15, 32, 95), rgb(5, 5, 40));
-    color: #fff;
-    padding: 1px 0;
-    text-align: center;
-    width: 100%;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: auto;
-}
-
-footer p {
-    margin: 5px 0 10px 0;
-    color: #fff;
-}
-
-footer a, footer span {
-    color: #fff;
-    text-decoration: none;
-}
-
-.social-icons {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-}
-
-.social-icons a {
-    color: #fff;
-    margin: 0 10px;
-    font-size: 20px;
-    transition: color 0.3s;
-}
-
-.social-icons a:hover {
-    color: #FFD700;
+	position: relative; /* Make the header the positioned ancestor */
 }
 
 .header-content {
-    display: flex;
-    align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .header-content .logo {
-    margin-right: 20px;
+	margin-right: 20px;
+}
+
+/* Footer related Styling */
+footer {
+	background: linear-gradient(to bottom, rgb(15, 32, 95), rgb(5, 5, 40));
+	color: #fff;
+	padding: 1px 0;
+	text-align: center;
+	width: 100%;
+	bottom: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: auto;
+}
+
+footer p {
+	margin: 5px 0;
+	color: #fff;
+	flex: 1;
+}
+
+footer a, footer span {
+	color: #fff;
+	text-decoration: none;
+}
+
+.social-icons {
+	display: flex;
+	margin-right: 20px;
+}
+
+.social-icons a {
+	color: #fff;
+	margin: 0 10px;
+	font-size: 20px;
+	transition: color 0.3s;
+}
+
+.social-icons a:hover {
+	color:   #FFD700;
 }

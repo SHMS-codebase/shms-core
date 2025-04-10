@@ -41,6 +41,12 @@ public class ReportsController {
 	@Autowired
 	private Job appointmentReportJob;
 
+	@Autowired
+	private Job patientReportJob;
+
+	@Autowired
+	private Job billingReportJob;
+
 	@GetMapping("/appointmentreport")
 	public String viewAppointmentReport(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Viewing Appointment Report!!!");
@@ -49,13 +55,22 @@ public class ReportsController {
 	}
 
 	@GetMapping("/patientreport")
-	public String viewPatientReport() {
+	public String viewPatientReport(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Viewing Patient Report!!!");
+		model.addAttribute("source", source);
 		return "patientreport";
 	}
 
+	@GetMapping("/billingreport")
+	public String viewBillingReport(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Viewing Billing Report!!!");
+		model.addAttribute("source", source);
+		return "billingreport";
+	}
+
 	@PostMapping("/appointmentreport")
-	public ResponseEntity<?> generateReport(@RequestParam(RequestParamConstants.REPORT_TYPE) String reportType,
+	public ResponseEntity<?> generateAppointmentReport(
+			@RequestParam(RequestParamConstants.REPORT_TYPE) String reportType,
 			@RequestParam(RequestParamConstants.DATE_PICKER) String datePicker,
 			@RequestParam(RequestParamConstants.REPORT_FORMAT) String reportFormat,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) throws Exception {
@@ -97,10 +112,11 @@ public class ReportsController {
 			if (!reportGenerated) {
 				logger.error("{}", MessageConstants.NO_APMNTS_REPORT_ERROR);
 				model.addAttribute("errorMessage", MessageConstants.NO_APMNTS_REPORT_ERROR);
-				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(model);
+				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(
+						"<script>alert('No appointments found for the selected criteria.'); window.location.href = '/reports/appointmentreport?source=admindashboard';</script>");
 			}
 
-			String reportFilePath = getReportFilePath(reportFormat, formattedNow);
+			String reportFilePath = getReportFilePath("appointmentReportJob", reportFormat, formattedNow);
 			logger.debug("reportFilePath: {}", reportFilePath);
 
 			File reportFile = new File(reportFilePath);
@@ -139,8 +155,187 @@ public class ReportsController {
 		}
 	}
 
-	private String getReportFilePath(String reportFormat, String formattedNow) {
-		String baseFilePath = "reports/appointment_report_" + formattedNow;
+	@PostMapping("/patientreport")
+	public ResponseEntity<?> generatePatientReport(
+			@RequestParam(RequestParamConstants.ADMISSION_YEAR) String admissionYear,
+			@RequestParam(RequestParamConstants.REPORT_FORMAT) String reportFormat,
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) throws Exception {
+		logger.info("Generating Patient Report!!!");
+
+		try {
+
+			LocalDateTime now = LocalDateTime.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+			String formattedNow = now.format(formatter);
+
+			JobParameters jobParams = new JobParametersBuilder().addString("admissionYear", admissionYear)
+					.addString("reportFormat", reportFormat).addString("formattedNow", formattedNow)
+					.addLong("Start-At", System.currentTimeMillis()).toJobParameters();
+
+			logger.debug("admissionYear: {}", admissionYear);
+			logger.debug("reportFormat: {}", reportFormat);
+
+			JobExecution jobExecution = jobLauncher.run(patientReportJob, jobParams);
+
+			// Wait for the job to complete
+			while (jobExecution.isRunning()) {
+				Thread.sleep(1000);
+			}
+
+			// Check job status
+			if (jobExecution.getStatus() != BatchStatus.COMPLETED) {
+				logger.error("{}", MessageConstants.JOB_FAILURE);
+				model.addAttribute("errorMessage", MessageConstants.JOB_FAILURE);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_HTML)
+						.body("error");
+			}
+
+			String reportGeneratedStr = jobExecution.getExecutionContext().getString("reportGenerated", "false");
+			boolean reportGenerated = Boolean.parseBoolean(reportGeneratedStr);
+
+			if (!reportGenerated) {
+				logger.error("{}", MessageConstants.NO_PATIENT_REPORT_ERROR);
+				model.addAttribute("errorMessage", MessageConstants.NO_PATIENT_REPORT_ERROR);
+				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(
+						"<script>alert('No patient records found for the selected year.'); window.location.href = '/reports/patientreport?source=admindashboard';</script>");
+			}
+
+			String reportFilePath = getReportFilePath("patientReportJob", reportFormat, formattedNow);
+			logger.debug("reportFilePath: {}", reportFilePath);
+
+			File reportFile = new File(reportFilePath);
+			logger.debug("reportFile: {}", reportFile);
+
+			// Retry logic
+			int retryCount = 0;
+			int maxRetries = 5;
+			while (!reportFile.exists() || reportFile.length() == 0 && retryCount < maxRetries) {
+				Thread.sleep(1000);
+				retryCount++;
+				reportFile = new File(reportFilePath);
+			}
+
+			if (!reportFile.exists()) {
+				logger.error("{}: {}", MessageConstants.REPORT_FILE_NOT_FOUND, reportFilePath);
+				model.addAttribute("errorMessage", MessageConstants.REPORT_FILE_NOT_FOUND);
+				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(model);
+			}
+
+			model.addAttribute("source", source);
+
+			try (FileInputStream fis = new FileInputStream(reportFile)) {
+				InputStreamResource resource = new InputStreamResource(new FileInputStream(reportFile));
+				MediaType mediaType = getMediaType(reportFormat);
+				logger.debug("{}", MessageConstants.PATIENT_REPORT_GENERATED);
+				model.addAttribute("message", MessageConstants.PATIENT_REPORT_GENERATED);
+				return ResponseEntity.ok()
+						.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + reportFile.getName())
+						.contentType(mediaType).contentLength(reportFile.length()).body(resource);
+			}
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.PATIENT_REPORT_FAILURE, e);
+			model.addAttribute("errorMessage", MessageConstants.PATIENT_REPORT_FAILURE);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_HTML).body(model);
+		}
+	}
+
+	@PostMapping("/billingreport")
+	public ResponseEntity<?> generateBillingReport(@RequestParam(RequestParamConstants.REPORT_TYPE) String reportType,
+			@RequestParam(RequestParamConstants.DATE_PICKER) String datePicker,
+			@RequestParam(RequestParamConstants.REPORT_FORMAT) String reportFormat,
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) throws Exception {
+		logger.info("Generating Billing Report!!!");
+
+		try {
+
+			LocalDateTime now = LocalDateTime.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+			String formattedNow = now.format(formatter);
+
+			JobParameters jobParams = new JobParametersBuilder().addString("reportType", reportType)
+					.addString("datePicker", datePicker).addString("reportFormat", reportFormat)
+					.addString("formattedNow", formattedNow).addLong("Start-At", System.currentTimeMillis())
+					.toJobParameters();
+
+			logger.debug("reportType: {}", reportType);
+			logger.debug("datePicker: {}", datePicker);
+			logger.debug("reportFormat: {}", reportFormat);
+
+			JobExecution jobExecution = jobLauncher.run(billingReportJob, jobParams);
+
+			// Wait for the job to complete
+			while (jobExecution.isRunning()) {
+				Thread.sleep(1000);
+			}
+
+			// Check job status
+			if (jobExecution.getStatus() != BatchStatus.COMPLETED) {
+				logger.error("{}", MessageConstants.JOB_FAILURE);
+				model.addAttribute("errorMessage", MessageConstants.JOB_FAILURE);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_HTML)
+						.body("error");
+			}
+
+			String reportGeneratedStr = jobExecution.getExecutionContext().getString("reportGenerated", "false");
+			boolean reportGenerated = Boolean.parseBoolean(reportGeneratedStr);
+
+			if (!reportGenerated) {
+				logger.error("{}", MessageConstants.NO_BILLING_REPORT_ERROR);
+				model.addAttribute("errorMessage", MessageConstants.NO_BILLING_REPORT_ERROR);
+				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(
+						"<script>alert('No Billing details found for the selected criteria.'); window.location.href = '/reports/billingreport?source=admindashboard';</script>");
+			}
+
+			String reportFilePath = getReportFilePath("billingReportJob", reportFormat, formattedNow);
+			logger.debug("reportFilePath: {}", reportFilePath);
+
+			File reportFile = new File(reportFilePath);
+			logger.debug("reportFile: {}", reportFile);
+
+			// Retry logic
+			int retryCount = 0;
+			int maxRetries = 5;
+			while (!reportFile.exists() || reportFile.length() == 0 && retryCount < maxRetries) {
+				Thread.sleep(1000);
+				retryCount++;
+				reportFile = new File(reportFilePath);
+			}
+
+			if (!reportFile.exists()) {
+				logger.error("{}: {}", MessageConstants.REPORT_FILE_NOT_FOUND, reportFilePath);
+				model.addAttribute("errorMessage", MessageConstants.REPORT_FILE_NOT_FOUND);
+				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(model);
+			}
+
+			model.addAttribute("source", source);
+
+			try (FileInputStream fis = new FileInputStream(reportFile)) {
+				InputStreamResource resource = new InputStreamResource(new FileInputStream(reportFile));
+				MediaType mediaType = getMediaType(reportFormat);
+				logger.debug("{}", MessageConstants.BILLING_REPORT_GENERATED);
+				model.addAttribute("message", MessageConstants.BILLING_REPORT_GENERATED);
+				return ResponseEntity.ok()
+						.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + reportFile.getName())
+						.contentType(mediaType).contentLength(reportFile.length()).body(resource);
+			}
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.BILLING_REPORT_FAILURE, e);
+			model.addAttribute("errorMessage", MessageConstants.BILLING_REPORT_FAILURE);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.TEXT_HTML).body(model);
+		}
+	}
+
+	private String getReportFilePath(String jobName, String reportFormat, String formattedNow) {
+
+		String baseFilePath = "";
+
+		if (jobName.equalsIgnoreCase("appointmentReportJob"))
+			baseFilePath = "reports/appointment/appointment_report_" + formattedNow;
+		else if (jobName.equalsIgnoreCase("patientReportJob"))
+			baseFilePath = "reports/patient/patient_report_" + formattedNow;
+		else if (jobName.equalsIgnoreCase("billingReportJob"))
+			baseFilePath = "reports/billing/billing_report_" + formattedNow;
+
 		return switch (reportFormat.toLowerCase()) {
 		case "pdf" -> baseFilePath + ".pdf";
 		case "word" -> baseFilePath + ".docx";

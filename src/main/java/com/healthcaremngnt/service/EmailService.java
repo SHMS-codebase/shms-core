@@ -8,6 +8,6 @@ public interface EmailService {
 
 	public void sendRegistrationEmail(String emailID, String userName, String generatedUserName, String generatedPassword);
 
-	public void sendAppointmentEmail(String reportFilePath, String emailID);
+	public void sendReportsEmail(String jobName, String reportFilePath, String emailID);
 	
 }

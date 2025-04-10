@@ -16,7 +16,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
 	List<Invoice> findByInvoiceDate(LocalDate queryDate);
 
-	List<Invoice> findByInvoiceDateBetween(LocalDate startOfWeek, LocalDate endOfWeek);
+	@Query("SELECT i FROM Invoice i WHERE FUNCTION('DATE', i.invoiceDate) BETWEEN :startDate AND :endDate")
+	List<Invoice> findInvoicesByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
 	@Query("SELECT i FROM Invoice i JOIN Treatment t ON i.treatment.treatmentID = t.treatmentID "
 			+ "WHERE (:patientID IS NULL OR t.patientID = :patientID) "

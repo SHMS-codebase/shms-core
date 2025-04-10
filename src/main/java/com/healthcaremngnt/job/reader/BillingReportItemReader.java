@@ -25,14 +25,14 @@ import com.healthcaremngnt.repository.InvoiceRepository;
 
 @Component
 @StepScope
-public class FinanceReportItemReader implements ItemReader<Invoice> {
+public class BillingReportItemReader implements ItemReader<Invoice> {
 
-	private static final Logger logger = LogManager.getLogger(FinanceReportItemReader.class);
+	private static final Logger logger = LogManager.getLogger(BillingReportItemReader.class);
 
 	@Autowired
-	private InvoiceRepository invoiceRepository;
+	private InvoiceRepository billingRepository;
 
-	private Iterator<Invoice> invoiceIterator;
+	private Iterator<Invoice> billingIterator;
 
 	@Value("#{jobParameters['datePicker'] ?: '2025-01-01'}")
 	private String dateString;
@@ -40,47 +40,46 @@ public class FinanceReportItemReader implements ItemReader<Invoice> {
 	@Value("#{jobParameters['reportType'] ?: 'daily'}")
 	private String reportType;
 
-	private boolean noInvoicesAvailable = false;
+	private boolean noBillingInfoAvailable = false;
 
 	@Override
-	public Invoice read()
-			throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+	public Invoice read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 
-		logger.info("FinanceReportItemReader::: read()");
-		if (invoiceIterator == null) {
+		logger.info("BillingReportItemReader::: read()");
+		if (billingIterator == null) {
 
 			try {
 				LocalDate queryDate = parseDate(dateString, reportType);
 				if (queryDate == null) {
-					noInvoicesAvailable = true; // Set the flag
+					noBillingInfoAvailable = true; // Set the flag
 					logger.error("Invalid date format: {}", dateString);
-					return null; // Return null to indicate no invoices available
+					return null; // Return null to indicate no invoice records available
 				}
 				logger.debug("queryDate: {}", queryDate);
 
-				List<Invoice> invoices = fetchInvoices(queryDate, reportType);
+				List<Invoice> invoices = fetchBillingInfo(queryDate, reportType);
 				logger.debug("invoices: {}", invoices);
 				logger.debug("Read {} invoices total", invoices.size());
 
 				if (invoices != null && !invoices.isEmpty()) {
-					invoiceIterator = invoices.iterator();
+					billingIterator = invoices.iterator();
 				} else {
-					noInvoicesAvailable = true; // Set the flag
-					invoiceIterator = List.<Invoice>of().iterator();
-					logger.warn("No invoices found for the given date and report type.");
+					noBillingInfoAvailable = true; // Set the flag
+					billingIterator = List.<Invoice>of().iterator();
+					logger.warn("No billing info found for the given date and report type.");
 				}
 			} catch (Exception e) {
-				logger.error("Error in invoiceItemReader: {}", e.getMessage());
-				noInvoicesAvailable = true; // Set the flag
-				invoiceIterator = List.<Invoice>of().iterator();
+				logger.error("Error in BillingReportItemReader: {}", e.getMessage());
+				noBillingInfoAvailable = true; // Set the flag
+				billingIterator = List.<Invoice>of().iterator();
 			}
 
 		}
 
-		if (invoiceIterator.hasNext()) {
-			return invoiceIterator.next();
+		if (billingIterator.hasNext()) {
+			return billingIterator.next();
 		} else {
-			return null; // No more invoices
+			return null; // No more appointments
 		}
 	}
 
@@ -108,29 +107,29 @@ public class FinanceReportItemReader implements ItemReader<Invoice> {
 		}
 	}
 
-	private List<Invoice> fetchInvoices(LocalDate queryDate, String reportType) {
+	private List<Invoice> fetchBillingInfo(LocalDate queryDate, String reportType) {
 		switch (reportType.toLowerCase()) {
 		case "daily":
-			return invoiceRepository.findByInvoiceDate(queryDate);
+			return billingRepository.findByInvoiceDate(queryDate);
 		case "weekly":
 			LocalDate startOfWeek = queryDate.minusDays(queryDate.getDayOfWeek().getValue() - 1);
 			LocalDate endOfWeek = startOfWeek.plusDays(6);
-			return invoiceRepository.findByInvoiceDateBetween(startOfWeek, endOfWeek);
+			return billingRepository.findInvoicesByDateRange(startOfWeek, endOfWeek);
 		case "monthly":
 			LocalDate startOfMonth = queryDate.withDayOfMonth(1);
 			LocalDate endOfMonth = queryDate.withDayOfMonth(queryDate.lengthOfMonth());
-			return invoiceRepository.findByInvoiceDateBetween(startOfMonth, endOfMonth);
+			return billingRepository.findInvoicesByDateRange(startOfMonth, endOfMonth);
 		case "yearly":
 			LocalDate startOfYear = queryDate.withDayOfYear(1);
 			LocalDate endOfYear = queryDate.withDayOfYear(queryDate.lengthOfYear());
-			return invoiceRepository.findByInvoiceDateBetween(startOfYear, endOfYear);
+			return billingRepository.findInvoicesByDateRange(startOfYear, endOfYear);
 		default:
 			throw new IllegalArgumentException("Invalid report type: " + reportType);
 		}
 	}
 
-	public boolean isNoinvoicesAvailable() {
-		return noInvoicesAvailable;
+	public boolean isNoBillingInfoAvailable() {
+		return noBillingInfoAvailable;
 	}
 
 }

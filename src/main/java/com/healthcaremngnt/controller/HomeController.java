@@ -55,8 +55,16 @@ public class HomeController {
 		return "login";
 	}
 
+	@GetMapping("/buttonplatter")
+	public String viewButtonPlatter(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Viewing Button Platter!!!");
+		model.addAttribute("source", source);
+		return "buttonplatter";
+	}
+
 	@GetMapping("/dashboard")
-	public String dashboard(Authentication authentication, Model model, HttpSession session) throws DoctorNotFoundException, PatientNotFoundException {
+	public String dashboard(Authentication authentication, Model model, HttpSession session)
+			throws DoctorNotFoundException, PatientNotFoundException {
 		logger.info("Login Successful and displaying the respective Dashboard Page");
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
@@ -70,7 +78,7 @@ public class HomeController {
 
 			model.addAttribute("userName", userDetails.getUsername());
 			model.addAttribute("roleName", roleName);
-			
+
 			session.setAttribute("userName", userDetails.getUsername());
 			session.setAttribute("roleName", roleName);
 		}
@@ -78,7 +86,7 @@ public class HomeController {
 		String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.filter(authority -> List.of("ADMIN", "DOCTOR", "PATIENT").contains(authority.toUpperCase()))
 				.findFirst().orElse("HOME");
-		
+
 		return switch (role.toUpperCase()) {
 		case "ADMIN" -> "admindashboard";
 		case "DOCTOR" -> doctorController.getDoctorDashboard(userDetails.getUsername(), model);

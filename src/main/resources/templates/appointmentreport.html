@@ -176,6 +176,9 @@ button:hover {
 
 		<form id="reportForm" th:action="@{/reports/appointmentreport}"
 			method="post">
+			
+			<input type="hidden" name="source" th:value="${source}">
+			
 			<div class="form-row">
 				<label for="reportType">Select Report Type:</label> <select
 					id="reportType" name="reportType" required>

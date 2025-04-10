@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inky Pinky Ponky</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<style>
+:root {
+	/* Group II */
+	/* Define base colors */
+	--dodger-blue: #1E90FF;
+	--dodger-blue-hover: #1C86EE;
+	--dodger-blue-active: #1874CD;
+	--dodger-blue-disabled: #B0C4DE;
+	--royal-blue: #4169E1;
+	--royal-blue-hover: #3A5FCD;
+	--royal-blue-active: #27408B;
+	--royal-blue-disabled: #A9A9A9;
+	--steel-blue: #4682B4;
+	--steel-blue-hover: #407CAB;
+	--steel-blue-active: #36648F;
+	--steel-blue-disabled: #C0C0C0;
+	--sea-green: #20B2AA;
+	--sea-green-hover: #1FA7A0;
+	--sea-green-active: #199F97;
+	--sea-green-disabled: #B0E0E6;
+	--medium-sea-green: #3CB371;
+	--medium-sea-green-hover: #36A564;
+	--medium-sea-green-active: #2E8B57;
+	--medium-sea-green-disabled: #A9A9A9;
+	--sea-green-pure: #2E8B57;
+	--sea-green-pure-hover: #279456;
+	--sea-green-pure-active: #207A4C;
+	--sea-green-pure-disabled: #A9A9A9;
+	--dark-turquoise: #00CED1;
+	--dark-turquoise-hover: #00C5C0;
+	--dark-turquoise-active: #00AFAF;
+	--dark-turquoise-disabled: #B0E0E6;
+	--medium-aquamarine: #66CDAA;
+	--medium-aquamarine-hover: #5EBE98;
+	--medium-aquamarine-active: #52B78C;
+	--medium-aquamarine-disabled: #A9A9A9;
+	--light-blue: #ADD8E6;
+	--light-blue-hover: #A0CFE0;
+	--light-blue-active: #89BBCA;
+	--light-blue-disabled: #C0C0C0;
+	--light-steel-blue: #B0C4DE;
+	--light-steel-blue-hover: #A7B9D1;
+	--light-steel-blue-active: #96A7BF;
+	--light-steel-blue-disabled: #A9A9A9;
+	/* Current theme colors - default to dodger blue */
+	--theme-color: var(--dodger-blue);
+	--theme-color-hover: var(--dodger-blue-hover);
+	--theme-color-active: var(--dodger-blue-active);
+	--theme-color-disabled: var(--dodger-blue-disabled);
+	/* Current theme colors - default to dodger blue */
+	/* Group II */
+	--deep-sky-blue: #1A73E8;
+	--deep-sky-blue-hover: #0D62D1;
+	--deep-sky-blue-active: #0650BC;
+	--deep-sky-blue-disabled: #A5C4F4;
+	--ocean-blue: #0277BD;
+	--ocean-blue-hover: #01579B;
+	--ocean-blue-active: #014377;
+	--ocean-blue-disabled: #B3D9EC;
+	--google-blue: #4285F4;
+	--google-blue-hover: #3367D6;
+	--google-blue-active: #2A56C6;
+	--google-blue-disabled: #C2D3FC;
+	--light-sea-blue: #039BE5;
+	--light-sea-blue-hover: #0288D1;
+	--light-sea-blue-active: #0277BD;
+	--light-sea-blue-disabled: #B0E0F7;
+	--indigo: #5C6BC0;
+	--indigo-hover: #3949AB;
+	--indigo-active: #303F9F;
+	--indigo-disabled: #C5CBE7;
+	--medical-blue: #516AD4;
+	--medical-blue-hover: #4053B0;
+	--medical-blue-active: #34439C;
+	--medical-blue-disabled: #BBC4EE;
+	--hospital-blue: #2C9CDB;
+	--hospital-blue-hover: #2188C7;
+	--hospital-blue-active: #1A6FA3;
+	--hospital-blue-disabled: #ADD8F0;
+	--medical-teal: #00B4A0;
+	--medical-teal-hover: #00A090;
+	--medical-teal-active: #008878;
+	--medical-teal-disabled: #A8E0D9;
+	--accessible-blue: #007ACD;
+	--accessible-blue-hover: #0062A9;
+	--accessible-blue-active: #005696;
+	--accessible-blue-disabled: #A5D1F0;
+	--lavender: #7986CB;
+	--lavender-hover: #5C6BC0;
+	--lavender-active: #3F51B5;
+	--lavender-disabled: #D1D6EE;
+	/* Group III */
+	--turquoise: #1abc9c;
+	--turquoise-hover: #16a085;
+	--turquoise-active: #148f77;
+	--turquoise-disabled: #95a5a6;
+	--peter-river: #3498db;
+	--peter-river-hover: #2980b9;
+	--peter-river-active: #2471a3;
+	--peter-river-disabled: #bdc3c7;
+	--emerald: #2ecc71;
+	--emerald-hover: #27ae60;
+	--emerald-active: #229954;
+	--emerald-disabled: #95a5a6;
+	--belize-hole: #2980b9;
+	--belize-hole-hover: #2471a3;
+	--belize-hole-active: #1f618d;
+	--belize-hole-disabled: #bdc3c7;
+	--picton-blue: #5dade2;
+	--picton-blue-hover: #5499c7;
+	--picton-blue-active: #2980b9;
+	--picton-blue-disabled: #d6eaf8;
+	--light-teal: #48c9b0;
+	--light-teal-hover: #1abc9c;
+	--light-teal-active: #16a085;
+	--light-teal-disabled: #d4efdf;
+	--light-green: #58d68d;
+	--light-green-hover: #45b39d;
+	--light-green-active: #2ecc71;
+	--light-green-disabled: #d5f5e3;
+	--asbestos: #7f8c8d;
+	--asbestos-hover: #707b7c;
+	--asbestos-active: #616a6b;
+	--asbestos-disabled: #ecf0f1;
+	--wet-asphalt: #34495e;
+	--wet-asphalt-hover: #2c3e50;
+	--wet-asphalt-active: #22313f;
+	--wet-asphalt-disabled: #f5f6fa;
+	--green-sea: #16a085;
+	--green-sea-hover: #138d75;
+	--green-sea-active: #117a65;
+	--green-sea-disabled: #f5f6fa;
+	/* Group IV */
+	--yinmn-blue: #2A5C8A;
+	--yinmn-blue-hover: #1E4566;
+	--yinmn-blue-active: #143352;
+	--yinmn-blue-disabled: #7C8B9C;
+	--periwinkle: #5D5BEA;
+	--periwinkle-hover: #4A4BC9;
+	--periwinkle-active: #3838A6;
+	--periwinkle-disabled: #B3B3E6;
+	--bright-cyan: #33B3DA;
+	--bright-cyan-hover: #2A92B3;
+	--bright-cyan-active: #1E738C;
+	--bright-cyan-disabled: #A6DCE3;
+	--mint-green: #5DBEA3;
+	--mint-green-hover: #4AA88C;
+	--mint-green-active: #38846F;
+	--mint-green-disabled: #AADDC7;
+	--dark-slate-blue: #034C81;
+	--dark-slate-blue-hover: #2CA3FA;
+	--dark-slate-blue-active: #5BA2F4;
+	--dark-slate-blue-disabled: #7F858C;
+	--jungle-green: #33B249;
+	--jungle-green-hover: #2A8F3E;
+	--jungle-green-active: #1E7030;
+	--jungle-green-disabled: #A6D5B3;
+	--bright-blue: #4681F4;
+	--bright-blue-hover: #3569C9;
+	--bright-blue-active: #244AA6;
+	--bright-blue-disabled: #A9BCE3;
+	--golden-yellow: #FFBD03;
+	--golden-yellow-hover: #E5AA02;
+	--golden-yellow-active: #CC9402;
+	--golden-yellow-disabled: #F3E2A6;
+	--scarlet-red: #ED0800;
+	--scarlet-red-hover: #C90600;
+	--scarlet-red-active: #A10500;
+	--scarlet-red-disabled: #E2A6A6;
+	--purple-haze: #80669D;
+	--purple-haze-hover: #684F7D;
+	--purple-haze-active: #50385D;
+	--purple-haze-disabled: #B3A6C9;
+	--hot-pink: #FF69B4;
+	--hot-pink-hover: #E55EA0;
+	--hot-pink-active: #CC528C;
+	--hot-pink-disabled: #F2C7D9;
+	/* Group V */
+	--modern-teal: #1A9A8B;
+	--modern-teal-hover: #157F73;
+	--modern-teal-active: #11665C;
+	--modern-teal-disabled: #9ACBC4;
+	--deep-ocean-blue: #0D47A1;
+	--deep-ocean-blue-hover: #0A3A82;
+	--deep-ocean-blue-active: #072E63;
+	--deep-ocean-blue-disabled: #9BB4DD;
+	--trustworthy-blue: #2A68C8;
+	--trustworthy-blue-hover: #2459AA;
+	--trustworthy-blue-active: #1E4A8D;
+	--trustworthy-blue-disabled: #AABBDD;
+	--calming-green: #2E8B57;
+	--calming-green-hover: #267348;
+	--calming-green-active: #1E5A3A;
+	--calming-green-disabled: #A3C9B2;
+	--innovative-purple: #6A4C9C;
+	--innovative-purple-hover: #583E83;
+	--innovative-purple-active: #47316A;
+	--innovative-purple-disabled: #B9ACD1;
+	--azure: #3182CE;
+	--azure-hover: #2B6CB0;
+	--azure-active: #2C5282;
+	--azure-disabled: #90CDF4;
+	--medium-slate-blue: #5A67D8;
+	--medium-slate-blue-hover: #4C51BF;
+	--medium-slate-blue-active: #434190;
+	--medium-slate-blue-disabled: #AEB2F0;
+	--midnight-blue: #27408B;
+	--midnight-blue-hover: #20336F;
+	--midnight-blue-active: #1A2959;
+	--midnight-blue-disabled: #94A0C7;
+	--deep-cerulean: #2E5AAC;
+	--deep-cerulean-hover: #264A8E;
+	--deep-cerulean-active: #203E76;
+	--deep-cerulean-disabled: #97A8C7;
+	--dark-emerald: #047857;
+	--dark-emerald-hover: #065f46;
+	--dark-emerald-active: #064e3b;
+	--dark-emerald-disabled: #6ee7b7;
+	/* Group VI */
+	--persian-green: #00B3A7;
+	--persian-green-hover: #00998E;
+	--persian-green-active: #00857B;
+	--persian-green-disabled: #80D9D4;
+	--azures: #2A6EFF;
+	--azures-hover: #1A5AE6;
+	--azures-active: #0A4ACC;
+	--azures-disabled: #A0B8FF;
+	--verdigris: #5BC0BE;
+	--verdigris-hover: #4BA8A6;
+	--verdigris-active: #3B908E;
+	--verdigris-disabled: #B0E0DE;
+	--cornflower: #4A90E2;
+	--cornflower-hover: #3A7FD1;
+	--cornflower-active: #2A6EC0;
+	--cornflower-disabled: #B0D0FF;
+	--ocean-green: #48BF84;
+	--ocean-green-hover: #38A674;
+	--ocean-green-active: #288D64;
+	--ocean-green-disabled: #A3DFC4;
+	--medium-slate: #6C5CE7;
+	--medium-slate-hover: #5C4CD7;
+	--medium-slate-active: #4C3CC7;
+	--medium-slate-disabled: #B5A9F7;
+	--salmon: #FF6B6B;
+	--salmon-hover: #FF5555;
+	--salmon-active: #FF4040;
+	--salmon-disabled: #FFB5B5;
+	--mango-tango: #FF914D;
+	--mango-tango-hover: #FF7A33;
+	--mango-tango-active: #FF6319;
+	--mango-tango-disabled: #FFC8A6;
+	--royal-purple: #8A4FFF;
+	--royal-purple-hover: #7A3FEF;
+	--royal-purple-active: #6A2FDF;
+	--royal-purple-disabled: #C5A9FF;
+	--mountain-meadow: #36C2AA;
+	--mountain-meadow-hover: #26B29A;
+	--mountain-meadow-active: #16A28A;
+	--mountain-meadow-disabled: #9BE0D4;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	background-color: rgb(220, 223, 239);
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+}
+
+.container {
+	flex-grow: 1;
+}
+
+.form-container {
+	background-color: #f9f9f9;
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+	background: linear-gradient(to top, rgb(15, 32, 95), rgb(5, 5, 40));
+	color: white;
+	padding: 8px;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+}
+
+/* Single button class with theme variables */
+.btn-theme {
+	background-color: var(--theme-color);
+	color: white;
+	border: none;
+	border-radius: 20px;
+	transition: all 0.3s ease;
+	margin: 10px;
+	cursor: pointer;
+	box-shadow: 0px 4px 8px rgba(30, 144, 255, 0.3);
+	position: relative;
+	top: 0;
+}
+
+.btn-theme:hover:not([disabled]) {
+	background-color: var(--theme-color-hover);
+	box-shadow: 0px 6px 12px rgba(28, 134, 238, 0.4);
+	transform: translateY(-2px);
+}
+
+.btn-theme:active:not([disabled]) {
+	background-color: var(--theme-color-active);
+	box-shadow: 0px 1px 3px rgba(24, 116, 205, 0.3);
+	transform: scale(0.95) translateY(3px);
+	top: 2px;
+}
+
+.btn-theme:disabled {
+	background-color: var(--theme-color-disabled);
+	color: #5A5A5A;
+	cursor: not-allowed;
+	box-shadow: none;
+	opacity: 0.8;
+}
+
+/* Color Picker Styles */
+.color-picker {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+	flex-wrap: wrap;
+	margin-top: 15px;
+}
+
+.color-option {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	margin: 0 10px;
+	cursor: pointer;
+	border: 2px solid transparent;
+	transition: all 0.2s ease;
+}
+
+.color-option:hover {
+	transform: scale(1.1);
+}
+
+.color-option.active {
+	border-color: #333;
+	transform: scale(1.1);
+}
+
+.color-label {
+	font-size: 12px;
+	text-align: center;
+	margin-top: 5px;
+}
+
+.color-choice {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 0 10px;
+}
+</style>
+</head>
+
+<body>
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container mt-5">
+		<!-- Form Header -->
+		<div class="form-header">Button Types in SHMS</div>
+
+		<div class="form-container">
+			<!-- Buttons Section -->
+			<div class="text-center mt-4">
+				<div class="d-flex flex-wrap justify-content-center">
+					<!-- Buttons with btn-theme class -->
+					<button type="button" class="btn btn-theme">Submit</button>
+					<button type="reset" class="btn btn-theme">Reset</button>
+					<button type="button" class="btn btn-theme">Update</button>
+					<button type="button" class="btn btn-theme">Make Changes</button>
+					<button type="button" class="btn btn-theme">Generate
+						Report</button>
+					<button type="button" class="btn btn-theme">Book
+						Appointment</button>
+					<button type="button" class="btn btn-theme">Edit
+						Appointment</button>
+					<button type="button" class="btn btn-theme">Cancel
+						Appointment</button>
+					<button type="button" class="btn btn-theme">X</button>
+					<button type="button" class="btn btn-theme">Add
+						Prescription</button>
+					<button type="button" class="btn btn-theme">Edit
+						Prescription</button>
+					<button type="button" class="btn btn-theme">Save
+						Prescription</button>
+					<button type="button" class="btn btn-theme">Print
+						Prescription</button>
+					<button type="button" class="btn btn-theme">Generate
+						Invoice</button>
+					<button type="button" class="btn btn-theme">Generate
+						Report</button>
+					<button type="button" class="btn btn-theme">Login</button>
+					<button type="button" class="btn btn-theme">Forgot
+						Password</button>
+					<button type="button" class="btn btn-theme">Reset Password</button>
+					<button type="button" class="btn btn-theme">Register</button>
+					<button type="button" class="btn btn-theme">Search</button>
+					<button type="reset" class="btn btn-theme">Reset Form</button>
+					<button type="button" class="btn btn-theme">Edit Schedule</button>
+					<button type="button" class="btn btn-theme">Add</button>
+					<button type="button" class="btn btn-theme">Save Changes</button>
+					<button type="button" class="btn btn-theme">Register</button>
+					<button type="button" class="btn btn-theme">Register</button>
+					<button type="button" class="btn btn-theme" disabled>Disabled
+						Button</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Color Picker Section -->
+		<div class="color-picker">
+			<!-- Original Color Options -->
+			<div class="color-choice">
+				<div class="color-option" id="dodger-blue"
+					style="background-color: #1E90FF;"
+					onclick="changeTheme('dodger-blue')"></div>
+				<div class="color-label">
+					<b><u>DODGER BLUE</u></b>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="royal-blue"
+					style="background-color: #4169E1;"
+					onclick="changeTheme('royal-blue')"></div>
+				<div class="color-label">
+					<u><b>Royal Blue</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="dark-turquoise"
+					style="background-color: #00CED1;"
+					onclick="changeTheme('dark-turquoise')"></div>
+				<div class="color-label">
+					<u><b>Dark Turquoise</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="steel-blue"
+					style="background-color: #4682B4;"
+					onclick="changeTheme('steel-blue')"></div>
+				<div class="color-label">
+					<u>Steel Blue</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="medium-sea-green"
+					style="background-color: #3CB371;"
+					onclick="changeTheme('medium-sea-green')"></div>
+				<div class="color-label">
+					<u>Medium Sea Green</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="sea-green"
+					style="background-color: #20B2AA;"
+					onclick="changeTheme('sea-green')"></div>
+				<div class="color-label">Light Sea Green</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="sea-green-pure"
+					style="background-color: #2E8B57;"
+					onclick="changeTheme('sea-green-pure')"></div>
+				<div class="color-label">Sea Green</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="medium-aquamarine"
+					style="background-color: #66CDAA;"
+					onclick="changeTheme('medium-aquamarine')"></div>
+				<div class="color-label">Medium Aquamarine</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="light-blue"
+					style="background-color: #ADD8E6;"
+					onclick="changeTheme('light-blue')"></div>
+				<div class="color-label">Light Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="light-steel-blue"
+					style="background-color: #B0C4DE;"
+					onclick="changeTheme('light-steel-blue')"></div>
+				<div class="color-label">Light Steel Blue</div>
+			</div>
+		</div>
+
+		<!-- Group II -->
+		<div class="color-picker">
+			<div class="color-choice">
+				<div class="color-option" id="medical-blue"
+					style="background-color: #516AD4;"
+					onclick="changeTheme('medical-blue')"></div>
+				<div class="color-label">
+					<u><b>MEDICAL BLUE</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="medical-teal"
+					style="background-color: #00B4A0;"
+					onclick="changeTheme('medical-teal')"></div>
+				<div class="color-label">
+					<u><b>Medical Teal</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="deep-sky-blue"
+					style="background-color: #1A73E8;"
+					onclick="changeTheme('deep-sky-blue')"></div>
+				<div class="color-label">
+					<u><b>Deep Sky Blue</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="indigo"
+					style="background-color: #5C6BC0;" onclick="changeTheme('indigo')"></div>
+				<div class="color-label">
+					<u>Indigo</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="accessible-blue"
+					style="background-color: #007ACD;"
+					onclick="changeTheme('accessible-blue')"></div>
+				<div class="color-label">
+					<u>Accessible Blue</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="ocean-blue"
+					style="background-color: #0277BD;"
+					onclick="changeTheme('ocean-blue')"></div>
+				<div class="color-label">Ocean Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="google-blue"
+					style="background-color: #4285F4;"
+					onclick="changeTheme('google-blue')"></div>
+				<div class="color-label">Google Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="light-sea-blue"
+					style="background-color: #039BE5;"
+					onclick="changeTheme('light-sea-blue')"></div>
+				<div class="color-label">Light Sea Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="hospital-blue"
+					style="background-color: #2C9CDB;"
+					onclick="changeTheme('hospital-blue')"></div>
+				<div class="color-label">Hospital Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="lavender"
+					style="background-color: #7986CB;"
+					onclick="changeTheme('lavender')"></div>
+				<div class="color-label">Lavender</div>
+			</div>
+		</div>
+
+		<!-- Group III -->
+		<div class="color-picker">
+			<div class="color-choice">
+				<div class="color-option" id="peter-river"
+					style="background-color: #3498db;"
+					onclick="changeTheme('peter-river')"></div>
+				<div class="color-label">
+					<u><b>PETER RIVER</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="turquoise"
+					style="background-color: #1abc9c;"
+					onclick="changeTheme('turquoise')"></div>
+				<div class="color-label">
+					<u><b>Turquoise</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="emerald"
+					style="background-color: #2ecc71;" onclick="changeTheme('emerald')"></div>
+				<div class="color-label">
+					<u><b>Emerald</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="picton-blue"
+					style="background-color: #5dade2;"
+					onclick="changeTheme('picton-blue')"></div>
+				<div class="color-label">
+					<u>Picton Blue</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="asbestos"
+					style="background-color: #7f8c8d;"
+					onclick="changeTheme('asbestos')"></div>
+				<div class="color-label">
+					<u>Asbestos</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="belize-hole"
+					style="background-color: #2980b9;"
+					onclick="changeTheme('belize-hole')"></div>
+				<div class="color-label">Belize Hole</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="light-teal"
+					style="background-color: #48c9b0;"
+					onclick="changeTheme('light-teal')"></div>
+				<div class="color-label">Light Teal</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="light-green"
+					style="background-color: #58d68d;"
+					onclick="changeTheme('light-green')"></div>
+				<div class="color-label">Light Green</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="wet-asphalt"
+					style="background-color: #34495e;"
+					onclick="changeTheme('wet-asphalt')"></div>
+				<div class="color-label">Wet Asphalt</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="green-sea"
+					style="background-color: #16a085;"
+					onclick="changeTheme('green-sea')"></div>
+				<div class="color-label">Green Sea</div>
+			</div>
+		</div>
+
+		<!-- Group IV -->
+		<div class="color-picker">
+			<div class="color-choice">
+				<div class="color-option" id="yinmn-blue"
+					style="background-color: #2A5C8A;"
+					onclick="changeTheme('yinmn-blue')"></div>
+				<div class="color-label">
+					<u><b>YINMN BLUE</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="periwinkle"
+					tyle="background-color: #5D5BEA;"
+					onclick="changeTheme('periwinkle')"></div>
+				<div class="color-label">
+					<u><b>Periwinkle</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="bright-cyan"
+					style="background-color: #33B3DA;"
+					onclick="changeTheme('bright-cyan')"></div>
+				<div class="color-label">
+					<u><b>Bright Cyan</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="mint-green"
+					style="background-color: #5DBEA3;"
+					onclick="changeTheme('mint-green')"></div>
+				<div class="color-label">
+					<u>Mint Green</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="dark-slate-blue"
+					style="background-color: #034C81;"
+					onclick="changeTheme('dark-slate-blue')"></div>
+				<div class="color-label">
+					<u>Dark Slate Blue</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="jungle-green"
+					style="background-color: #33B249;"
+					onclick="changeTheme('jungle-green')"></div>
+				<div class="color-label">Jungle Green</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="bright-blue"
+					style="background-color: #4681F4;"
+					onclick="changeTheme('bright-blue')"></div>
+				<div class="color-label">Bright Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="golden-yellow"
+					style="background-color: #FFBD03;"
+					onclick="changeTheme('golden-yellow')"></div>
+				<div class="color-label">Golden Yellow</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="scarlet-red"
+					style="background-color: #ED0800;"
+					onclick="changeTheme('scarlet-red')"></div>
+				<div class="color-label">Scarlet Red</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="purple-haze"
+					style="background-color: #80669D;"
+					onclick="changeTheme('purple-haze')"></div>
+				<div class="color-label">Purple Haze</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="hot-pink"
+					style="background-color: #FF69B4;"
+					onclick="changeTheme('hot-pink')"></div>
+				<div class="color-label">Hot Pink</div>
+			</div>
+		</div>
+
+		<!-- Group V -->
+		<div class="color-picker">
+			<div class="color-choice">
+				<div class="color-option" id="modern-teal"
+					style="background-color: #1A9A8B;"
+					onclick="changeTheme('modern-teal')"></div>
+				<div class="color-label">
+					<u><b>MODERN TEAL</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="deep-ocean-blue"
+					style="background-color: #0D47A1;"
+					onclick="changeTheme('deep-ocean-blue')"></div>
+				<div class="color-label">
+					<u><b>Deep Ocean Blue</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="trustworthy-blue"
+					style="background-color: #2A68C8;"
+					onclick="changeTheme('trustworthy-blue')"></div>
+				<div class="color-label">
+					<u><b>Trustworthy Blue</b></u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="calming-green"
+					style="background-color: #2E8B57;"
+					onclick="changeTheme('calming-green')"></div>
+				<div class="color-label">
+					<u>Calming Green</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="innovative-purple"
+					style="background-color: #6A4C9C;"
+					onclick="changeTheme('innovative-purple')"></div>
+				<div class="color-label">
+					<u>Innovative Purple</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="azure"
+					style="background-color: #3182CE;" onclick="changeTheme('azure')">
+				</div>
+				<div class="color-label">Azure</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="medium-slate-blue"
+					style="background-color: #5A67D8;"
+					onclick="changeTheme('medium-slate-blue')"></div>
+				<div class="color-label">Medium Slate Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="midnight-blue"
+					style="background-color: #27408B;"
+					onclick="changeTheme('midnight-blue')"></div>
+				<div class="color-label">Midnight Blue</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="deep-cerulean"
+					style="background-color: #2E5AAC;"
+					onclick="changeTheme('deep-cerulean')"></div>
+				<div class="color-label">Deep Cerulean</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="dark-emerald"
+					style="background-color: #047857;"
+					onclick="changeTheme('dark-emerald')"></div>
+				<div class="color-label">Dark Emerald</div>
+			</div>
+		</div>
+
+		<!-- Group VI -->
+		<div class="color-picker">
+			<div class="color-choice">
+				<div class="color-option" id="persian-green"
+					style="background-color: #00B3A7;"
+					onclick="changeTheme('persian-green')"></div>
+				<div class="color-label">
+					<b><u>PERSIAN GREEN</u></b>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="azures"
+					style="background-color: #2A6EFF;" onclick="changeTheme('azure')">
+				</div>
+				<div class="color-label">
+					<b><u>Azures</u></b>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="verdigris"
+					style="background-color: #5BC0BE;"
+					onclick="changeTheme('verdigris')"></div>
+				<div class="color-label">
+					<b><u>Verdigris</u></b>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="cornflower"
+					style="background-color: #4A90E2;"
+					onclick="changeTheme('cornflower')"></div>
+				<div class="color-label">
+					<u>Cornflower</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="ocean-green"
+					style="background-color: #48BF84;"
+					onclick="changeTheme('ocean-green')"></div>
+				<div class="color-label">
+					<u>Ocean Green</u>
+				</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="medium-slate"
+					style="background-color: #6C5CE7;"
+					onclick="changeTheme('medium-slate')"></div>
+				<div class="color-label">Medium Slate</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="salmon"
+					style="background-color: #FF6B6B;" onclick="changeTheme('salmon')"></div>
+				<div class="color-label">Salmon</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="mango-tango"
+					style="background-color: #FF914D;"
+					onclick="changeTheme('mango-tango')"></div>
+				<div class="color-label">Mango Tango</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="royal-purple"
+					style="background-color: #8A4FFF;"
+					onclick="changeTheme('royal-purple')"></div>
+				<div class="color-label">Royal Purple</div>
+			</div>
+			<div class="color-choice">
+				<div class="color-option" id="mountain-meadow"
+					style="background-color: #36C2AA;"
+					onclick="changeTheme('mountain-meadow')"></div>
+				<div class="color-label">Mountain Meadow</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Include Footer Fragment -->
+	<div th:replace="fragments/footer :: footer"></div>
+
+	<script>
+        // Theme configuration object
+        const themes = {
+            'dodger-blue': {
+                color: 'var(--dodger-blue)',
+                hover: 'var(--dodger-blue-hover)',
+                active: 'var(--dodger-blue-active)',
+                disabled: 'var(--dodger-blue-disabled)'
+            },
+            'royal-blue': {
+                color: 'var(--royal-blue)',
+                hover: 'var(--royal-blue-hover)',
+                active: 'var(--royal-blue-active)',
+                disabled: 'var(--royal-blue-disabled)'
+            },
+            'steel-blue': {
+                color: 'var(--steel-blue)',
+                hover: 'var(--steel-blue-hover)',
+                active: 'var(--steel-blue-active)',
+                disabled: 'var(--steel-blue-disabled)'
+            },
+            'sea-green': {
+                color: 'var(--sea-green)',
+                hover: 'var(--sea-green-hover)',
+                active: 'var(--sea-green-active)',
+                disabled: 'var(--sea-green-disabled)'
+            },
+            'medium-sea-green': {
+                color: 'var(--medium-sea-green)',
+                hover: 'var(--medium-sea-green-hover)',
+                active: 'var(--medium-sea-green-active)',
+                disabled: 'var(--medium-sea-green-disabled)'
+            },
+            'sea-green-pure': {
+                color: 'var(--sea-green-pure)',
+                hover: 'var(--sea-green-pure-hover)',
+                active: 'var(--sea-green-pure-active)',
+                disabled: 'var(--sea-green-pure-disabled)'
+            },
+            'dark-turquoise': {
+                color: 'var(--dark-turquoise)',
+                hover: 'var(--dark-turquoise-hover)',
+                active: 'var(--dark-turquoise-active)',
+                disabled: 'var(--dark-turquoise-disabled)'
+            },
+            'medium-aquamarine': {
+                color: 'var(--medium-aquamarine)',
+                hover: 'var(--medium-aquamarine-hover)',
+                active: 'var(--medium-aquamarine-active)',
+                disabled: 'var(--medium-aquamarine-disabled)'
+            },
+            'light-blue': {
+                color: 'var(--light-blue)',
+                hover: 'var(--light-blue-hover)',
+                active: 'var(--light-blue-active)',
+                disabled: 'var(--light-blue-disabled)'
+            },
+            'light-steel-blue': {
+                color: 'var(--light-steel-blue)',
+                hover: 'var(--light-steel-blue-hover)',
+                active: 'var(--light-steel-blue-active)',
+                disabled: 'var(--light-steel-blue-disabled)'
+            },
+            'deep-sky-blue': {
+                color: 'var(--deep-sky-blue)',
+                hover: 'var(--deep-sky-blue-hover)',
+                active: 'var(--deep-sky-blue-active)',
+                disabled: 'var(--deep-sky-blue-disabled)'
+            },
+            'ocean-blue': {
+                color: 'var(--ocean-blue)',
+                hover: 'var(--ocean-blue-hover)',
+                active: 'var(--ocean-blue-active)',
+                disabled: 'var(--ocean-blue-disabled)'
+            },
+            'google-blue': {
+                color: 'var(--google-blue)',
+                hover: 'var(--google-blue-hover)',
+                active: 'var(--google-blue-active)',
+                disabled: 'var(--google-blue-disabled)'
+            },
+            'light-sea-blue': {
+                color: 'var(--light-sea-blue)',
+                hover: 'var(--light-sea-blue-hover)',
+                active: 'var(--light-sea-blue-active)',
+                disabled: 'var(--light-sea-blue-disabled)'
+            },
+            'indigo': {
+                color: 'var(--indigo)',
+                hover: 'var(--indigo-hover)',
+                active: 'var(--indigo-active)',
+                disabled: 'var(--indigo-disabled)'
+            },
+            'medical-blue': {
+                color: 'var(--medical-blue)',
+                hover: 'var(--medical-blue-hover)',
+                active: 'var(--medical-blue-active)',
+                disabled: 'var(--medical-blue-disabled)'
+            },
+            'hospital-blue': {
+                color: 'var(--hospital-blue)',
+                hover: 'var(--hospital-blue-hover)',
+                active: 'var(--hospital-blue-active)',
+                disabled: 'var(--hospital-blue-disabled)'
+            },
+            'medical-teal': {
+                color: 'var(--medical-teal)',
+                hover: 'var(--medical-teal-hover)',
+                active: 'var(--medical-teal-active)',
+                disabled: 'var(--medical-teal-disabled)'
+            },
+            'accessible-blue': {
+                color: 'var(--accessible-blue)',
+                hover: 'var(--accessible-blue-hover)',
+                active: 'var(--accessible-blue-active)',
+                disabled: 'var(--accessible-blue-disabled)'
+            },
+            'lavender': {
+                color: 'var(--lavender)',
+                hover: 'var(--lavender-hover)',
+                active: 'var(--lavender-active)',
+                disabled: 'var(--lavender-disabled)'
+            },
+            'turquoise': {
+                color: 'var(--turquoise)',
+                hover: 'var(--turquoise-hover)',
+                active: 'var(--turquoise-active)',
+                disabled: 'var(--turquoise-disabled)'
+            },
+            'peter-river': {
+                color: 'var(--peter-river)',
+                hover: 'var(--peter-river-hover)',
+                active: 'var(--peter-river-active)',
+                disabled: 'var(--peter-river-disabled)'
+            },
+            'emerald': {
+                color: 'var(--emerald)',
+                hover: 'var(--emerald-hover)',
+                active: 'var(--emerald-active)',
+                disabled: 'var(--emerald-disabled)'
+            },
+            'belize-hole': {
+                color: 'var(--belize-hole)',
+                hover: 'var(--belize-hole-hover)',
+                active: 'var(--belize-hole-active)',
+                disabled: 'var(--belize-hole-disabled)'
+            },
+            'picton-blue': {
+                color: 'var(--picton-blue)',
+                hover: 'var(--picton-blue-hover)',
+                active: 'var(--picton-blue-active)',
+                disabled: 'var(--picton-blue-disabled)'
+            },
+            'light-teal': {
+                color: 'var(--light-teal)',
+                hover: 'var(--light-teal-hover)',
+                active: 'var(--light-teal-active)',
+                disabled: 'var(--light-teal-disabled)'
+            },
+            'light-green': {
+                color: 'var(--light-green)',
+                hover: 'var(--light-green-hover)',
+                active: 'var(--light-green-active)',
+                disabled: 'var(--light-green-disabled)'
+            },
+            'asbestos': {
+                color: 'var(--asbestos)',
+                hover: 'var(--asbestos-hover)',
+                active: 'var(--asbestos-active)',
+                disabled: 'var(--asbestos-disabled)'
+            },
+            'wet-asphalt': {
+                color: 'var(--wet-asphalt)',
+                hover: 'var(--wet-asphalt-hover)',
+                active: 'var(--wet-asphalt-active)',
+                disabled: 'var(--wet-asphalt-disabled)'
+            },
+            'green-sea': {
+                color: 'var(--green-sea)',
+                hover: 'var(--green-sea-hover)',
+                active: 'var(--green-sea-active)',
+                disabled: 'var(--green-sea-disabled)'
+            },
+            'yinmn-blue': {
+                color: 'var(--yinmn-blue)',
+                hover: 'var(--yinmn-blue-hover)',
+                active: 'var(--yinmn-blue-active)',
+                disabled: 'var(--yinmn-blue-disabled)'
+            },
+            'periwinkle': {
+                color: 'var(--periwinkle)',
+                hover: 'var(--periwinkle-hover)',
+                active: 'var(--periwinkle-active)',
+                disabled: 'var(--periwinkle-disabled)'
+            },
+            'bright-cyan': {
+                color: 'var(--bright-cyan)',
+                hover: 'var(--bright-cyan-hover)',
+                active: 'var(--bright-cyan-active)',
+                disabled: 'var(--bright-cyan-disabled)'
+            },
+            'mint-green': {
+                color: 'var(--mint-green)',
+                hover: 'var(--mint-green-hover)',
+                active: 'var(--mint-green-active)',
+                disabled: 'var(--mint-green-disabled)'
+            },
+            'dark-slate-blue': {
+                color: 'var(--dark-slate-blue)',
+                hover: 'var(--dark-slate-blue-hover)',
+                active: 'var(--dark-slate-blue-active)',
+                disabled: 'var(--dark-slate-blue-disabled)'
+            },
+            'jungle-green': {
+                color: 'var(--jungle-green)',
+                hover: 'var(--jungle-green-hover)',
+                active: 'var(--jungle-green-active)',
+                disabled: 'var(--jungle-green-disabled)'
+            },
+            'bright-blue': {
+                color: 'var(--bright-blue)',
+                hover: 'var(--bright-blue-hover)',
+                active: 'var(--bright-blue-active)',
+                disabled: 'var(--bright-blue-disabled)'
+            },
+            'golden-yellow': {
+                color: 'var(--golden-yellow)',
+                hover: 'var(--golden-yellow-hover)',
+                active: 'var(--golden-yellow-active)',
+                disabled: 'var(--golden-yellow-disabled)'
+            },
+            'scarlet-red': {
+                color: 'var(--scarlet-red)',
+                hover: 'var(--scarlet-red-hover)',
+                active: 'var(--scarlet-red-active)',
+                disabled: 'var(--scarlet-red-disabled)'
+            },
+            'purple-haze': {
+                color: 'var(--purple-haze)',
+                hover: 'var(--purple-haze-hover)',
+                active: 'var(--purple-haze-active)',
+                disabled: 'var(--purple-haze-disabled)'
+            },
+            'hot-pink': {
+                color: 'var(--hot-pink)',
+                hover: 'var(--hot-pink-hover)',
+                active: 'var(--hot-pink-active)',
+                disabled: 'var(--hot-pink-disabled)'
+            },
+            'modern-teal': {
+                color: 'var(--modern-teal)',
+                hover: 'var(--modern-teal-hover)',
+                active: 'var(--modern-teal-active)',
+                disabled: 'var(--modern-teal-disabled)'
+            },
+            'deep-ocean-blue': {
+                color: 'var(--deep-ocean-blue)',
+                hover: 'var(--deep-ocean-blue-hover)',
+                active: 'var(--deep-ocean-blue-active)',
+                disabled: 'var(--deep-ocean-blue-disabled)'
+            },
+            'trustworthy-blue': {
+                color: 'var(--trustworthy-blue)',
+                hover: 'var(--trustworthy-blue-hover)',
+                active: 'var(--trustworthy-blue-active)',
+                disabled: 'var(--trustworthy-blue-disabled)'
+            },
+            'calming-green': {
+                color: 'var(--calming-green)',
+                hover: 'var(--calming-green-hover)',
+                active: 'var(--calming-green-active)',
+                disabled: 'var(--calming-green-disabled)'
+            },
+            'innovative-purple': {
+                color: 'var(--innovative-purple)',
+                hover: 'var(--innovative-purple-hover)',
+                active: 'var(--innovative-purple-active)',
+                disabled: 'var(--innovative-purple-disabled)'
+            },
+            'azure': {
+                color: 'var(--azure)',
+                hover: 'var(--azure-hover)',
+                active: 'var(--azure-active)',
+                disabled: 'var(--azure-disabled)'
+            },
+            'medium-slate-blue': {
+                color: 'var(--medium-slate-blue)',
+                hover: 'var(--medium-slate-blue-hover)',
+                active: 'var(--medium-slate-blue-active)',
+                disabled: 'var(--medium-slate-blue-disabled)'
+            },
+            'midnight-blue': {
+                color: 'var(--midnight-blue)',
+                hover: 'var(--midnight-blue-hover)',
+                active: 'var(--midnight-blue-active)',
+                disabled: 'var(--midnight-blue-disabled)'
+            },
+            'deep-cerulean': {
+                color: 'var(--deep-cerulean)',
+                hover: 'var(--deep-cerulean-hover)',
+                active: 'var(--deep-cerulean-active)',
+                disabled: 'var(--deep-cerulean-disabled)'
+            },
+            'dark-emerald': {
+                color: 'var(--dark-emerald)',
+                hover: 'var(--dark-emerald-hover)',
+                active: 'var(--dark-emerald-active)',
+                disabled: 'var(--dark-emerald-disabled)'
+            },
+            'persian-green': {
+                color: 'var(--persian-green)',
+                hover: 'var(--persian-green-hover)',
+                active: 'var(--persian-green-active)',
+                disabled: 'var(--persian-green-disabled)'
+            },
+            'azures': {
+                color: 'var(--azures)',
+                hover: 'var(--azures-hover)',
+                active: 'var(--azures-active)',
+                disabled: 'var(--azures-disabled)'
+            },
+            'verdigris': {
+                color: 'var(--verdigris)',
+                hover: 'var(--verdigris-hover)',
+                active: 'var(--verdigris-active)',
+                disabled: 'var(--verdigris-disabled)'
+            },
+            'cornflower': {
+                color: 'var(--cornflower)',
+                hover: 'var(--cornflower-hover)',
+                active: 'var(--cornflower-active)',
+                disabled: 'var(--cornflower-disabled)'
+            },
+            'ocean-green': {
+                color: 'var(--ocean-green)',
+                hover: 'var(--ocean-green-hover)',
+                active: 'var(--ocean-green-active)',
+                disabled: 'var(--ocean-green-disabled)'
+            },
+            'medium-slate': {
+                color: 'var(--medium-slate)',
+                hover: 'var(--medium-slate-hover)',
+                active: 'var(--medium-slate-active)',
+                disabled: 'var(--medium-slate-disabled)'
+            },
+            'salmon': {
+                color: 'var(--salmon)',
+                hover: 'var(--salmon-hover)',
+                active: 'var(--salmon-active)',
+                disabled: 'var(--salmon-disabled)'
+            },
+            'mango-tango': {
+                color: 'var(--mango-tango)',
+                hover: 'var(--mango-tango-hover)',
+                active: 'var(--mango-tango-active)',
+                disabled: 'var(--mango-tango-disabled)'
+            },
+            'royal-purple': {
+                color: 'var(--royal-purple)',
+                hover: 'var(--royal-purple-hover)',
+                active: 'var(--royal-purple-active)',
+                disabled: 'var(--royal-purple-disabled)'
+            },
+            'mountain-meadow': {
+                color: 'var(--mountain-meadow)',
+                hover: 'var(--mountain-meadow-hover)',
+                active: 'var(--mountain-meadow-active)',
+                disabled: 'var(--mountain-meadow-disabled)'
+            }
+        };
+
+        function changeTheme(themeName) {
+            // Get the theme colors
+            const theme = themes[themeName];
+            if (!theme) return;
+
+            // Update CSS variables
+            document.documentElement.style.setProperty('--theme-color', theme.color);
+            document.documentElement.style.setProperty('--theme-color-hover', theme.hover);
+            document.documentElement.style.setProperty('--theme-color-active', theme.active);
+            document.documentElement.style.setProperty('--theme-color-disabled', theme.disabled);
+
+            // Update active state in the color picker
+            const colorOptions = document.querySelectorAll('.color-option');
+            colorOptions.forEach(option => {
+                option.classList.remove('active');
+            });
+
+            const selectedOption = document.getElementById(themeName);
+            if (selectedOption) {
+                selectedOption.classList.add('active');
+            }
+        }
+
+        // Initialize with default theme
+        document.addEventListener('DOMContentLoaded', function () {
+            changeTheme('dodger-blue');
+        });
+    </script>
+</body>
+
+</html>

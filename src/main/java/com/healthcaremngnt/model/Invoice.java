@@ -44,7 +44,7 @@ public class Invoice {
 	@Column(name = "invoice_status", nullable = false)
 	private InvoiceStatus invoiceStatus;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "treatment_id", unique = true, nullable = false)
 	private Treatment treatment;
 

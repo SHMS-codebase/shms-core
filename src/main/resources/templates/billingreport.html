@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patient Reports</title>
+<title>Billing Reports</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -73,15 +73,38 @@ form {
 }
 </style>
 <script>
-	$(document).ready(function() {
-		$('#generateReportBtn').click(function() {
-			if ($('#admissionYear').val() === "") {
-				alert("Please select an admission year.");
-				return;
-			}
-			$('#reportForm').submit();
-		});
-	});
+	$(document).ready(
+			function() {
+				$('#reportType').change(
+						function() {
+							var reportType = $(this).val();
+							if (reportType === 'daily') {
+								$('#datePickerLabel').text('Select Date:');
+								$('#datePicker').attr('type', 'date');
+							} else if (reportType === 'weekly') {
+								$('#datePickerLabel').text('Select Week:');
+								$('#datePicker').attr('type', 'week');
+							} else if (reportType === 'monthly') {
+								$('#datePickerLabel').text('Select Month:');
+								$('#datePicker').attr('type', 'month');
+							} else if (reportType === 'yearly') {
+								$('#datePickerLabel').text('Select Year:');
+								$('#datePicker').attr('type', 'number').attr(
+										'min', '2020').attr('max',
+										moment().year());
+							}
+						});
+
+				$('#generateReportBtn').click(
+						function() {
+							if ($('#reportType').val() === ""
+									|| $('#datePicker').val() === "") {
+								alert("Please select a report type and date.");
+								return;
+							}
+							$('#reportForm').submit();
+						});
+			});
 </script>
 </head>
 <body>
@@ -90,7 +113,7 @@ form {
 
 	<div class="container">
 
-		<h4 class="centered-text">Patient Reports</h4>
+		<h4 class="centered-text">Billing Reports</h4>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
@@ -98,18 +121,25 @@ form {
 		<div th:if="${message}" class="success-message">
 			<p th:text="${message}"></p>
 		</div>
-		<form id="reportForm" th:action="@{/reports/patientreport}"
+		<form id="reportForm" th:action="@{/reports/billingreport}"
 			method="post">
 
 			<input type="hidden" name="source" th:value="${source}">
-			
+
 			<div class="form-row">
-				<label for="admissionYear">Select Admission Year:</label> <select
-					id="admissionYear" name="admissionYear" required>
-					<option value="">Select Year</option>
+				<label for="reportType">Select Report Type:</label> <select
+					id="reportType" name="reportType" required>
+					<option value="">--Select Report Type--</option>
+					<option value="daily">Daily</option>
+					<option value="weekly">Weekly</option>
+					<option value="monthly">Monthly</option>
+					<option value="yearly">Yearly</option>
 				</select>
 			</div>
-
+			<div class="form-row">
+				<label id="datePickerLabel" for="datePicker">Select Date:</label> <input
+					type="date" id="datePicker" name="datePicker" required>
+			</div>
 			<div class="form-row">
 				<label for="reportFormat">Select Report Format:</label> <select
 					id="reportFormat" name="reportFormat" required>
@@ -122,24 +152,6 @@ form {
 			<button type="button" id="generateReportBtn">Generate Report</button>
 		</form>
 	</div>
-
-	<script>
-		// Get the current year
-		const currentYear = new Date().getFullYear();
-		const startYear = 2020; // Starting year
-
-		// Select the dropdown element
-		const admissionYearSelect = document.getElementById("admissionYear");
-
-		// Populate the dropdown with years from 2020 to current year
-		for (let year = startYear; year <= currentYear; year++) {
-			let option = document.createElement("option");
-			option.value = year;
-			option.textContent = year;
-			admissionYearSelect.appendChild(option);
-		}
-	</script>
-
 	<!-- Include Footer Fragment -->
 	<div th:replace="fragments/footer :: footer"></div>
 </body>

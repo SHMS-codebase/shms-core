@@ -65,4 +65,6 @@ public class RequestParamConstants {
 	public static final String INVOICE_DATE = "invoiceDate";
 	public static final String INVOICE_STATUS = "invoiceStatus";
 
+	public static final String ADMISSION_YEAR = "admissionYear";
+
 }
