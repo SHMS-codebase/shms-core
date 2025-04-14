@@ -123,6 +123,7 @@ public class UserController {
 		return "register";
 	}
 
+	// Needs to be removed at the end!!
 	private void loginFormDetails(RegistrationForm form) {
 		logger.info("Registration form details:");
 		logger.debug("Role: {}, Admin Name: {}, Admin Email: {}", form.getRole(), form.getAdminName(),
@@ -131,8 +132,9 @@ public class UserController {
 				form.getDoctorEmailID(), form.getDoctorAddress(), form.getDoctorContactNumber());
 		logger.debug("Doctor - Qualification: {}, Specialization: {}, Experience: {}", form.getQualification(),
 				form.getSpecialization(), form.getExperience());
-		logger.debug("Patient - Name: {}, Email: {}, Address: {}, Contact: {}", form.getPatientName(),
-				form.getPatientEmailID(), form.getPatientAddress(), form.getPatientContactNumber());
+		logger.debug("Patient - Salutation: {}, Custom Salutaion: {}, Name: {}, Email: {}, Address: {}, Contact: {}",
+				form.getSalutation(), form.getCustomSalutation(), form.getPatientName(), form.getPatientEmailID(),
+				form.getPatientAddress(), form.getPatientContactNumber());
 		logger.debug("Patient - DOB: {}, Gender: {}", form.getDob(), form.getGender());
 	}
 
@@ -196,6 +198,8 @@ public class UserController {
 		logger.info("Creating patient profile");
 
 		Patient patient = new Patient();
+		patient.setSalutation(form.getSalutation());
+		patient.setCustomSalutation(form.getCustomSalutation());
 		patient.setPatientName(form.getPatientName());
 		patient.setDob(form.getDob());
 		patient.setGender(form.getGender());
@@ -285,7 +289,6 @@ public class UserController {
 				model.addAttribute("errorMessage", MessageConstants.USER_NOT_FOUND);
 			}
 
-			model.addAttribute("source", source);
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.EDIT_USER_FETCH_ERROR, e);
 			model.addAttribute("errorMessage", MessageConstants.EDIT_USER_FETCH_ERROR);
@@ -306,7 +309,7 @@ public class UserController {
 			logger.debug("{}", MessageConstants.USER_UPD_SUCCESS);
 			model.addAttribute("userDetails", userDetails);
 			model.addAttribute("message", MessageConstants.USER_UPD_SUCCESS);
-			model.addAttribute("source", source);
+			
 
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.USER_UPD_FAILURE, e.getLocalizedMessage());
@@ -316,6 +319,7 @@ public class UserController {
 			return "edituserprofile";
 		}
 
+		model.addAttribute("source", source);
 		return "edituserprofile";
 	}
 

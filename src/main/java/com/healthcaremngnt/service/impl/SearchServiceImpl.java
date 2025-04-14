@@ -186,9 +186,9 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	private void validateSearchInputs(Long id, LocalDate date) {
-		if (id == null || id <= 0) {
-			throw new IllegalArgumentException("Invalid ID provided for search.");
-		}
+//		if (id == null || id <= 0) {
+//			throw new IllegalArgumentException("Invalid ID provided for search.");
+//		}
 		if (date != null && date.isAfter(LocalDate.now().plusYears(1))) {
 			throw new IllegalArgumentException("Search date cannot be beyond one year in the future.");
 		}

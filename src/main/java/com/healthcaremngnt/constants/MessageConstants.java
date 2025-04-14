@@ -55,11 +55,11 @@ public class MessageConstants {
 	public static final String REPORT_FILE_NOT_FOUND = "Report file not found";
 	public static final String APMNT_REPORT_GENERATED = "Appointment Report is generated Successfully!!!";
 	public static final String APMNT_REPORT_FAILURE = "Error generating appointment report";
-	
+
 	public static final String NO_PATIENT_REPORT_ERROR = "No Patients found for the selected criteria.";
 	public static final String PATIENT_REPORT_GENERATED = "Patient Report is generated Successfully!!!";
 	public static final String PATIENT_REPORT_FAILURE = "Error generating Patient report";
-	
+
 	public static final String NO_BILLING_REPORT_ERROR = "No billing information found for the selected criteria.";
 	public static final String BILLING_REPORT_GENERATED = "Billing Report is generated Successfully!!!";
 	public static final String BILLING_REPORT_FAILURE = "Error generating billing report";
@@ -97,30 +97,32 @@ public class MessageConstants {
 	public static final String PRESCRIPTION_CRTED_FAILURE = "Error creating Prescription Details.";
 
 	public static final String UNBILLED_TREATMENTS_LOAD_ERROR = "An error occurred while loading the unbilled treatments list";
-	
+
 	public static final String INVOICE_CREATED_SUCCESS = "Invoice generated successfully";
 	public static final String INVOICE_CREATED_FAILURE = "Error generating invoice";
 	public static final String INVOICE_LOAD_ERROR = "An error occurred while loading the invoice details";
 	public static final String INVOICE_STATUS_UPDATE_ERROR = "An error occurred while updating the invoice status";
 	public static final String NO_INVOICES_RESULTS = "No Invoices found for the given criteria.";
-	
+
 	public static final String NO_TREATMENTS_RESULTS = "No Treatments found for the given criteria.";
 	public static final String TREATMENT_INVALID_IDFORMAT = "Invalid Treatment ID format.";
 	public static final String TREATMENT_LOAD_ERROR = "An error occurred while loading the treatment details.";
 	public static final String TREATMENT_UPDATE_FAILURE = "An error occurred while updating the treatment details.";
 	public static final String TREATMENT_UPDATE_SUCCESS = "The Treatment Details have been updated successfully!!!";
-	
+
 	// Util Class Messages
 	public static final String DATE_NULL = "Date cannot be null";
 	public static final String TOKEN_GEN_ERROR = "Unable to generate token";
 	public static final String INVALID_TOKEN = "Invalid Token";
 	public static final String EXPIRED_TOKEN = "Expired Token";
-	
+
 	public static final String VIEW_MY_DOCTORS_LOAD_ERROR = "An error occurred while loading the My Doctors page.";
 	public static final String NO_DOCTORS_TREATING_PATIENT = "No Doctors";
-	
+
 	public static final String VIEW_RECENT_VISITS_LOAD_ERROR = "An error occurred while loading the Recent Visits page.";
 	public static final String VIEW_TREATMENT_DETAILS_LOAD_ERROR = "An error occurred while loading the Treatment Details page.";
 	public static final String VIEW_PRESC_DETAILS_LOAD_ERROR = "An error occurred while loading the Prescription Details page.";
+
+	public static final String PASSWORD_PATTERN_MISMATCH = "Password must be at least 8 characters and must include at least 1 number and 1 symbol";
 
 }

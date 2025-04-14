@@ -58,7 +58,8 @@ public class DoctorController {
 	}
 
 	@GetMapping("/doctordashboard")
-	public String getDoctorDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model) throws DoctorNotFoundException {
+	public String getDoctorDashboard(@SessionAttribute(RequestParamConstants.USER_NAME) String userName, Model model)
+			throws DoctorNotFoundException {
 		logger.info("Loading Doctor Dashboard");
 		Doctor doctor = doctorService.getDoctorInfoCard(userName);
 
@@ -163,13 +164,14 @@ public class DoctorController {
 			String scheduleStatus = SmartHealthCareConstants.APPROVED;
 			doctorService.loadDoctorsAndFormValues(model, doctorID, availableDate, startTime, endTime, scheduleStatus);
 			logger.debug("source: {}", source);
-			model.addAttribute("source", source);
+
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.CREATE_SCHEDULE_LOAD_ERROR, e);
 			model.addAttribute("errorMessage", MessageConstants.CREATE_SCHEDULE_LOAD_ERROR);
 			return source; // load the page that called this request
 		}
 
+		model.addAttribute("source", source);
 		return "createschedule";
 	}
 
@@ -206,6 +208,8 @@ public class DoctorController {
 			scheduleStatus = ScheduleStatus.PENDING;
 		}
 
+		model.addAttribute("source", source);
+
 		try {
 
 			DoctorScheduleRequest request = new DoctorScheduleRequest(doctorID, availableDate, startTime, endTime,
@@ -222,7 +226,6 @@ public class DoctorController {
 
 			List<Doctor> doctors = doctorService.getAllDoctors();
 			model.addAttribute("doctors", doctors);
-			model.addAttribute("source", source);
 			return "createschedule";
 		} catch (InvalidInputException | DoctorNotFoundException | OverlappingScheduleException e) {
 			logger.error("{}: {}", MessageConstants.SCHEDULE_SAVE_ERROR, e);
@@ -248,10 +251,11 @@ public class DoctorController {
 	public String viewApproveSchedules(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading Approve Schedule");
 
+		model.addAttribute("source", source);
+
 		try {
 			List<DoctorSchedule> doctorSchedules = doctorScheduleService.getPendingSchedules();
 			model.addAttribute("doctorSchedules", doctorSchedules);
-			model.addAttribute("source", source);
 
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.APPROVE_SCHEDULE_LOAD_ERROR, e);

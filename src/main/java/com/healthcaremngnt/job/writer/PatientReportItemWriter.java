@@ -32,6 +32,7 @@ import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
+import com.healthcaremngnt.enums.Salutation;
 import com.healthcaremngnt.model.Patient;
 
 @Component
@@ -91,10 +92,13 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(txtFilename, true))) {
 			writer.write("Patient Report generated on::: " + today + "\n\n");
 			for (Patient patient : patients) {
+				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+						: patient.getSalutation().name();
+
 				writer.write("Patient ID: " + patient.getPatientID() + "\n");
 				writer.write("User ID: " + patient.getUser().getUserID() + "\n");
 				writer.write("User Name: " + patient.getUser().getUserName() + "\n");
-				writer.write("Patient Name: " + patient.getPatientName() + "\n");
+				writer.write("Patient Name: " + salutation + " " + patient.getPatientName() + "\n");
 				writer.write("Gender: " + patient.getGender() + "\n");
 				writer.write("Date of Birth: " + patient.getDob() + "\n");
 				writer.write("Address: " + patient.getAddress() + "\n");
@@ -176,6 +180,10 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 
 			// Process each patient
 			for (Patient patient : patients) {
+
+				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+						: patient.getSalutation().name();
+
 				if (yPosition < 50 + (7 * 14.5f)) { // Check if we need a new page
 					contentStream.endText();
 					contentStream.close();
@@ -199,7 +207,7 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 				contentStream.newLine();
 				contentStream.showText("User Name: " + patient.getUser().getUserName());
 				contentStream.newLine();
-				contentStream.showText("Patient Name: " + patient.getPatientName());
+				contentStream.showText("Patient Name: " + salutation + " " + patient.getPatientName());
 				contentStream.newLine();
 				contentStream.showText("Gender: " + patient.getGender());
 				contentStream.newLine();
@@ -249,16 +257,20 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 			run.addBreak();
 			run.addBreak();
 		}
-		
+
 		for (Patient patient : patients) {
+
+			String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+					: patient.getSalutation().name();
+
 			run = paragraph.createRun();
-			run.setText("Patient ID: " + patient.getPatientName());
+			run.setText("Patient ID: " + patient.getPatientID());
 			run.addBreak();
 			run.setText("User ID: " + patient.getUser().getUserID());
 			run.addBreak();
 			run.setText("User Name: " + patient.getUser().getUserName());
 			run.addBreak();
-			run.setText("Patient Name: " + patient.getPatientName());
+			run.setText("Patient Name: " + salutation + " " + patient.getPatientName());
 			run.addBreak();
 			run.setText("Gender: " + patient.getGender());
 			run.addBreak();
@@ -309,11 +321,14 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 
 		// Create data rows
 		for (Patient patient : patients) {
+			String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+					: patient.getSalutation().name();
+
 			Row row = sheet.createRow(rowNum++);
-			row.createCell(0).setCellValue(patient.getPatientName());
+			row.createCell(0).setCellValue(patient.getPatientID() + "\n");
 			row.createCell(1).setCellValue(patient.getUser().getUserID() + "\n");
 			row.createCell(2).setCellValue(patient.getUser().getUserName() + "\n");
-			row.createCell(3).setCellValue(patient.getPatientName() + "\n");
+			row.createCell(3).setCellValue(salutation + " " + patient.getPatientName() + "\n");
 			row.createCell(4).setCellValue(patient.getGender() + "\n");
 			row.createCell(5).setCellValue(patient.getDob() + "\n");
 			row.createCell(6).setCellValue(patient.getAddress() + "\n");

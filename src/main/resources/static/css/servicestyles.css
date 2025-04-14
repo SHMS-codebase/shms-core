@@ -44,7 +44,7 @@ p {
 	box-shadow: none; /* Remove box shadow for accordion button */
 	color: #fff; /* White text color for accordion button */
 	font-weight: bold;
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Helvetica', sans-serif;
 	background-color: #f8f9fa;
 	/* Match the background color with the theme */
 }
@@ -61,7 +61,7 @@ p {
 .accordion-body {
 	background-color: #fff; /* Background color for accordion body */
 	border-top: 1px solid #ddd; /* Border for accordion body */
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Helvetica', sans-serif;
 }
 
 #headingOne .accordion-button {

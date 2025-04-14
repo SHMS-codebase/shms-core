@@ -137,7 +137,7 @@
 							<tbody>
 								<tr th:each="prescription : ${activeprescriptions}">
 									<td><a
-										th:href="@{'/prescriptions/viewprescription'(prescriptionID=${prescription.prescriptionID}, source='doctordashboard')}"
+										th:href="@{'/prescriptions/viewprescription'(prescriptionID=${prescription.prescriptionID}, source='patientdashboard')}"
 										th:text="${prescription.prescriptionID}"></a></td>
 									<td th:text="${prescription.patientName}"></td>
 									<td th:text="${prescription.diagnosis}"></td>

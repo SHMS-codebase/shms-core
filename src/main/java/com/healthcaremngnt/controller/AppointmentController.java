@@ -71,12 +71,14 @@ public class AppointmentController {
 	public String bookAppointment(AppointmentRequest appointmentRequest,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Booking Appointment: {}", appointmentRequest);
+		
+		model.addAttribute("source", source);
+
 		try {
 			appointmentService.bookAppointment(appointmentRequest);
 			logger.debug("{}", MessageConstants.APMNT_BOOKING_SUCCESS);
 			model.addAttribute("message", MessageConstants.APMNT_BOOKING_SUCCESS);
 			populateModelWithDoctorsAndPatients(model);
-			model.addAttribute("source", source);
 			return "createappointment";
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.APMNT_BOOKING_ERROR, e);

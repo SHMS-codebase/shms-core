@@ -36,7 +36,7 @@ html, body {
 
 .left-pane {
     flex: 0.2;   /* 20% width */
-    background-color: hwb(219 49% 4%);
+    background-color: rgb(74, 88, 164);
     padding: 0;
     display: flex;
     align-items: center;
@@ -126,6 +126,7 @@ label {
     font-weight: bold;
     text-align: left;
     /* Align labels to the left */
+    margin-left: 20px;
     width: 100%;
     max-width: 400px;
     /* Match input width */
@@ -278,7 +279,7 @@ header a:hover {
 }
 
 h1, .heading {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-weight: 700;
     font-size: 30px;
     margin: 0;

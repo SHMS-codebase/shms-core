@@ -3,6 +3,7 @@ package com.healthcaremngnt.model;
 import java.time.LocalDate;
 
 import com.healthcaremngnt.enums.Gender;
+import com.healthcaremngnt.enums.Salutation;
 
 public class RegistrationForm {
 
@@ -22,6 +23,8 @@ public class RegistrationForm {
 	private String experience;
 
 	// Patient Data
+	private Salutation salutation;
+	private String customSalutation;
 	private String patientName;
 	private String patientEmailID;
 	private String patientContactNumber;
@@ -167,6 +170,34 @@ public class RegistrationForm {
 	 */
 	public void setExperience(String experience) {
 		this.experience = experience;
+	}
+
+	/**
+	 * @return the salutation
+	 */
+	public Salutation getSalutation() {
+		return salutation;
+	}
+
+	/**
+	 * @param salutation the salutation to set
+	 */
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	/**
+	 * @return the customSalutation
+	 */
+	public String getCustomSalutation() {
+		return customSalutation;
+	}
+
+	/**
+	 * @param customSalutation the customSalutation to set
+	 */
+	public void setCustomSalutation(String customSalutation) {
+		this.customSalutation = customSalutation;
 	}
 
 	/**

@@ -52,6 +52,11 @@ form {
 	margin-top: 160px;
 }
 
+.return-button {
+	display: flex;
+	justify-content: center;
+}
+
 .error-message {
 	color: #d93025;
 	font-size: 14px;
@@ -82,6 +87,11 @@ form {
 		<div th:if="${message}" class="success-message">
 			<p th:text="${message}"></p>
 		</div>
+		<div class="return-button">
+			<a th:href="@{/users/register(source='admindashboard')}"
+				class="btn btn-primary"> Return to Registration </a>
+		</div>
+
 	</div>
 
 	<!-- Include Footer Fragment -->

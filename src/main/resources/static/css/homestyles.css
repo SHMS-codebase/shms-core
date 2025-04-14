@@ -14,7 +14,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	/* background-color: #FFF0F5; */
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Helvetica', sans-serif;
 	background-color: #e0e4f1;
 	height: 100vh;
 	overflow: hidden; /* Ensure full background coverage */
@@ -79,7 +79,7 @@ body {
 }
 
 .text {
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Helvetica', sans-serif;
 	font-size: 20px;
 	color: #333; /* Ensures good contrast with the background */
 	margin-bottom: 1.5em; /* Add spacing between paragraphs */
@@ -118,7 +118,7 @@ header {
 }
 
 h1, .heading {
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Helvetica', sans-serif;
 	font-weight: 700;
 	font-size: 30px;
 	margin: 0;
@@ -133,7 +133,7 @@ h1, .heading {
 }
 
 .text {
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Helvetica', sans-serif;
 	font-size: 20px;
 }
 
@@ -174,7 +174,7 @@ h1, .heading {
 	width: 90%;
 	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 	overflow: hidden;
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Helvetica', sans-serif;
 }
 
 .navbar-custom .navbar-brand {

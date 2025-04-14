@@ -111,7 +111,8 @@ public class InvoiceController {
 			@RequestParam(RequestParamConstants.TOTAL_AMOUNT) BigDecimal totalAmount,
 			@RequestParam(RequestParamConstants.INVOICE_STATUS) InvoiceStatus invoiceStatus,
 			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source,
-			RedirectAttributes redirectAttributes, Model model) throws PrescriptionNotFoundException, DataPersistenceException {
+			RedirectAttributes redirectAttributes, Model model)
+			throws PrescriptionNotFoundException, DataPersistenceException {
 
 		logger.info("Generating Invoice!!");
 
@@ -120,6 +121,8 @@ public class InvoiceController {
 					"Request parameters - treatmentID: {},  prescriptionID: {}, treatmentCost: {}, prescriptionCost: {}, totalAmount: {}, invoiceStatus: {}, source: {}",
 					treatmentID, prescriptionID, treatmentCost, prescriptionCost, totalAmount, invoiceStatus, source);
 		}
+
+		model.addAttribute("source", source);
 
 		try {
 
@@ -167,8 +170,6 @@ public class InvoiceController {
 			logger.debug("updatedTreatment: {}", updatedTreatment);
 
 			// Should Prescription Status be updated??!?!?
-
-			model.addAttribute("source", source);
 
 			// Set success message and redirect to invoice details page
 			redirectAttributes.addFlashAttribute("message", MessageConstants.INVOICE_CREATED_SUCCESS);

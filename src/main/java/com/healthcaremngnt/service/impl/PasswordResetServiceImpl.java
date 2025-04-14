@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.exceptions.InvalidTokenException;
 import com.healthcaremngnt.exceptions.TokenExpiredException;
 import com.healthcaremngnt.model.PasswordResetToken;
@@ -66,10 +67,13 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 				.orElseThrow(() -> new RuntimeException("User not found with ID: " + userID));
 
 		validateOldPassword(user, oldPassword);
+
 		updateUserPassword(user, newPassword);
 	}
 
 	private void validateOldPassword(User user, String oldPassword) {
+		logger.info("Validating Old Password with the DB Password");
+
 		if (!encoder.matches(oldPassword, user.getPassword())) {
 			logger.debug("Password mismatch for User ID: {}", user.getUserID());
 			throw new RuntimeException("Failed to authenticate: Incorrect old password.");
@@ -77,9 +81,31 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 	}
 
 	private void updateUserPassword(User user, String newPassword) {
+		logger.info("Updating User Password");
+
+		// Password must include at least 1 number and 1 symbol
+		validatePassword(newPassword);
+		
 		user.setPassword(encoder.encode(newPassword));
 		userRepository.save(user);
 		logger.info("Password successfully updated for User ID: {}", user.getUserID());
+	}
+
+	private void validatePassword(String newPassword) {
+		logger.info("Validating the password");
+		
+		newPassword = newPassword.trim();
+		logger.debug("newPassword: {}", newPassword);
+		
+		String pattern = "^(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$";
+		
+		logger.debug("Regex match result: {}", newPassword.matches(pattern));
+		
+		if (!newPassword.matches(pattern)) {
+			logger.debug("{}", MessageConstants.PASSWORD_PATTERN_MISMATCH);
+			throw new RuntimeException(MessageConstants.PASSWORD_PATTERN_MISMATCH);
+		}
+		
 	}
 
 }

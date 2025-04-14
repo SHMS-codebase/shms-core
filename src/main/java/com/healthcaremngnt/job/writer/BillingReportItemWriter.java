@@ -33,7 +33,9 @@ import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
+import com.healthcaremngnt.enums.Salutation;
 import com.healthcaremngnt.model.Invoice;
+import com.healthcaremngnt.model.Patient;
 
 @Component
 @StepScope
@@ -92,10 +94,13 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(txtFilename, true))) {
 			writer.write("Billing Report generated on::: " + today + "\n\n");
 			for (Invoice invoice : invoices) {
+				Patient patient = invoice.getTreatment().getAppointment().getPatient();
+				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+						: patient.getSalutation().name();
+
 				writer.write("Invoice ID: " + invoice.getInvoiceID() + "\n");
 				writer.write("Invoice Date: " + invoice.getInvoiceDate() + "\n");
-				writer.write(
-						"Patient: " + invoice.getTreatment().getAppointment().getPatient().getPatientName() + "\n");
+				writer.write("Patient: " + salutation + " " + patient.getPatientName() + "\n");
 				writer.write("Treatment Cost: ₹" + invoice.getTreatmentCost() + "\n");
 				writer.write("Prescription Cost: ₹" + invoice.getPrescriptionCost() + "\n");
 				writer.write("Total Cost: ₹" + invoice.getTotalAmount() + "\n");
@@ -165,8 +170,11 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 				contentStream.newLine();
 				contentStream.showText("Invoice Date: " + invoice.getInvoiceDate());
 				contentStream.newLine();
-				contentStream
-						.showText("Patient: " + invoice.getTreatment().getAppointment().getPatient().getPatientName());
+				Patient patient = invoice.getTreatment().getAppointment().getPatient();
+				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+						: patient.getSalutation().name();
+
+				contentStream.showText("Patient: " + salutation + " " + patient.getPatientName());
 				contentStream.newLine();
 				contentStream.showText("Treatment Cost: " + invoice.getTreatmentCost());
 				contentStream.newLine();
@@ -225,12 +233,17 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 		}
 
 		for (Invoice invoice : invoices) {
+
+			Patient patient = invoice.getTreatment().getAppointment().getPatient();
+			String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+					: patient.getSalutation().name();
+
 			run = paragraph.createRun();
 			run.setText("Invoice ID: " + invoice.getInvoiceID());
 			run.addBreak();
 			run.setText("Invoice Date: " + invoice.getInvoiceDate());
 			run.addBreak();
-			run.setText("Patient: " + invoice.getTreatment().getAppointment().getPatient().getPatientName());
+			run.setText("Patient: " + salutation + " " + patient.getPatientName());
 			run.addBreak();
 			run.setText("Treatment Cost: ₹" + invoice.getTreatmentCost());
 			run.addBreak();
@@ -280,10 +293,14 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 
 		// Create data rows
 		for (Invoice invoice : invoices) {
+			Patient patient = invoice.getTreatment().getAppointment().getPatient();
+			String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+					: patient.getSalutation().name();
+
 			Row row = sheet.createRow(rowNum++);
 			row.createCell(0).setCellValue(invoice.getInvoiceID().toString());
 			row.createCell(1).setCellValue(invoice.getInvoiceDate().toString());
-			row.createCell(2).setCellValue(invoice.getTreatment().getAppointment().getPatient().getPatientName());
+			row.createCell(2).setCellValue(salutation + " " + patient.getPatientName());
 			row.createCell(3).setCellValue(invoice.getTreatmentCost().toString());
 			row.createCell(4).setCellValue(invoice.getPrescriptionCost().toString());
 			row.createCell(5).setCellValue(invoice.getTotalAmount().toString());

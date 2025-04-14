@@ -24,13 +24,13 @@ public class TokenValidator {
 		if (resetToken == null) {
 			logger.warn("Reset token is null");
 			model.addAttribute("message", MessageConstants.INVALID_TOKEN);
-			return "error";
+			return MessageConstants.INVALID_TOKEN;
 		}
 
 		if (resetToken.getExpirationTime().isBefore(LocalDateTime.now())) {
 			logger.warn("Reset token has expired");
 			model.addAttribute("message", MessageConstants.EXPIRED_TOKEN);
-			return "error";
+			return MessageConstants.EXPIRED_TOKEN;
 		}
 
 		logger.debug("Token validation successful");

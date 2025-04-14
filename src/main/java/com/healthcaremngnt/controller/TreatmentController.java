@@ -142,12 +142,8 @@ public class TreatmentController {
 			@RequestParam(value = RequestParamConstants.TREATMENT_ID, required = false) Long treatmentID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading View Treatment");
+		
 		Optional.ofNullable(treatmentID).ifPresent(id -> logger.debug("Treatment ID: {}", id));
-		// or
-		Optional.ofNullable(treatmentID).ifPresent(id -> {
-			String maskedID = String.valueOf(id).replaceAll("(?<=.{2}).(?=.*$)", "*");
-			logger.debug("Treatment ID: {}", maskedID);
-		});
 
 		try {
 			Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);

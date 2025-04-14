@@ -21,6 +21,24 @@
 	margin-top: 5px;
 	display: block;
 }
+
+.form-row {
+	display: flex;
+	align-items: center; /* Aligns items vertically */
+	gap: 15px; /* Adds space between elements */
+}
+
+.salutation-container {
+	flex: 1; /* Makes salutation field take 1 part */
+}
+
+.patient-name-container {
+	flex: 3; /* Makes name input take 3 parts */
+}
+
+select, input {
+	width: 100%; /* Ensures fields stretch properly */
+}
 </style>
 </head>
 <body>
@@ -63,11 +81,11 @@
 					<div id="adminFields" class="role-fields">
 						<label for="adminName" class="required">Administrator
 							Name:</label> <input type="text" id="adminName" name="adminName">
-						<div class="tooltip" id="nameTooltip"></div>
+						<div class="tooltip" id="adminNameTooltip"></div>
 
 						<label for="adminEmailID" class="required">Email ID:</label> <input
 							type="email" id="adminEmailID" name="adminEmailID">
-						<div class="tooltip" id="emailTooltip"></div>
+						<div class="tooltip" id="adminEmailIDTooltip"></div>
 					</div>
 
 					<!-- Doctor Fields -->
@@ -124,11 +142,25 @@
 					<!-- Patient Fields -->
 					<div id="patientFields" class="role-fields" style="display: none;">
 						<div class="form-row">
-							<div>
-								<label for="patientName" class="required">Patient Name:</label>
-								<input type="text" id="patientName" name="patientName">
-								<div class="tooltip" id="patientNameTooltip"></div>
-							</div>
+							<!-- <label for="patientName" class="required">Patient Name:</label>  -->
+							<select
+								id="salutationSelect" name="salutation"
+								onchange="toggleCustomSalutation()" style="flex: 1;">
+								<option value="MR">Mr.</option>
+								<option value="MRS">Mrs.</option>
+								<option value="MS">Ms.</option>
+								<option value="MX">Mx.</option>
+								<option value="MASTER">Master</option>
+								<option value="BABY">Baby</option>
+								<option value="CUSTOM">Other (Type your own)</option>
+							</select> <input type="text" id="customSalutation" name="customSalutation"
+								style="display: none; flex: 1;"
+								placeholder="Enter custom salutation"> <input
+								type="text" id="patientName" name="patientName" style="flex: 3;">
+
+							<div class="tooltip" id="patientNameTooltip"></div>
+						</div>
+						<div class="form-row">
 							<div>
 								<label for="patientEmailID" class="required">Email ID:</label> <input
 									type="email" id="patientEmailID" name="patientEmailID">
@@ -211,6 +243,12 @@
             });
         }
 
+        function toggleCustomSalutation() {
+            const select = document.getElementById("salutationSelect");
+            const customInput = document.getElementById("customSalutation");
+            customInput.style.display = select.value === "CUSTOM" ? "block" : "none";
+        }
+
         // Call the function on page load
         document.addEventListener('DOMContentLoaded', populateSpecializations);
 
@@ -267,11 +305,11 @@
         };
 
         const validateField = (field, rules) => {
-            const element = document.getElementById(field); // Get the field element (input or select)
+        	const element = document.getElementById(field); // Get the field element (input or select)
             const value = element.value; // Get the value of the element
             const tooltip = document.getElementById(`${field}Tooltip`); // Get the tooltip for the field
             let valid = true;
-
+            
             for (const rule of rules) {
                 if (!rule.validate(value)) {
                     tooltip.textContent = rule.message; // Display the error message
@@ -286,7 +324,7 @@
 
                     valid = false;
                     return valid; // Exit once a rule fails
-                }
+                }                
             }
 
             // Clear tooltip and error styles if valid
@@ -298,9 +336,9 @@
 
         const register = () => {
         	console.log('Inside register() js!!');
-            const role = document.getElementById('role').value;
+        	const role = document.getElementById('role').value;
             console.log(role);
-            let valid = true; // Initialize valid flag
+        	let valid = true; // Initialize valid flag
 
             if (role === 'Admin') {
             	valid =  validateField('adminName', [
@@ -374,7 +412,8 @@
                     { validate: (value) => value.length <= 1000, message: 'Must be 1000 characters or less.' }
                 ]) && valid;
             }
-            return valid;
+            
+        	return valid;
         };
         const resetForm = () => {
             // Reset the common registration form

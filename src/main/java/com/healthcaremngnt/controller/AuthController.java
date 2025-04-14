@@ -141,18 +141,27 @@ public class AuthController {
 	@GetMapping("/reset-password")
 	public String viewResetPasswordForm(@RequestParam(RequestParamConstants.TOKEN) String token, Model model) {
 		logger.info("Reset Password Form will be loaded");
-		PasswordResetToken resetToken = tokenService.findByToken(token);
 
-		if (resetToken != null) {
+		try {
+			PasswordResetToken resetToken = tokenService.findByToken(token);
+			logger.debug("resetToken: {}", resetToken);
+
 			String validationError = TokenValidator.validateResetToken(resetToken, model);
+			logger.debug("validationError: {}", validationError);
+
 			if (validationError != null) {
-				logger.error("{}: {}", MessageConstants.TOKEN_INVALID_OR_EXPIRED, token);
-				model.addAttribute("tokenError", MessageConstants.TOKEN_INVALID_OR_EXPIRED);
+				logger.debug("validationError is not null");
+
+				logger.error("{}: {}", validationError, token);
+				model.addAttribute("tokenError", validationError);
 				return "resetpassword";
 			}
 			logger.debug("The Token is valid");
 			model.addAttribute("token", token);
-		} else {
+
+		} catch (Exception e) {
+			logger.debug("resetToken is deleted from the DB");
+
 			logger.error("{}: {}", MessageConstants.TOKEN_NOT_FOUND, token);
 			model.addAttribute("tokenError", MessageConstants.TOKEN_INVALID_OR_EXPIRED);
 			return "resetpassword";
