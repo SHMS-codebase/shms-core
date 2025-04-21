@@ -48,6 +48,7 @@ public class MessageConstants {
 
 	public static final String PRESCRIPTION_NOT_FOUND = "Prescription not found for the ID.";
 	public static final String PRESCRIPTION_LOAD_ERROR = "An error occurred while loading prescription details. Please try again later.";
+	public static final String PRESCRIPTION_PRINT_LOAD_ERROR = "An error occurred while loading print prescription details. Please try again later.";
 	public static final String PRESCRIPTION_UPD_SUCCESS = "The Prescription Details have been updated successfully!!!";
 	public static final String PRESCRIPTION_UPD_FAILURE = "An error occurred while updating prescription details.";
 

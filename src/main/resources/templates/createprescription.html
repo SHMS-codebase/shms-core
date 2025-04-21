@@ -18,7 +18,6 @@
 <link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
 <link rel="stylesheet" th:href="@{/css/createstyles.css}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="/path/to/formValidation.js"></script>
 <style>
 /* Additional styles to make card look consistent with existing design */
 body {
@@ -162,13 +161,6 @@ form {
 						th:text="${treatment != null ? treatment.diagnosis : 'No Diagnosis Available'}"
 						th:style="${treatment == null ? 'color: red;' : ''}"> </span>
 				</p>
-				<!-- Debug Information -->
-				<!-- <div th:if="${#httpServletRequest.remoteUser == 'admin'}" class="debug-info">
-            <p><strong>Debug Info:</strong></p>
-            <p>Patient Object: <span th:text="${patient}"></span></p>
-            <p>Treatment Object: <span th:text="${treatment}"></span></p>
-            <p>Source: <span th:text="${source}"></span></p>
-        </div> -->
 			</div>
 		</div>
 
@@ -210,6 +202,7 @@ form {
 					<thead>
 						<tr>
 							<th>Medicine Name</th>
+							<th>Medicine Type</th>
 							<th>Dosage</th>
 							<th>Frequency <br> (e.g., 1-0-1)
 							</th>
@@ -219,76 +212,45 @@ form {
 						</tr>
 					</thead>
 					<tbody>
-						<!-- Ensure to display all prescription records in separate rows -->
-						<tr
-							th:each="prescriptionDetail, iterStat : ${prescriptionForm.prescriptionDetails}">
-							<td><select
-								th:field="*{prescriptionDetails[__${iterStat.index}__].medicine.medicineID}"
-								class="medicine-dropdown form-control"
-								th:attr="data-row-index=${iterStat.index}" required>
+
+						<!-- If there are no prescriptions, add an empty row -->
+						<tr th:if="${prescriptionForm.prescriptionDetails.size() == 0}">
+							<td><select name="prescriptionDetails[0].medicineName"
+								class="medicine-name-dropdown form-control" data-row-index="0"
+								required>
 									<option value="">Select Medicine</option>
-									<option th:each="medicine : ${uniqueMedicineNames}"
-										th:value="${medicine.key}" th:text="${medicine.value}"
-										th:selected="${prescriptionDetail.medicine != null && medicine.key == prescriptionDetail.medicine.medicineID}">
-									</option>
 							</select></td>
-							<td><select
-								th:field="*{prescriptionDetails[__${iterStat.index}__].dosage}"
-								class="dosage-dropdown form-control"
-								th:id="${'dosage-' + iterStat.index}" required>
+							<td><select name="prescriptionDetails[0].medicineType"
+								class="medicine-type-dropdown form-control" data-row-index="0"
+								required disabled>
+									<option value="">Select Type</option>
+							</select></td>
+							<td><select name="prescriptionDetails[0].dosage"
+								class="dosage-dropdown form-control" id="dosage-0" required
+								disabled>
 									<option value="">Select Dosage</option>
-									<!-- Dosage options will be populated dynamically via JavaScript -->
-							</select></td>
+							</select> <input type="hidden"
+								name="prescriptionDetails[0].medicine.medicineID"
+								class="medicine-id-input"></td>
 							<td><input type="text" class="form-control"
-								name="prescriptionDetails[__${iterStat.index}__].frequency"
-								placeholder="e.g., 1-0-1"
-								th:value="${prescriptionDetail.frequency}"
-								pattern="^[0-9]+-[0-9]+-[0-9]+$"
+								name="prescriptionDetails[0].frequency"
+								placeholder="e.g., 1-0-1" pattern="^[0-9]+-[0-9]+-[0-9]+$"
 								title="Enter frequency in the format Morning-Afternoon-Night (e.g., 1-0-1)"
 								required></td>
 							<td>
 								<div class="input-group">
 									<input type="number" class="form-control"
-										name="prescriptionDetails[__${iterStat.index}__].duration"
-										placeholder="Duration in days"
-										th:value="${prescriptionDetail.duration}" min="1" required>
-									<span class="input-group-text">Days</span>
+										name="prescriptionDetails[0].duration"
+										placeholder="Duration in days" min="1" required> <span
+										class="input-group-text">Days</span>
 								</div>
 							</td>
-
-							<td><input type="text" class="form-control"
-								name="prescriptionDetails[__${iterStat.index}__].instructions"
-								th:value="${prescriptionDetail.instructions}"></td>
-							<td><button type="button"
-									class="deleteRowBtn btn btn-danger btn-sm">X</button></td>
-						</tr>
-
-						<!-- If there are no prescriptions, add an empty row -->
-						<tr th:if="${prescriptionForm.prescriptionDetails.size() == 0}">
-							<td><select
-								name="prescriptionDetails[0].medicine.medicineID"
-								class="medicine-dropdown form-control" data-row-index="0"
-								required>
-									<option value="">Select Medicine</option>
-									<option th:each="medicine : ${uniqueMedicineNames}"
-										th:value="${medicine.key}" th:text="${medicine.value}">
-									</option>
-							</select></td>
-							<td><select name="prescriptionDetails[0].dosage"
-								class="dosage-dropdown form-control" id="dosage-0" required>
-									<option value="">Select Dosage</option>
-									<!-- Dosage options will be populated dynamically via JavaScript -->
-							</select></td>
-							<td><input type="text" class="form-control"
-								name="prescriptionDetails[0].frequency" required></td>
-							<td><input type="text" class="form-control"
-								name="prescriptionDetails[0].duration" required></td>
 							<td><input type="text" class="form-control"
 								name="prescriptionDetails[0].instructions"></td>
-							<td><button type="button"
-									class="deleteRowBtn btn btn-danger btn-sm">X</button></td>
+							<td>
+								<button type="button" class="deleteRowBtn btn btn-danger btn-sm">X</button>
+							</td>
 						</tr>
-
 					</tbody>
 				</table>
 			</div>
@@ -306,168 +268,292 @@ form {
 
 	<!-- JavaScript to handle dependent dropdowns -->
 	<script th:inline="javascript">
- 	
-	// Store medicine details for JavaScript use
-	const medicineDetailsList = /*[[${medicineDetails}]]*/ [];
-	const uniqueMedicineNames = /*[[${uniqueMedicineNames}]]*/ {};
-	const MAX_MEDICATIONS = 5;
-	  
-	// Create a map to store variations (dosages) by medicine ID
-	const medicineDosageMap = {};
+  // Store medicine details for JavaScript use
+  // Replace the JavaScript code that processes the medicine details with this:
+const medicineDetailsList = /*[[${medicineDetails}]]*/ [];
+const uniqueMedicineNames = /*[[${uniqueMedicineNames}]]*/ {};
+const MAX_MEDICATIONS = 5;
 
-	function processMedicineDetails() {
-	  console.log("Processing medicine details:", medicineDetailsList);
-	  
-	  medicineDetailsList.forEach(medicine => {
-	    const medicineID = medicine.medicineID;
-	    
-	    // Initialize this medicine in our map if it doesn't exist
-	    if (!medicineDosageMap[medicineID]) {
-	      medicineDosageMap[medicineID] = {
-	        name: medicine.medicineName,
-	        type: medicine.medicineType,
-	        variations: []
-	      };
-	    }
-	    
-	    // Add the variation as a dosage option if it doesn't exist already
-	    if (medicine.variation && 
-	        !medicineDosageMap[medicineID].variations.includes(medicine.variation)) {
-	      medicineDosageMap[medicineID].variations.push(medicine.variation);
-	    }
-	  });
-	  
-	  console.log("Medicine dosage map:", medicineDosageMap);
-	}
+//Define the missing processMedicineDetails function
+function processMedicineDetails() {
+  console.log("Processing medicine details", medicineDetailsList);
+  // This function is no longer needed with the updated structure
+  // since we're directly using the uniqueMedicineNames from the controller
+  // but we'll keep it to avoid the error
+}
 
-	// Update dosage options based on selected medicine ID
-	function updateDosages(medicineSelect) {
-	  const rowIndex = medicineSelect.getAttribute('data-row-index');
-	  const selectedMedicineID = medicineSelect.value;
-	  const dosageDropdown = document.getElementById(`dosage-${rowIndex}`);
-	  
-	  console.log(`Updating dosages for medicine ID: ${selectedMedicineID}, row: ${rowIndex}`);
-	  
-	  // Clear existing options
-	  dosageDropdown.innerHTML = '<option value="">Select Dosage</option>';
-	  
-	  // Add new options if a medicine is selected
-	  if (selectedMedicineID && medicineDosageMap[selectedMedicineID]) {
-	    const variations = medicineDosageMap[selectedMedicineID].variations;
-	    console.log(`Found ${variations.length} variations for medicine ID ${selectedMedicineID}:`, variations);
-	    
-	    variations.forEach(variation => {
-	      const option = document.createElement('option');
-	      option.value = variation;
-	      option.textContent = variation;
-	      dosageDropdown.appendChild(option);
-	    });
-	  } else {
-	    console.log(`No variations found for medicine ID ${selectedMedicineID}`);
-	  }
-	}
+// This function will map medicine details for ID lookup
+function buildMedicineIDMap() {
+  const medicineIDMap = {};
+  
+  medicineDetailsList.forEach(medicine => {
+    const key = `${medicine.medicineName}-${medicine.medicineType}-${medicine.variation}`;
+    medicineIDMap[key] = {
+      id: medicine.medicineID,
+      cost: medicine.cost
+    };
+  });
+  
+  return medicineIDMap;
+}
 
-	document.addEventListener('DOMContentLoaded', function() {
-	  console.log("DOM loaded, processing medicine details");
-	  console.log("Medicine details list:", medicineDetailsList);
-	  console.log("Unique medicine names:", uniqueMedicineNames);
-	  
-	  // Process medicine details to populate the dosage map
-	  processMedicineDetails();
-	  
-	  // Set up event listeners for existing medicine dropdowns
-	  const medicineDropdowns = document.querySelectorAll('.medicine-dropdown');
-	  console.log(`Found ${medicineDropdowns.length} medicine dropdowns`);
-	  
-	  medicineDropdowns.forEach(dropdown => {
-	    dropdown.addEventListener('change', function() {
-	      console.log(`Medicine dropdown changed to ${this.value}`);
-	      updateDosages(this);
-	    });
-	    
-	    // If a medicine is already selected, populate its dosages
-	    if (dropdown.value) {
-	      console.log(`Medicine dropdown has preselected value: ${dropdown.value}`);
-	      updateDosages(dropdown);
-	    }
-	  });
-	  
-	  // Initialize prescription index by counting existing rows
-	  let prescriptionIndex = document.querySelectorAll('#prescriptionTable tbody tr').length;
-	  
-	  // Add record functionality
-	  document.getElementById('addMedicationBtn').addEventListener('click', function() {
-	    // Check against actual table rows
-	    if (document.querySelectorAll('#prescriptionTable tbody tr').length >= MAX_MEDICATIONS) {
-	      alert('Maximum 5 medications allowed');
-	      return;
-	    }
-	    
-	    // Build options for medicine dropdown
-	    const medicineOptions = Object.entries(uniqueMedicineNames).map(([id, name]) => 
-	      `<option value="${id}">${name}</option>`
-	    ).join('');
-	    
-	    const newRow = document.createElement('tr');
-	    newRow.innerHTML = `
-	      <td>
-	        <select name="prescriptionDetails[${prescriptionIndex}].medicine.medicineID" 
-	                class="medicine-dropdown form-control"
-	                data-row-index="${prescriptionIndex}" required>
-	          <option value="">Select Medicine</option>
-	          ${medicineOptions}
-	        </select>
-	      </td>
-	      <td>
-	        <select name="prescriptionDetails[${prescriptionIndex}].dosage" 
-	                class="dosage-dropdown form-control"
-	                id="dosage-${prescriptionIndex}" required>
-	          <option value="">Select Dosage</option>
-	        </select>
-	      </td>
-	      <td><input type="text" class="form-control" name="prescriptionDetails[${prescriptionIndex}].frequency" required></td>
-	      <td><input type="text" class="form-control" name="prescriptionDetails[${prescriptionIndex}].duration" required></td>
-	      <td><input type="text" class="form-control" name="prescriptionDetails[${prescriptionIndex}].instructions"></td>
-	      <td><button type="button" class="deleteRowBtn btn btn-danger btn-sm">X</button></td>
-	    `;
-	    
-	    // Append to the actual table body
-	    document.querySelector('#prescriptionTable tbody').appendChild(newRow);
-	    
-	    // Set up change event listener for the new medicine dropdown
-	    const newMedicineDropdown = newRow.querySelector('.medicine-dropdown');
-	    newMedicineDropdown.addEventListener('change', function() {
-	      updateDosages(this);
-	    });
-	    
-	    prescriptionIndex++;
-	  });
+// Populate medicine name dropdown for all rows
+function populateMedicineNameDropdowns() {
+  const dropdowns = document.querySelectorAll('.medicine-name-dropdown');
+  
+  dropdowns.forEach(dropdown => {
+    // Clear existing options except the first one
+    while (dropdown.options.length > 1) {
+      dropdown.remove(1);
+    }
     
+    // Add medicine names from uniqueMedicineNames keys
+    Object.keys(uniqueMedicineNames).sort().forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      dropdown.appendChild(option);
+    });
+  });
+}
+
+// Update medicine type dropdown based on selected medicine name
+function updateMedicineTypeDropdown(nameDropdown) {
+  const rowIndex = nameDropdown.getAttribute('data-row-index');
+  const medicineName = nameDropdown.value;
+  const typeDropdown = document.querySelector(`select[name="prescriptionDetails[${rowIndex}].medicineType"]`);
+  const dosageDropdown = document.querySelector(`select[name="prescriptionDetails[${rowIndex}].dosage"]`);
+  const medicineIDInput = document.querySelector(`input[name="prescriptionDetails[${rowIndex}].medicine.medicineID"]`);
+  
+  console.log(`Updating medicine types for medicine name: ${medicineName}, row: ${rowIndex}`);
+  
+  // Clear existing options
+  while (typeDropdown.options.length > 1) {
+    typeDropdown.remove(1);
+  }
+  
+  // Clear dosage dropdown
+  while (dosageDropdown.options.length > 1) {
+    dosageDropdown.remove(1);
+  }
+  
+  // Reset medicineID
+  medicineIDInput.value = '';
+  
+  // Enable/disable dropdowns
+  if (medicineName) {
+    typeDropdown.disabled = false;
+    
+    // Add medicine types using the uniqueMedicineNames structure
+    const types = Object.keys(uniqueMedicineNames[medicineName] || {}).sort();
+    types.forEach(type => {
+      const option = document.createElement('option');
+      option.value = type;
+      option.textContent = type;
+      typeDropdown.appendChild(option);
+    });
+  } else {
+    typeDropdown.disabled = true;
+    dosageDropdown.disabled = true;
+  }
+}
+
+// Update dosage dropdown based on selected medicine name and type
+function updateDosageDropdown(typeDropdown) {
+  const row = typeDropdown.closest('tr');
+  const medicineName = row.querySelector('.medicine-name-dropdown').value;
+  const medicineType = typeDropdown.value;
+  const dosageDropdown = row.querySelector('.dosage-dropdown');
+  const medicineIDInput = row.querySelector('.medicine-id-input');
+  
+  console.log(`Updating dosages for medicine name: ${medicineName}, type: ${medicineType}`);
+  
+  // Clear existing options
+  while (dosageDropdown.options.length > 1) {
+    dosageDropdown.remove(1);
+  }
+  
+  // Reset medicineID
+  medicineIDInput.value = '';
+  
+  // Enable/disable dosage dropdown
+  if (medicineType) {
+    dosageDropdown.disabled = false;
+    
+    // Add dosages using the uniqueMedicineNames structure
+    const dosages = uniqueMedicineNames[medicineName][medicineType] || [];
+    dosages.sort().forEach(dosage => {
+      const option = document.createElement('option');
+      option.value = dosage;
+      option.textContent = dosage;
+      dosageDropdown.appendChild(option);
+    });
+  } else {
+    dosageDropdown.disabled = true;
+  }
+}
+
+// Set medicineID based on selected medicine name, type, and dosage
+function updateMedicineID(dosageDropdown) {
+  const row = dosageDropdown.closest('tr');
+  const medicineName = row.querySelector('.medicine-name-dropdown').value;
+  const medicineType = row.querySelector('.medicine-type-dropdown').value;
+  const dosage = dosageDropdown.value;
+  const medicineIDInput = row.querySelector('.medicine-id-input');
+  
+  console.log(`Setting medicine ID for ${medicineName}, ${medicineType}, ${dosage}`);
+  
+  if (medicineName && medicineType && dosage) {
+    const key = `${medicineName}-${medicineType}-${dosage}`;
+    const medicineIDMap = buildMedicineIDMap();
+    
+    if (medicineIDMap[key]) {
+      medicineIDInput.value = medicineIDMap[key].id;
+      console.log(`Set medicine ID to ${medicineIDMap[key].id}`);
+    } else {
+      console.log(`No medicine ID found for key: ${key}`);
+      medicineIDInput.value = '';
+    }
+  } else {
+    medicineIDInput.value = '';
+  }
+}
+
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM loaded, processing medicine details");
+    console.log("Medicine details list:", medicineDetailsList);
+    
+    // Process medicine details to populate the maps
+    processMedicineDetails();
+    
+    // Populate medicine name dropdowns initially
+    populateMedicineNameDropdowns();
+    
+    // Set up event delegation for dropdown changes
+    document.addEventListener('change', function(event) {
+      if (event.target.classList.contains('medicine-name-dropdown')) {
+        updateMedicineTypeDropdown(event.target);
+      } else if (event.target.classList.contains('medicine-type-dropdown')) {
+        updateDosageDropdown(event.target);
+      } else if (event.target.classList.contains('dosage-dropdown')) {
+        updateMedicineID(event.target);
+      }
+    });
+    
+    // Initialize prescription index by counting existing rows
+    let prescriptionIndex = document.querySelectorAll('#prescriptionTable tbody tr').length;
+    
+    // Add medication functionality
+    document.getElementById('addMedicationBtn').addEventListener('click', function() {
+      // Check against maximum medications
+      if (document.querySelectorAll('#prescriptionTable tbody tr').length >= MAX_MEDICATIONS) {
+        alert('Maximum 5 medications allowed');
+        return;
+      }
+      
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>
+          <select name="prescriptionDetails[${prescriptionIndex}].medicineName" 
+                  class="medicine-name-dropdown form-control"
+                  data-row-index="${prescriptionIndex}" required>
+            <option value="">Select Medicine</option>
+          </select>
+        </td>
+        <td>
+          <select name="prescriptionDetails[${prescriptionIndex}].medicineType" 
+                  class="medicine-type-dropdown form-control"
+                  data-row-index="${prescriptionIndex}" required disabled>
+            <option value="">Select Type</option>
+          </select>
+        </td>
+        <td>
+          <select name="prescriptionDetails[${prescriptionIndex}].dosage" 
+                  class="dosage-dropdown form-control"
+                  id="dosage-${prescriptionIndex}" required disabled>
+            <option value="">Select Dosage</option>
+          </select>
+          <input type="hidden" name="prescriptionDetails[${prescriptionIndex}].medicine.medicineID" class="medicine-id-input">
+        </td>
+        <td>
+          <input type="text" class="form-control" 
+                 name="prescriptionDetails[${prescriptionIndex}].frequency" 
+                 placeholder="e.g., 1-0-1"
+                 pattern="^[0-9]+-[0-9]+-[0-9]+$"
+                 title="Enter frequency in the format Morning-Afternoon-Night (e.g., 1-0-1)"
+                 required>
+        </td>
+        <td>
+          <div class="input-group">
+            <input type="number" class="form-control"
+                   name="prescriptionDetails[${prescriptionIndex}].duration"
+                   placeholder="Duration in days" 
+                   min="1" required>
+            <span class="input-group-text">Days</span>
+          </div>
+        </td>
+        <td>
+          <input type="text" class="form-control" 
+                 name="prescriptionDetails[${prescriptionIndex}].instructions">
+        </td>
+        <td>
+          <button type="button" class="deleteRowBtn btn btn-danger btn-sm">X</button>
+        </td>
+      `;
+      
+      // Append to the table body
+      document.querySelector('#prescriptionTable tbody').appendChild(newRow);
+      
+   // Populate the new medicine name dropdown
+      const newNameDropdown = newRow.querySelector('.medicine-name-dropdown');
+      Object.keys(uniqueMedicineNames).sort().forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        newNameDropdown.appendChild(option);
+      });
+      
+      prescriptionIndex++;
+    });
+  
     // Remove medication functionality using event delegation
     document.addEventListener('click', function(event) {
       if (event.target.classList.contains('deleteRowBtn')) {
-        event.target.closest('tr').remove();
+        const tbody = document.querySelector('#prescriptionTable tbody');
+        // Check if this is the only row remaining
+        if (tbody.children.length > 1) {
+          event.target.closest('tr').remove();
+        } else {
+          // If it's the last row, just reset the values
+          const row = event.target.closest('tr');
+          row.querySelectorAll('input, select').forEach(input => {
+            if (input.type !== 'hidden') {
+              input.value = '';
+            }
+          });
+          row.querySelector('.medicine-type-dropdown').disabled = true;
+          row.querySelector('.dosage-dropdown').disabled = true;
+        }
       }
     });
     
     // Form submission handler
     document.getElementById('prescriptionForm').addEventListener('submit', function(event) {
-      // Remove empty rows
+      // Validate each row has a selected medicine ID
+      let valid = true;
       document.querySelectorAll('#prescriptionTable tbody tr').forEach(function(row) {
-        let isEmpty = true;
-        row.querySelectorAll('input[type="text"], select').forEach(function(input) {
-          if (input.value.trim() !== "") {
-            isEmpty = false;
-            return;
-          }
-        });
-        
-        if (isEmpty) {
-          row.remove();
+        const medicineIDInput = row.querySelector('.medicine-id-input');
+        if (!medicineIDInput.value) {
+          valid = false;
+          alert('Please select medicine name, type, and dosage for all medications');
+          event.preventDefault();
+          return false;
         }
       });
       
-      // Renumber the remaining rows sequentially
+      if (!valid) return;
+      
+      // Renumber the rows sequentially
       let newIndex = 0;
       document.querySelectorAll('#prescriptionTable tbody tr').forEach(function(row) {
         row.querySelectorAll('input, select').forEach(function(input) {
@@ -477,13 +563,13 @@ form {
             input.setAttribute('name', newName);
           }
           
-          // Update select IDs and data attributes
-          if (input.classList.contains('dosage-dropdown')) {
-            input.setAttribute('id', `dosage-${newIndex}`);
+          // Update data attributes
+          if (input.hasAttribute('data-row-index')) {
+            input.setAttribute('data-row-index', newIndex);
           }
           
-          if (input.classList.contains('medicine-dropdown')) {
-            input.setAttribute('data-row-index', newIndex);
+          if (input.id && input.id.startsWith('dosage-')) {
+            input.setAttribute('id', `dosage-${newIndex}`);
           }
         });
         newIndex++;
@@ -498,30 +584,6 @@ form {
       dateField.max = today;
     }
   });
-	document.addEventListener('input', function(event) {
-		  const row = event.target.closest('tr'); // Get the current row where the input occurred
-		  if (!row) return;
-
-		  const frequencyInput = row.querySelector('input[name^="prescriptionDetails"][name$=".frequency"]').value;
-		  const durationInput = row.querySelector('input[name^="prescriptionDetails"][name$=".duration"]').value;
-		  const costField = row.querySelector('input[name^="prescriptionDetails"][name$=".cost"]');
-
-		  // Get the selected medicine's cost per unit from the dropdown (assume it's stored as a data attribute)
-		  const medicineDropdown = row.querySelector('select[name^="prescriptionDetails"][name$=".medicineName"]');
-		  const costPerUnit = medicineDropdown.options[medicineDropdown.selectedIndex]?.getAttribute('data-cost') || 0;
-
-		  // Parse the frequency (e.g., "1-0-1") and calculate doses per day
-		  const dosesPerDay = frequencyInput.split('-').reduce((total, num) => total + (parseInt(num, 10) || 0), 0);
-
-		  // Ensure valid inputs for calculation
-		  const durationInDays = parseInt(durationInput, 10) || 0;
-		  const unitCost = parseFloat(costPerUnit) || 0;
-
-		  // Calculate the total cost and update the field
-		  const totalCost = (dosesPerDay * durationInDays * unitCost).toFixed(2);
-		  costField.value = totalCost > 0 ? `$${totalCost}` : ''; // Display cost or clear field if invalid
-		});
-
 </script>
 </body>
 </html>

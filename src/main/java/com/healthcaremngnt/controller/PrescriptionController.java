@@ -1,14 +1,17 @@
 package com.healthcaremngnt.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,22 +25,27 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
 import com.healthcaremngnt.enums.AppointmentStatus;
+import com.healthcaremngnt.enums.Salutation;
 import com.healthcaremngnt.exceptions.AppointmentNotFoundException;
 import com.healthcaremngnt.exceptions.DataPersistenceException;
 import com.healthcaremngnt.exceptions.PatientNotFoundException;
 import com.healthcaremngnt.exceptions.TreatmentNotFoundException;
+import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.MedicineDetail;
 import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.model.Prescription;
 import com.healthcaremngnt.model.PrescriptionDetail;
 import com.healthcaremngnt.model.PrescriptionForm;
 import com.healthcaremngnt.model.Treatment;
+import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.MedicineDetailRepository;
 import com.healthcaremngnt.service.AppointmentService;
+import com.healthcaremngnt.service.DoctorService;
 import com.healthcaremngnt.service.PatientService;
 import com.healthcaremngnt.service.PrescriptionDetailService;
 import com.healthcaremngnt.service.PrescriptionService;
 import com.healthcaremngnt.service.TreatmentService;
+import com.healthcaremngnt.util.DateFormatter;
 
 @Controller
 @RequestMapping("/prescriptions")
@@ -47,6 +55,7 @@ public class PrescriptionController {
 
 	private final PrescriptionService prescriptionService;
 	private final PrescriptionDetailService prescriptionDetailService;
+	private final DoctorService doctorService;
 	private final PatientService patientService;
 	private final TreatmentService treatmentService;
 	private final AppointmentService appointmentService;
@@ -54,11 +63,12 @@ public class PrescriptionController {
 	private final MedicineDetailRepository medicineDetailRepository;
 
 	public PrescriptionController(PrescriptionService prescriptionService,
-			PrescriptionDetailService prescriptionDetailService, PatientService patientService,
-			TreatmentService treatmentService, AppointmentService appointmentService,
+			PrescriptionDetailService prescriptionDetailService, DoctorService doctorService,
+			PatientService patientService, TreatmentService treatmentService, AppointmentService appointmentService,
 			MedicineDetailRepository medicineDetailRepository) {
 		this.prescriptionService = prescriptionService;
 		this.prescriptionDetailService = prescriptionDetailService;
+		this.doctorService = doctorService;
 		this.patientService = patientService;
 		this.treatmentService = treatmentService;
 		this.appointmentService = appointmentService;
@@ -71,6 +81,7 @@ public class PrescriptionController {
 		logger.info("Loading Prescription Details!!!");
 
 		try {
+
 			Prescription prescription = prescriptionService.getPrescriptionDetails(prescriptionID);
 
 			List<PrescriptionDetail> prescriptionDetails = prescriptionDetailService
@@ -80,8 +91,47 @@ public class PrescriptionController {
 				prescription.setPrescriptionDetails(prescriptionDetails);
 			}
 
-			model.addAttribute("prescription", prescription);
 			logger.debug("prescription: {}", prescription);
+			model.addAttribute("prescription", prescription);
+
+			// Get all medicine details from the repository
+			List<MedicineDetail> medicineDetails = medicineDetailRepository.findAll(Sort.by("medicineName"));
+
+			// Create a simplified data structure for JavaScript
+			List<Map<String, Object>> simpleMedicineList = new ArrayList<>();
+			for (MedicineDetail med : medicineDetails) {
+				Map<String, Object> medicineMap = new HashMap<>();
+				medicineMap.put("medicineID", med.getMedicineID());
+				medicineMap.put("medicineName", med.getMedicineName());
+				medicineMap.put("medicineType", med.getMedicineType());
+				medicineMap.put("variation", med.getVariation());
+				simpleMedicineList.add(medicineMap);
+			}
+
+			// Also create a simplified prescription details list
+			List<Map<String, Object>> simplePrescriptionDetails = new ArrayList<>();
+			if (prescription.getPrescriptionDetails() != null) {
+				for (PrescriptionDetail detail : prescription.getPrescriptionDetails()) {
+					Map<String, Object> detailMap = new HashMap<>();
+					detailMap.put("medicineID", detail.getMedicine().getMedicineID());
+					detailMap.put("medicineName", detail.getMedicine().getMedicineName());
+					detailMap.put("medicineType", detail.getMedicine().getMedicineType());
+					detailMap.put("dosage", detail.getDosage());
+					detailMap.put("frequency", detail.getFrequency());
+					detailMap.put("duration", detail.getDuration());
+					detailMap.put("instructions", detail.getInstructions());
+					simplePrescriptionDetails.add(detailMap);
+				}
+			}
+
+			logger.debug("medicineDetails: {}", medicineDetails);
+			logger.debug("simpleMedicineList: {}", simpleMedicineList);
+			logger.debug("simplePrescriptionDetails: {}", simplePrescriptionDetails);
+
+			// Add attributes to the model
+			model.addAttribute("medicineDetails", medicineDetails);
+			model.addAttribute("simpleMedicineList", simpleMedicineList);
+			model.addAttribute("simplePrescriptionDetails", simplePrescriptionDetails);
 
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.PRESCRIPTION_LOAD_ERROR, e.getLocalizedMessage());
@@ -94,16 +144,116 @@ public class PrescriptionController {
 
 	}
 
+	@GetMapping("printprescription")
+	public String viewPrintPrescription(@RequestParam(RequestParamConstants.PRESCRIPTION_ID) Long prescriptionID,
+			Model model) {
+		logger.info("Loading Print Prescription Details!!!");
+
+		try {
+
+			String currentDate = LocalDateTime.now().toString().replace("T", " ");
+
+			Prescription prescription = prescriptionService.getPrescriptionDetails(prescriptionID);
+
+			List<PrescriptionDetail> prescriptionDetails = prescriptionDetailService
+					.getPrescriptionDetails(prescription.getPrescriptionID());
+
+			if (prescriptionDetails != null && !prescriptionDetails.isEmpty()) {
+				prescription.setPrescriptionDetails(prescriptionDetails);
+			}
+
+			logger.debug("prescription: {}", prescription);
+
+			String formattedPrescriptionDate = DateFormatter
+					.formatWithOrdinalSuffix(prescription.getPrescriptionDate());
+			String formattedTreatmentDate = null;
+
+			if (prescription.getTreatment() != null) {
+
+				Treatment treatment = prescription.getTreatment();
+
+				LocalDate treatmentDate = treatment.getTreatmentDate();
+				LocalDateTime treatmentDateTime = treatmentDate.atStartOfDay();
+				formattedTreatmentDate = DateFormatter.formatWithOrdinalSuffix(treatmentDateTime);
+
+				Doctor doctor = doctorService.getDoctorDetails(treatment.getDoctorID());
+
+				logger.debug("doctor: {}", doctor);
+				model.addAttribute("doctor", doctor);
+
+				Patient patient = patientService.getPatientDetails(treatment.getPatientID());
+				logger.debug("patient: {}", patient);
+				
+				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
+						: patient.getSalutation().name();
+				salutation = salutation.charAt(0) + salutation.substring(1).toLowerCase();
+		  
+				model.addAttribute("salutation", salutation);
+				model.addAttribute("patient", patient);
+
+				User user = patient.getUser();
+				logger.debug("user: {}", user);
+				model.addAttribute("user", user);
+
+			}
+
+			model.addAttribute("formattedPrescriptionDate", formattedPrescriptionDate);
+			model.addAttribute("formattedTreatmentDate", formattedTreatmentDate);
+			model.addAttribute("currentDate", currentDate);
+			model.addAttribute("prescription", prescription);
+
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.PRESCRIPTION_PRINT_LOAD_ERROR, e.getLocalizedMessage());
+			model.addAttribute("errorMessage", MessageConstants.PRESCRIPTION_PRINT_LOAD_ERROR);
+
+		}
+
+		return "printprescription";
+	}
+
 	@PostMapping("/updateprescription")
 	public String updatePrescription(@ModelAttribute Prescription prescription,
-			@RequestParam(value = RequestParamConstants.PRESCRIPTION_ID, required = false) Long prescriptionID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Updating Prescriptions");
 
-		Optional.ofNullable(prescription).ifPresent(id -> logger.debug("prescription: {}", id));
-		Optional.ofNullable(prescriptionID).ifPresent(id -> logger.debug("prescription ID: {}", id));
+//		logger.debug("prescription: {}", prescription); // Log the entire object
+		Optional.ofNullable(prescription).map(Prescription::getPrescriptionID)
+				.ifPresent(id -> logger.debug("prescription ID from object: {}", id));
+		Optional.ofNullable(prescription).map(Prescription::getPrescriptionDate)
+				.ifPresent(id -> logger.debug("prescription Date from object: {}", id));
+		Optional.ofNullable(prescription).map(Prescription::getPrescriptionStatus)
+				.ifPresent(id -> logger.debug("prescription Status from object: {}", id));
+		Optional.ofNullable(prescription).map(Prescription::getGeneralInstructions)
+				.ifPresent(id -> logger.debug("General Instructions from object: {}", id));
+
 		Optional.ofNullable(source).ifPresent(src -> logger.debug("Source: {}", src));
 
+		if (prescription.getTreatment() != null) {
+			logger.debug("Treatment is not null");
+
+		} else {
+			logger.debug("Treatment is null");
+		}
+		
+		if (prescription.getPrescriptionDetails() != null) {
+			logger.debug("Prescription Details is not null");
+
+			for (PrescriptionDetail prescriptionDetail : prescription.getPrescriptionDetails()) {
+				logger.debug("ID: {}", prescriptionDetail.getPrescriptionDetailID());
+				logger.debug("Medicine: {}, {}, {}", prescriptionDetail.getMedicine().getMedicineID(),
+						prescriptionDetail.getMedicine().getMedicineName(),
+						prescriptionDetail.getMedicine().getMedicineType());
+				logger.debug("Dosage: {}", prescriptionDetail.getDosage());
+				logger.debug("Frequency: {}", prescriptionDetail.getFrequency());
+				logger.debug("Duration: {}", prescriptionDetail.getDuration());
+				logger.debug("Instructions: {}", prescriptionDetail.getInstructions());
+
+			}
+
+		} else {
+			logger.debug("Prescription Details is null");
+
+		}
 		try {
 			prescriptionService.updatePrescriptionDetails(prescription);
 			logger.debug("{}", MessageConstants.PRESCRIPTION_UPD_SUCCESS);
@@ -115,7 +265,7 @@ public class PrescriptionController {
 		}
 
 		model.addAttribute("prescription", prescription);
-		model.addAttribute("prescriptionID", prescriptionID);
+		model.addAttribute("prescriptionID", prescription.getPrescriptionID());
 		model.addAttribute("message", MessageConstants.PRESCRIPTION_UPD_SUCCESS);
 		model.addAttribute("source", source);
 
@@ -149,19 +299,15 @@ public class PrescriptionController {
 		}
 
 		// Get all medicine details from the repository
-		List<MedicineDetail> medicineDetails = medicineDetailRepository.findAll();
+		List<MedicineDetail> medicineDetails = medicineDetailRepository.findAll(Sort.by("medicineName"));
 
-		// Create a map of medicine IDs to medicine names
-		Map<Long, String> uniqueMedicineNames = new LinkedHashMap<>();
+		// Structure data to support cascading dropdowns
+		Map<String, Map<String, List<String>>> uniqueMedicineNames = new LinkedHashMap<>();
 
-		// Group by medicine name AND type to avoid duplicates in dropdown
-		medicineDetails.stream()
-				.collect(Collectors
-						.groupingBy(medicine -> medicine.getMedicineName() + " - " + medicine.getMedicineType()))
-				.forEach((nameWithType, medicines) -> {
-					// Just take the first medicine's ID for each unique name-type combination
-					uniqueMedicineNames.put(medicines.get(0).getMedicineID(), nameWithType);
-				});
+		medicineDetails.forEach(medicine -> {
+			uniqueMedicineNames.computeIfAbsent(medicine.getMedicineName(), k -> new LinkedHashMap<>())
+					.computeIfAbsent(medicine.getMedicineType(), k -> new ArrayList<>()).add(medicine.getVariation());
+		});
 
 		logger.debug("medicineDetails: {}", medicineDetails);
 		logger.debug("uniqueMedicineNames: {}", uniqueMedicineNames);

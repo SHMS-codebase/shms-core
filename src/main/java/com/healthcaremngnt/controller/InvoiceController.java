@@ -209,7 +209,7 @@ public class InvoiceController {
 
 			String year = String.valueOf(java.time.Year.now());
 			String invoiceNumber = "#INV-" + year + "-" + invoiceID;
-			String currentDate = java.time.LocalDateTime.now().toString().replace("T", " ");
+			String currentDate = LocalDateTime.now().toString().replace("T", " ");
 
 			logger.debug("invoice: {}", invoice);
 			model.addAttribute("invoice", invoice);

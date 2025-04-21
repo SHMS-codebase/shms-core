@@ -93,7 +93,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
 	@Override
 	public Prescription getPrescriptionDetails(Long prescriptionID) throws PrescriptionNotFoundException {
-		logger.info("Fetching prescription details for ID: {}", prescriptionID);
+		logger.info("Fetching prescription for ID: {}", prescriptionID);
 
 		if (prescriptionID == null || prescriptionID <= 0) {
 			throw new IllegalArgumentException("Invalid prescription ID.");

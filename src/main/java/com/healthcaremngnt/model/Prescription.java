@@ -31,7 +31,7 @@ public class Prescription {
 	@Column(name = "prescription_id")
 	private Long prescriptionID;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "treatment_id", nullable = false)
 	private Treatment treatment;
 

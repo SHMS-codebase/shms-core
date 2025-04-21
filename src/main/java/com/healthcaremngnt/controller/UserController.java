@@ -131,7 +131,7 @@ public class UserController {
 		logger.debug("Doctor - Name: {}, Email: {}, Address: {}, Contact: {}", form.getDoctorName(),
 				form.getDoctorEmailID(), form.getDoctorAddress(), form.getDoctorContactNumber());
 		logger.debug("Doctor - Qualification: {}, Specialization: {}, Experience: {}", form.getQualification(),
-				form.getSpecialization(), form.getExperience());
+				form.getSpecialization(), form.getExperience(), form.getLicenseNumber());
 		logger.debug("Patient - Salutation: {}, Custom Salutaion: {}, Name: {}, Email: {}, Address: {}, Contact: {}",
 				form.getSalutation(), form.getCustomSalutation(), form.getPatientName(), form.getPatientEmailID(),
 				form.getPatientAddress(), form.getPatientContactNumber());
@@ -180,6 +180,7 @@ public class UserController {
 		doctor.setQualification(form.getQualification());
 		doctor.setSpecialization(form.getSpecialization());
 		doctor.setExperience(Integer.parseInt(form.getExperience()));
+		doctor.setLicenseNumber(form.getLicenseNumber());
 		doctor.setUser(user);
 
 		try {
@@ -309,7 +310,6 @@ public class UserController {
 			logger.debug("{}", MessageConstants.USER_UPD_SUCCESS);
 			model.addAttribute("userDetails", userDetails);
 			model.addAttribute("message", MessageConstants.USER_UPD_SUCCESS);
-			
 
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.USER_UPD_FAILURE, e.getLocalizedMessage());

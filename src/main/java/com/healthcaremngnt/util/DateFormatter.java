@@ -1,5 +1,6 @@
 package com.healthcaremngnt.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -9,6 +10,18 @@ import com.healthcaremngnt.constants.MessageConstants;
 public class DateFormatter {
 
 	public static String formatWithOrdinalSuffix(LocalDateTime date) {
+		if (date == null) {
+			throw new IllegalArgumentException(MessageConstants.DATE_NULL);
+		}
+
+		int day = date.getDayOfMonth();
+		String daySuffix = determineDaySuffix(day);
+
+		return String.format("%s %d%s, %d", date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH), day,
+				daySuffix, date.getYear());
+	}
+	
+	public static String formatWithOrdinalSuffix(LocalDate date) {
 		if (date == null) {
 			throw new IllegalArgumentException(MessageConstants.DATE_NULL);
 		}

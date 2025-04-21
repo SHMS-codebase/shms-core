@@ -186,6 +186,7 @@ public class UserServiceImpl implements UserService {
 		doctor.setQualification(updatedDoctor.getQualification());
 		doctor.setSpecialization(updatedDoctor.getSpecialization());
 		doctor.setExperience(updatedDoctor.getExperience());
+		doctor.setLicenseNumber(updatedDoctor.getLicenseNumber());
 	}
 
 	private void updatePatientDetails(Patient patient, Patient updatedPatient) {

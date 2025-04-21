@@ -41,14 +41,17 @@ public class Doctor {
 	@Column(name = "experience", nullable = false)
 	private int experience;
 
+	@Column(name = "license_number", nullable = false)
+	private String licenseNumber;
+
 	@Column(name = "created_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createdDate;
 
 	@Column(name = "updated_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
 	private LocalDateTime updatedDate;
 
-	 @OneToOne(fetch = FetchType.LAZY)
-	    @JoinColumn(name = "user_id", unique = true)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", unique = true)
 	private User user;
 
 	/**
@@ -150,6 +153,20 @@ public class Doctor {
 	}
 
 	/**
+	 * @return the licenseNumber
+	 */
+	public String getLicenseNumber() {
+		return licenseNumber;
+	}
+
+	/**
+	 * @param licenseNumber the licenseNumber to set
+	 */
+	public void setLicenseNumber(String licenseNumber) {
+		this.licenseNumber = licenseNumber;
+	}
+
+	/**
 	 * @return the createdDate
 	 */
 	public LocalDateTime getCreatedDate() {
@@ -201,13 +218,13 @@ public class Doctor {
 	protected void onUpdate() {
 		updatedDate = LocalDateTime.now();
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Doctor [doctorID=" + doctorID + ", doctorName=" + doctorName + ", contactNumber="
-				+ contactNumber + ", address=" + address + ", qualification=" + qualification
-				+ ", specialization=" + specialization + ", experience=" + experience + ", createdDate=" + createdDate
-				+ ", updatedDate=" + updatedDate + "]";
+		return "Doctor [doctorID=" + doctorID + ", doctorName=" + doctorName + ", contactNumber=" + contactNumber
+				+ ", address=" + address + ", qualification=" + qualification + ", specialization=" + specialization
+				+ ", experience=" + experience + ", licenseNumber=" + licenseNumber + ", createdDate=" + createdDate
+				+ ", updatedDate=" + updatedDate + ", user=" + user + "]";
 	}
 
 }

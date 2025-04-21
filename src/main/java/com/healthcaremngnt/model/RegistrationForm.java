@@ -21,6 +21,7 @@ public class RegistrationForm {
 	private String qualification;
 	private String specialization;
 	private String experience;
+	private String licenseNumber;
 
 	// Patient Data
 	private Salutation salutation;
@@ -173,6 +174,20 @@ public class RegistrationForm {
 	}
 
 	/**
+	 * @return the licenseNumber
+	 */
+	public String getLicenseNumber() {
+		return licenseNumber;
+	}
+
+	/**
+	 * @param licenseNumber the licenseNumber to set
+	 */
+	public void setLicenseNumber(String licenseNumber) {
+		this.licenseNumber = licenseNumber;
+	}
+
+	/**
 	 * @return the salutation
 	 */
 	public Salutation getSalutation() {
@@ -289,9 +304,11 @@ public class RegistrationForm {
 		return "RegistrationForm [role=" + role + ", adminName=" + adminName + ", adminEmailID=" + adminEmailID
 				+ ", doctorName=" + doctorName + ", doctorEmailID=" + doctorEmailID + ", doctorContactNumber="
 				+ doctorContactNumber + ", doctorAddress=" + doctorAddress + ", qualification=" + qualification
-				+ ", specialization=" + specialization + ", experience=" + experience + ", patientName=" + patientName
-				+ ", patientEmailID=" + patientEmailID + ", patientContactNumber=" + patientContactNumber
-				+ ", patientAddress=" + patientAddress + ", dob=" + dob + ", gender=" + gender + "]";
+				+ ", specialization=" + specialization + ", experience=" + experience + ", licenseNumber="
+				+ licenseNumber + ", salutation=" + salutation + ", customSalutation=" + customSalutation
+				+ ", patientName=" + patientName + ", patientEmailID=" + patientEmailID + ", patientContactNumber="
+				+ patientContactNumber + ", patientAddress=" + patientAddress + ", dob=" + dob + ", gender=" + gender
+				+ "]";
 	}
 
 }

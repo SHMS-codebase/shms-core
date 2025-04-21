@@ -292,7 +292,7 @@ public class Treatment {
 	@Override
 	public String toString() {
 		return "Treatment [treatmentID=" + treatmentID + ", diagnosis=" + diagnosis + ", treatmentDetails="
-				+ treatmentDetails + ", additonalNotes=" + notes + ", treatmentStatus=" + treatmentStatus
+				+ treatmentDetails + ", notes=" + notes + ", treatmentStatus=" + treatmentStatus
 				+ ", followUpNeeded=" + followUpNeeded + ", invoiceGenerated=" + invoiceGenerated + ", treatmentDate="
 				+ treatmentDate + ", appointment=" + appointment + ", doctorID=" + doctorID + ", patientID=" + patientID
 				+ ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + "]";
