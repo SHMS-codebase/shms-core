@@ -331,4 +331,12 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new RuntimeException("User not found with username: " + userName));
 	}
 
+	@Override
+	public User getUserByPatientID(Long patientID) {
+		logger.info("Fetching user by Patient ID: {}", patientID);
+
+		return userRepository.findUserByPatientID(patientID)
+				.orElseThrow(() -> new RuntimeException("User not found with Patient ID: " + patientID));
+	}
+
 }

@@ -59,7 +59,6 @@ public class PrescriptionController {
 	private final PatientService patientService;
 	private final TreatmentService treatmentService;
 	private final AppointmentService appointmentService;
-
 	private final MedicineDetailRepository medicineDetailRepository;
 
 	public PrescriptionController(PrescriptionService prescriptionService,
@@ -183,11 +182,11 @@ public class PrescriptionController {
 
 				Patient patient = patientService.getPatientDetails(treatment.getPatientID());
 				logger.debug("patient: {}", patient);
-				
+
 				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
 						: patient.getSalutation().name();
 				salutation = salutation.charAt(0) + salutation.substring(1).toLowerCase();
-		  
+
 				model.addAttribute("salutation", salutation);
 				model.addAttribute("patient", patient);
 
@@ -234,7 +233,7 @@ public class PrescriptionController {
 		} else {
 			logger.debug("Treatment is null");
 		}
-		
+
 		if (prescription.getPrescriptionDetails() != null) {
 			logger.debug("Prescription Details is not null");
 
@@ -288,7 +287,8 @@ public class PrescriptionController {
 		Patient patient = new Patient();
 		Long patientID = null;
 
-		if (savedTreatment != null && savedTreatment.getAppointment() != null) {
+		if (savedTreatment != null && savedTreatment.getAppointments() != null
+				&& !savedTreatment.getAppointments().isEmpty()) {
 
 			patientID = savedTreatment.getPatientID();
 			logger.debug("patientID: {}", patientID);

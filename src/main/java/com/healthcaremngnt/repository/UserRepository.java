@@ -34,6 +34,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+ "AND (:emailID IS NULL OR u.emailID LIKE %:emailID%)")
 	List<User> searchAdminUsers(@Param("name") String name, @Param("emailID") String emailID);
 
+	@Query("SELECT u FROM User u WHERE u.userID = (SELECT p.user.userID FROM Patient p WHERE p.patientID = :patientID)")
+	Optional<User> findUserByPatientID(@Param("patientID")Long patientID);
+
 	// Example of a derived query (if needed):
 	// Optional<User> findByUserNameIgnoreCase(String userName); // Case-insensitive search
 

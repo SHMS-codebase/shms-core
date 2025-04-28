@@ -94,7 +94,7 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(txtFilename, true))) {
 			writer.write("Billing Report generated on::: " + today + "\n\n");
 			for (Invoice invoice : invoices) {
-				Patient patient = invoice.getTreatment().getAppointment().getPatient();
+				Patient patient = invoice.getTreatment().getAppointments().get(0).getPatient();
 				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
 						: patient.getSalutation().name();
 
@@ -170,7 +170,7 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 				contentStream.newLine();
 				contentStream.showText("Invoice Date: " + invoice.getInvoiceDate());
 				contentStream.newLine();
-				Patient patient = invoice.getTreatment().getAppointment().getPatient();
+				Patient patient = invoice.getTreatment().getAppointments().get(0).getPatient();
 				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
 						: patient.getSalutation().name();
 
@@ -188,7 +188,7 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 				contentStream.newLine();
 
 				logger.debug("Processing invoice: " + invoice.getInvoiceID() + ", Patient: "
-						+ invoice.getTreatment().getAppointment().getPatient().getPatientName());
+						+ invoice.getTreatment().getAppointments().get(0).getPatient().getPatientName());
 
 				yPosition -= (9 * 14.5f); // Adjust downward after writing each invoice
 			}
@@ -234,7 +234,7 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 
 		for (Invoice invoice : invoices) {
 
-			Patient patient = invoice.getTreatment().getAppointment().getPatient();
+			Patient patient = invoice.getTreatment().getAppointments().get(0).getPatient();
 			String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
 					: patient.getSalutation().name();
 
@@ -293,7 +293,7 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 
 		// Create data rows
 		for (Invoice invoice : invoices) {
-			Patient patient = invoice.getTreatment().getAppointment().getPatient();
+			Patient patient = invoice.getTreatment().getAppointments().get(0).getPatient();
 			String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
 					: patient.getSalutation().name();
 

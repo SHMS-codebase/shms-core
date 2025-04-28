@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescription Details</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<style>
+/* Card styles */
+.card {
+	margin-top: 100px;
+	width: 100%;
+	max-width: 1000px;
+	margin: 100px auto 20px;
+	background-color: #fff;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header {
+	background: linear-gradient(to top, rgb(5, 5, 40), rgb(15, 32, 95));
+	color: white;
+	padding: 10px 15px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.card-header h5 {
+	margin: 0;
+	text-align: center;
+}
+
+.card-body {
+	padding: 15px 20px;
+}
+
+.container {
+	width: 70%;
+	margin-top: 500px;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Prescription Header */
+.prescription-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 15px;
+	margin: 20px;
+	border-bottom: 1px solid #ccc; /* Separator line */
+}
+
+.prescription-title {
+	text-align: center;
+	margin: 15px 0;
+	color: #2c3e50;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.rx-number {
+	font-size: 18px;
+	font-weight: bold;
+	color: rgb(0, 0, 128);
+	font-weight: normal;
+}
+
+/* Patient and Prescriber Info Sections */
+.patient-info, .prescriber-info, .treatment-details {
+	background-color: #f8f9fa;
+	border-radius: 8px;
+	padding: 15px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	height: 100%;
+}
+
+.col-sm-6 h5 {
+	text-align: left;
+	font-size: 18px;
+	color: #2c3e50;
+	margin-bottom: 15px;
+	border-bottom: 2px solid #3498db;
+	padding-bottom: 8px;
+	font-weight: 600;
+}
+
+.patient-name, .doctor-name {
+	font-size: 20px;
+	font-weight: bold;
+	color: #2c3e50;
+	font-family: 'Open Sans', sans-serif;
+	margin-bottom: 10px;
+}
+
+.italic-text {
+	font-style: italic;
+	font-size: 15px;
+	color: #555;
+	margin-bottom: 5px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+/* Treatment and Prescription Dates */
+.treatment-prescription-dates {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	padding: 10px 15px;
+	background-color: #f5f5f5;
+	border-radius: 5px;
+}
+
+.treatment-date, .prescription-date {
+	font-weight: 500;
+	color: #444;
+}
+
+/* Medication Section */
+.section {
+	margin-bottom: 20px;
+	padding: 15px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+.section-title {
+	margin-top: 0;
+	color: #2c3e50;
+	font-size: 16px;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 8px;
+}
+
+.medication-section {
+	background-color: #f9f9f9;
+}
+
+.medication-note {
+	font-style: italic;
+	color: #666;
+}
+
+/* Medication Table */
+.medication-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 10px;
+}
+
+.medication-table th {
+	background-color: #2c3e50;
+	color: white;
+	text-align: left;
+	padding: 10px;
+	font-size: 14px;
+}
+
+.medication-table td {
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+	font-size: 14px;
+}
+
+.medication-table tr:nth-child(even) {
+	background-color: #f2f2f2;
+}
+
+.medication-table tr:hover {
+	background-color: #e9f7fe;
+}
+
+/* Print Button */
+.print-button {
+	background-color: #3498db;
+	color: white;
+	border: none;
+	padding: 10px 15px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	margin-top: 20px;
+}
+
+/* Print Media Styles */
+@media print {
+	.no-print {
+		display: none;
+	}
+	body * {
+		visibility: hidden;
+	}
+	.card.mb-4, .card.mb-4 * {
+		visibility: visible;
+	}
+	.card.mb-4 {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+	.btn {
+		display: none;
+	}
+	.container {
+		box-shadow: none;
+		padding: 0;
+	}
+}
+
+.centered-text {
+	text-align: center;
+}
+</style>
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="fragments/header-loggedin :: header"></div>
+
+	<div class="container mt-4 mb-5">
+
+		<div class="card mb-4">
+
+			<div class="card-header">
+				<div class="row">
+					<div class="col-md-6">
+						<h4 class="mb-0">Smart HealthCare Management System</h4>
+					</div>
+				</div>
+			</div>
+
+			<div class="prescription-title">Prescription Details</div>
+
+			<div class="prescription-header">
+				<div class="rx-number">
+					Prescription ID: &nbsp; <span
+						th:text="${prescription.prescriptionID}"></span>
+				</div>
+				<p style="font-weight: lighter;">
+					Printed on: &nbsp; <span th:text="${currentDate}"></span>
+				</p>
+			</div>
+
+			<div class="card-body">
+				<div class="row mb-4">
+
+					<div class="col-sm-6">
+						<div class="patient-info">
+							<h5 class="mb-3">Patient Information:</h5>
+							<div>
+								<strong class="patient-name"
+									th:text="${salutation + '. ' + patient.patientName}"></strong>
+							</div>
+							<div class="italic-text"
+								th:text="${'Date of Birth: ' + patient.dob}"></div>
+							<div class="italic-text"
+								th:text="${'Patient ID: ' + patient.patientID}"></div>
+							<div class="italic-text"
+								th:text="${'Phone: ' + patient.contactNumber}"></div>
+							<div class="italic-text" th:text="${'Email: ' + user.emailID}"></div>
+						</div>
+					</div>
+
+					<div class="col-sm-6">
+						<div class="prescriber-info">
+							<h5 class="mb-3">Prescriber Information:</h5>
+							<div>
+								<strong class="doctor-name" th:text="${doctor.doctorName}"></strong>
+							</div>
+							<div class="italic-text" th:text="${doctor.specialization}"></div>
+							<div class="italic-text"
+								th:text="${'License #: ' + doctor.licenseNumber}"></div>
+							<div class="italic-text">Smart HealthCare Management System</div>
+							<div class="italic-text">Phone: +91 ***** *****</div>
+							<div class="italic-text">
+								Email: <a href="mailto:smarthealthcaremngntsystem@gmail.com">smarthealthcaremngntsystem@gmail.com</a>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row mb-4">
+					<div class="col-sm-12">
+						<div class="treatment-prescription-dates">
+							<div class="prescription-date">
+								Prescription Date: &nbsp; <span
+									th:text="${formattedPrescriptionDate}"></span>
+							</div>
+							<div class="prescription-date">
+								Prescription Status: &nbsp; <span
+									th:text="${prescription.prescriptionStatus}"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="section medication-section">
+					<h3 class="section-title">Prescribed Medications</h3>
+					<table class="medication-table">
+						<thead>
+							<tr>
+								<th>Medicine Name</th>
+								<th>Medicine Type</th>
+								<th>Dosage</th>
+								<th>Frequency</th>
+								<th>Duration (Days)</th>
+								<th>Instructions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="detail : ${prescription.prescriptionDetails}">
+								<td th:text="${detail.medicine.medicineName}"></td>
+								<td th:text="${detail.medicine.medicineType}"></td>
+								<td th:text="${detail.dosage}"></td>
+								<td th:text="${detail.frequency}"></td>
+								<td th:text="${detail.duration}"></td>
+								<td th:text="${detail.instructions}"></td>
+							</tr>
+						</tbody>
+
+					</table>
+					<div class="medication-note">
+						<p>
+							<strong>General Instructions:</strong> <span
+								th:text="${prescription.generalInstructions}"></span>
+						</p>
+					</div>
+				</div>
+
+				<div class="row mb-4">
+					<div class="col-sm-12">
+						<div class="treatment-prescription-dates">
+							<div class="treatment-date">
+								Treatment Date: &nbsp; <span th:text="${formattedTreatmentDate}"></span>
+							</div>
+							<div class="treatment-date">
+								Treatment Status: &nbsp; <span
+									th:text="${prescription.treatment.treatmentStatus}"></span>
+							</div>
+						</div>
+						<div class="treatment-details">
+							<div>
+								<strong>Treatment ID: &nbsp;</strong> <span
+									th:text="${prescription.treatment.treatmentID}"> </span>
+							</div>
+							<div>
+								<strong>Diagnosis: &nbsp;</strong> <span
+									th:text="${prescription.treatment.diagnosis}"> </span>
+							</div>
+							<div>
+								<strong>Treatment Details: &nbsp;</strong> <span
+									class="italic-text"
+									th:text="${prescription.treatment.treatmentDetails}"> </span>
+							</div>
+							<div>
+								<strong>Additonal Notes: &nbsp;</strong> <span
+									class="italic-text" th:text="${prescription.treatment.notes}">
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-12">
+						<div class="alert alert-info mt-3">
+							<p class="centered-text">This prescription is electronically
+								generated from the Smart Healthcare Management System.</p>
+							<p class="centered-text">For verification, please contact the
+								prescriber's office or //scan the barcode.</p>
+							<p class="centered-text">CONFIDENTIAL PATIENT INFORMATION -
+								Protected by Health Privacy Laws</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="no-print" style="text-align: center;">
+			<button class="print-button" onclick="window.print()">Print
+				Prescription</button>
+		</div>
+	</div>
+</body>
+</html>

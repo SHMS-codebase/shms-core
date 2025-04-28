@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +21,13 @@ import com.healthcaremngnt.model.Appointment;
 import com.healthcaremngnt.model.AppointmentRequest;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
+import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.AppointmentRepository;
+import com.healthcaremngnt.repository.DoctorRepository;
 import com.healthcaremngnt.repository.DoctorScheduleRepository;
 import com.healthcaremngnt.repository.PatientRepository;
 import com.healthcaremngnt.service.AppointmentService;
+import com.healthcaremngnt.service.EmailService;
 
 @Service
 @Transactional
@@ -32,14 +35,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private static final Logger logger = LogManager.getLogger(AppointmentServiceImpl.class);
 
-	@Autowired
-	private AppointmentRepository appointmentRepository;
+	private final AppointmentRepository appointmentRepository;
+	private final DoctorRepository doctorRepository;
+	private final DoctorScheduleRepository doctorScheduleRepository;
+	private final PatientRepository patientRepository;
+	private final EmailService emailService;
 
-	@Autowired
-	private DoctorScheduleRepository doctorScheduleRepository;
-
-	@Autowired
-	private PatientRepository patientRepository;
+	public AppointmentServiceImpl(AppointmentRepository appointmentRepository, DoctorRepository doctorRepository,
+			DoctorScheduleRepository doctorScheduleRepository, PatientRepository patientRepository,
+			EmailService emailService) {
+		this.appointmentRepository = appointmentRepository;
+		this.doctorRepository = doctorRepository;
+		this.doctorScheduleRepository = doctorScheduleRepository;
+		this.patientRepository = patientRepository;
+		this.emailService = emailService;
+	}
 
 	@Override
 	public Appointment bookAppointment(AppointmentRequest appointmentRequest) {
@@ -146,8 +156,44 @@ public class AppointmentServiceImpl implements AppointmentService {
 			recentVisits = appointmentRepository.findByPatientAndAppointmentStatusAndAppointmentDateGreaterThanEqual(
 					patientOptional.get(), AppointmentStatus.COMPLETED, dateLimit);
 		}
-		
+
 		return recentVisits;
+	}
+
+	@Async
+	@Override
+	public void sendAppointmentEmail(Appointment appointment) {
+		if (appointment == null) {
+			logger.warn("Appointment is null, email will not be sent.");
+			return;
+		}
+
+		logger.info("Sending Appointment Email for Appointment ID: {}", appointment.getAppointmentID());
+		logger.debug("appointment: {}", appointment);
+
+		// Fetch doctor details safely
+		Optional<Doctor> doctorOptional = Optional.ofNullable(appointment.getDoctor())
+				.map(doctor -> doctorRepository.findById(doctor.getDoctorID())).orElse(Optional.empty());
+
+		doctorOptional.ifPresent(appointment::setDoctor);
+
+		// Fetch patient details safely
+		Optional<Patient> patientOptional = Optional.ofNullable(appointment.getPatient())
+				.map(patient -> patientRepository.findById(patient.getPatientID())).orElse(Optional.empty());
+
+		patientOptional.ifPresent(patient -> {
+			appointment.setPatient(patient);
+			String emailID = Optional.ofNullable(patient.getUser()).map(User::getEmailID).orElse(null);
+
+			if (emailID != null) {
+				logger.debug("Sending email to: {}", emailID);
+				emailService.sendAppointmentEmail(emailID, appointment);
+			} else {
+				logger.warn("Email ID not found for patient, email will not be sent.");
+			}
+		});
+
+		logger.debug("Final appointment state: {}", appointment);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.healthcaremngnt.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -79,7 +80,14 @@ public class TreatmentController {
 		if (appointmentID != null) {
 			try {
 				Appointment appointment = appointmentService.getAppointmentDetails(appointmentID);
-				treatment.setAppointment(appointment);
+
+				// Initialize the appointments list if it's null
+				if (treatment.getAppointments() == null) {
+				    treatment.setAppointments(new ArrayList<>());
+				}
+
+				// Add the appointment to the treatment's appointment list
+				treatment.getAppointments().add(appointment);
 			} catch (AppointmentNotFoundException e) {
 				logger.error("{}: {}", MessageConstants.APMNT_NOT_FOUND, e.getMessage());
 				model.addAttribute("errorMessage", MessageConstants.APMNT_NOT_FOUND);

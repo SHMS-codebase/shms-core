@@ -3,6 +3,7 @@ package com.healthcaremngnt.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,14 +72,18 @@ public class AppointmentController {
 	public String bookAppointment(AppointmentRequest appointmentRequest,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Booking Appointment: {}", appointmentRequest);
-		
+
 		model.addAttribute("source", source);
 
 		try {
-			appointmentService.bookAppointment(appointmentRequest);
+			Appointment appointment = appointmentService.bookAppointment(appointmentRequest);
 			logger.debug("{}", MessageConstants.APMNT_BOOKING_SUCCESS);
 			model.addAttribute("message", MessageConstants.APMNT_BOOKING_SUCCESS);
 			populateModelWithDoctorsAndPatients(model);
+
+			// Call async method
+			CompletableFuture.runAsync(() -> appointmentService.sendAppointmentEmail(appointment));
+
 			return "createappointment";
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.APMNT_BOOKING_ERROR, e);
@@ -109,7 +114,7 @@ public class AppointmentController {
 
 		try {
 			Appointment appointment = appointmentService.getAppointmentDetails(appointmentID);
-			
+
 			logger.debug("appointment: {}", appointment);
 			model.addAttribute("appointment", appointment);
 		} catch (NumberFormatException e) {

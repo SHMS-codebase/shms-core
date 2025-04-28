@@ -2,6 +2,7 @@ package com.healthcaremngnt.service.impl;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.healthcaremngnt.constants.SmartHealthCareConstants;
+import com.healthcaremngnt.exceptions.EmailSendException;
+import com.healthcaremngnt.model.Appointment;
+import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.PasswordResetToken;
+import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.PasswordResetTokenRepository;
 import com.healthcaremngnt.service.EmailService;
@@ -141,6 +146,46 @@ public class EmailServiceImpl implements EmailService {
 			throw new RuntimeException("Attachment file not found: " + filePath);
 		}
 		helper.addAttachment(attachment.getName(), attachment);
+	}
+
+	@Override
+	public void sendAppointmentEmail(String emailID, Appointment appointment) {
+	    if (appointment == null) {
+	        logger.warn("Appointment is null, email will not be sent.");
+	        return;
+	    }
+
+	    logger.info("Sending Appointment Email to: {}", emailID);
+	    logger.debug("Appointment Details: {}", appointment);
+
+	    try {
+	        Patient patient = appointment.getPatient();
+	        Doctor doctor = appointment.getDoctor();
+
+	        if (patient == null || doctor == null) {
+	            logger.error("Patient or Doctor information missing, email will not be sent.");
+	            return;
+	        }
+
+	        String appointmentDate = String.valueOf(appointment.getAppointmentDate());
+	        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a"); // 12-hour format with AM/PM
+	        String appointmentTime = appointment.getAppointmentTime().format(timeFormatter);
+	        String reasonToVisit = appointment.getReasonToVisit();
+	        String subject = "Appointment Notification";
+
+	        String emailContent = String.format(
+	            "Dear %s,\n\nYour appointment with %s is scheduled successfully!\n\n"
+	            + "Find the appointment details below:\n"
+	            + "Appointment Date: %s\nAppointment Time: %s\nReason To Visit: %s\n\n"
+	            + "Best regards,\nSmart HealthCare Management System",
+	            patient.getPatientName(), doctor.getDoctorName(), appointmentDate, appointmentTime, reasonToVisit
+	        );
+
+	        sendSimpleEmail(emailID, subject, emailContent);
+	    } catch (Exception e) {
+	        logger.error("Error sending appointment email: {}", e.getMessage(), e);
+	        throw new EmailSendException("Failed to send appointment email", e);
+	    }
 	}
 
 	// Appointment Reports sent via Email

@@ -2,8 +2,6 @@ package com.healthcaremngnt.model;
 
 import java.time.LocalDate;
 
-import com.healthcaremngnt.enums.Salutation;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import net.jcip.annotations.Immutable;

@@ -26,4 +26,6 @@ public interface AppointmentService {
 
 	List<Appointment> getRecentVisits(Long patientID);
 
+	void sendAppointmentEmail(Appointment appointment);
+
 }

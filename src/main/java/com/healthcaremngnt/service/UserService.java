@@ -19,4 +19,6 @@ public interface UserService {
 
 	User findByUserName(String userName);
 
+	User getUserByPatientID(Long patientID);
+
 }

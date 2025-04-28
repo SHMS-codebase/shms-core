@@ -49,8 +49,8 @@ form {
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	width: 100%;
 	max-width: 650px;
-	padding: 30px;
-	margin-top: 160px;
+	padding: 50px;
+	margin-top: 100px;
 }
 
 .error-message {
@@ -74,11 +74,19 @@ form {
 	<div th:replace="fragments/header-public :: header"></div>
 	<div class="container">
 
-		<h4 class="centered-text">Something went wrong</h4>
+		<h4 class="centered-text">Oops! Page not found.</h4>
+		<br>
 		<div class="error-message">
-			<p>We're sorry, but the page you were looking for doesn't exist.</p>
+			<p>
+				<strong>Status:</strong> <span th:text="${error}"></span>
+			</p>
+			<p>
+				<strong>Message:</strong> <span th:text="${message}"></span>
+			</p>
 		</div>
-
+		<div class="centered-text">
+			<a href="/home">Go to Home</a>
+		</div>
 	</div>
 	<!-- Include Footer Fragment -->
 	<div th:replace="fragments/footer :: footer"></div>
