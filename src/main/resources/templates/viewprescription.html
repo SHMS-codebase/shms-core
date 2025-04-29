@@ -236,7 +236,8 @@ input[disabled], select[disabled], textarea[disabled] {
 </style>
 </head>
 <body>
-	<div th:replace="fragments/header-loggedin :: header"></div>
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
 
 	<div class="main-container">
 		<div class="card">
@@ -424,7 +425,7 @@ input[disabled], select[disabled], textarea[disabled] {
 		</div>
 	</div>
 
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 
 	<script th:inline="javascript">
         $(document).ready(function() {

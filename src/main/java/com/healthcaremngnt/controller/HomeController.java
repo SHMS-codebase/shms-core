@@ -43,6 +43,12 @@ public class HomeController {
 		logger.info("Home link is being clicked");
 		return "home";
 	}
+	
+	@GetMapping("/")
+	public String launchHome() {
+		logger.info("Initial Application Launch!!!");
+		return "redirect:/login";
+	}
 
 	@GetMapping("/login")
 	public String login(@RequestParam(value = RequestParamConstants.ERROR, required = false) String error,

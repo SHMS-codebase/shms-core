@@ -229,7 +229,8 @@ input[type="date"], input[type="time"], select, textarea {
 </head>
 <body>
 	<!-- Include Header Fragment -->
-	<div th:replace="fragments/header-loggedin :: header"></div>
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
 
 	<div class="container">
 
@@ -326,6 +327,6 @@ input[type="date"], input[type="time"], select, textarea {
 
 	</div>
 	<!-- Include Footer Fragment -->
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

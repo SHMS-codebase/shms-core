@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -45,7 +44,7 @@ import com.healthcaremngnt.model.Patient;
 @Configuration
 @EnableBatchProcessing
 @ComponentScan(basePackages = "com.healthcaremngnt")
-@Import(DataSourceConfig.class)
+//@Import(DataSourceConfig.class)
 @EnableScheduling
 public class BatchConfig {
 

@@ -120,7 +120,8 @@ form {
 </head>
 <body>
 	<!-- Include Header Fragment -->
-	<div th:replace="fragments/header-loggedin :: header"></div>
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
 
 	<div class="container">
 
@@ -218,6 +219,6 @@ form {
 		</div>
 	</div>
 	<!-- Include Footer Fragment -->
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

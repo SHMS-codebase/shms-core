@@ -10,6 +10,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -23,7 +24,7 @@ public class BatchJobRunnerApplication {
 	private JobLauncher jobLauncher;
 
 	@Autowired
-	private Job deleteExpiredSchedulesJob;
+	private Job appointmentNoShowJob;
 
 	public static void main(String[] args) {
 		SpringApplication.run(BatchJobRunnerApplication.class, args);
@@ -36,7 +37,7 @@ public class BatchJobRunnerApplication {
 				logger.info("Running the Job for testing");
 				JobParameters jobParameters = new JobParametersBuilder().addLong("time", System.currentTimeMillis())
 						.toJobParameters();
-				JobExecution jobExecution = jobLauncher.run(deleteExpiredSchedulesJob, jobParameters);
+				JobExecution jobExecution = jobLauncher.run(appointmentNoShowJob, jobParameters);
 				logger.info("Job Execution Status: " + jobExecution.getStatus());
 			} catch (Exception e) {
 				logger.error("Failed to execute job", e);

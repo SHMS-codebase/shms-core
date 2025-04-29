@@ -283,7 +283,8 @@ button:hover {
 </style>
 </head>
 <body>
-	<div th:replace="fragments/header-loggedin :: header"></div>
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
 
 	<div class="container">
 
@@ -407,6 +408,6 @@ button:hover {
 		</form>
 	</div>
 	<!-- Include Footer Fragment -->
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

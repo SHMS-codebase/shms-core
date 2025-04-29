@@ -19,7 +19,8 @@
 <body>
 	<div class="wrapper">
 		<!-- Include Header Fragment -->
-		<div th:replace="fragments/header :: header"></div>
+		<div th:replace="~{fragments/header :: header}"></div>
+
 
 		<!-- Main Content Section -->
 		<div class="main-container">
@@ -173,7 +174,7 @@
 			</div>
 		</div>
 		<!-- Include Footer Fragment -->
-		<div th:replace="fragments/footer :: footer"></div>
+		<div th:replace="~{fragments/footer :: footer}"></div>
 	</div>
 	<script src="../js/dashboard.js"></script>
 </body>

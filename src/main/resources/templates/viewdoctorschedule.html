@@ -214,7 +214,8 @@ input[type="date"], input[type="time"], input[type="number"], select {
 				All Schedules</a>
 		</div> -->
 	<!-- Include Header Fragment -->
-	<div th:replace="fragments/header-loggedin :: header"></div>
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
 
 	<div class="container">
 
@@ -285,6 +286,6 @@ input[type="date"], input[type="time"], input[type="number"], select {
 		</form>
 	</div>
 	<!-- Include Footer Fragment -->
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

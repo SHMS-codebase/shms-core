@@ -392,7 +392,8 @@ body {
 
 <body>
 	<!-- Include Header Fragment -->
-	<div th:replace="fragments/header-loggedin :: header"></div>
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
 
 	<div class="container mt-5">
 		<!-- Form Header -->
@@ -896,7 +897,7 @@ body {
 	</div>
 
 	<!-- Include Footer Fragment -->
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 
 	<script>
         // Theme configuration object

@@ -11,9 +11,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.healthcaremngnt"})
+@ComponentScan(basePackages = { "com.healthcaremngnt" })
 @EnableJpaRepositories(basePackages = "com.healthcaremngnt.repository")
-@EntityScan(basePackages = "com.healthcaremngnt.model")  
+@EntityScan(basePackages = "com.healthcaremngnt.model")
 @EnableTransactionManagement
 public class SmartHealthCareMngntApplication {
 
@@ -22,10 +22,8 @@ public class SmartHealthCareMngntApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(SmartHealthCareMngntApplication.class, args);
+		logger.info("SmartHealthCareMngntApplication");
 
-		logger.info("This is an info message - SpringBootApplication");
-		logger.debug("This is a debug message - SpringBootApplication");
-		logger.error("This is an error message - SpringBootApplication");
 	}
 
 }

@@ -71,7 +71,8 @@ form {
 </head>
 <body>
 	<!-- Include Header Fragment -->
-	<div th:replace="fragments/header-public :: header"></div>
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
 	<div class="container">
 
 		<h4 class="centered-text">Oops! Page not found.</h4>
@@ -89,6 +90,6 @@ form {
 		</div>
 	</div>
 	<!-- Include Footer Fragment -->
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

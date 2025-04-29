@@ -19,7 +19,8 @@
 <body>
 
 	<!-- Include Header Fragment -->
-	<div th:replace="fragments/header :: header"></div>
+	<div th:replace="~{fragments/header :: header}"></div>
+
 
 	<!-- Tab Navigation -->
 	<div class="tabs">
@@ -144,7 +145,7 @@
 	</div>
 
 	<!-- Include Footer Fragment -->
-	<div th:replace="fragments/footer :: footer"></div>
+	<div th:replace="~{fragments/footer :: footer}"></div>
 
 	<script src="../js/dashboard.js"></script>
 </body>
