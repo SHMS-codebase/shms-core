@@ -141,7 +141,9 @@ public class AppointmentController {
 		Optional.ofNullable(source).ifPresent(src -> logger.debug("Source: {}", src));
 
 		try {
-			appointmentService.updateAppointmentDetails(appointment);
+			Appointment updatedAppointment = appointmentService.updateAppointmentDetails(appointment);
+			logger.debug("updatedAppointment: {}", updatedAppointment);
+			
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.APMNT_UPDATE_FAILURE, e);
 			model.addAttribute("errorMessage", MessageConstants.APMNT_UPDATE_FAILURE);

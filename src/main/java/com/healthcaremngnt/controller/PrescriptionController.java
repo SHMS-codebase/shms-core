@@ -287,8 +287,7 @@ public class PrescriptionController {
 		Patient patient = new Patient();
 		Long patientID = null;
 
-		if (savedTreatment != null && savedTreatment.getAppointments() != null
-				&& !savedTreatment.getAppointments().isEmpty()) {
+		if (savedTreatment != null && savedTreatment.getAppointment() != null) {
 
 			patientID = savedTreatment.getPatientID();
 			logger.debug("patientID: {}", patientID);

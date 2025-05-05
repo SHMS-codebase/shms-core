@@ -283,18 +283,18 @@ input[type="date"], input[type="time"], select, textarea {
 						name="appointment.appointmentStatus"
 						th:field="*{appointmentStatus}" disabled>
 						<option value="SCHEDULED"
-							th:selected="${appointment.appointmentStatus == T(com.healthcaremngnt.enums.AppointmentStatus).SCHEDULED}">Scheduled</option>
+							th:selected="${appointment.appointmentStatus.name() == 'SCHEDULED'}">Scheduled</option>
 						<option value="CANCELLED"
-							th:selected="${appointment.appointmentStatus == T(com.healthcaremngnt.enums.AppointmentStatus).CANCELLED}">Cancelled</option>
+							th:selected="${appointment.appointmentStatus.name() == 'CANCELLED'}">Cancelled</option>
 						<option value="COMPLETED"
-							th:selected="${appointment.appointmentStatus == T(com.healthcaremngnt.enums.AppointmentStatus).COMPLETED}">Completed</option>
+							th:selected="${appointment.appointmentStatus.name() == 'COMPLETED'}">Completed</option>
 						<option value="NOSHOW"
-							th:selected="${appointment.appointmentStatus == T(com.healthcaremngnt.enums.AppointmentStatus).NOSHOW}">No
+							th:selected="${appointment.appointmentStatus.name() == 'NOSHOW'}">No
 							Show</option>
 						<option value="RESCHEDULED"
-							th:selected="${appointment.appointmentStatus == T(com.healthcaremngnt.enums.AppointmentStatus).RESCHEDULED}">Rescheduled</option>
+							th:selected="${appointment.appointmentStatus.name() == 'RESCHEDULED'}">Rescheduled</option>
 						<option value="FOLLOWUP"
-							th:selected="${appointment.appointmentStatus == T(com.healthcaremngnt.enums.AppointmentStatus).FOLLOWUP}">Follow
+							th:selected="${appointment.appointmentStatus.name() == 'FOLLOWUP'}">Follow
 							Up</option>
 					</select>
 				</div>
@@ -306,11 +306,11 @@ input[type="date"], input[type="time"], select, textarea {
 					<label>Priority:</label> <select id="appointment.priority"
 						name="appointment.priority" th:field="*{priority}" disabled>
 						<option value="LOW"
-							th:selected="${appointment.priority == T(com.healthcaremngnt.enums.Priority).LOW}">Low</option>
+							th:selected="${appointment.priority.name() == 'LOW'}">Low</option>
 						<option value="MEDIUM"
-							th:selected="${appointment.priority == T(com.healthcaremngnt.enums.Priority).MEDIUM}">Medium</option>
+							th:selected="${appointment.priority.name() == 'MEDIUM'}">Medium</option>
 						<option value="HIGH"
-							th:selected="${appointment.priority == T(com.healthcaremngnt.enums.Priority).HIGH}">High</option>
+							th:selected="${appointment.priority.name() == 'HIGH'}">High</option>
 					</select>
 				</div>
 				<input type="hidden" th:field="*{createdDate}" />

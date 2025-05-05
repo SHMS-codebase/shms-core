@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.enums.Priority;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -51,8 +53,7 @@ public class Appointment {
 	@JoinColumn(name = "doctor_id")
 	private Doctor doctor;
 
-	@ManyToOne
-	@JoinColumn(name = "treatment_id", nullable = true)
+	@OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Treatment treatment;
 
 	@Column(name = "created_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

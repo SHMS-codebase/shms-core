@@ -1,6 +1,5 @@
 package com.healthcaremngnt.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,22 +32,14 @@ public class TreatmentServiceImpl implements TreatmentService {
 
 	@Override
 	public Treatment createTreatment(Treatment treatment) throws AppointmentNotFoundException {
-		logger.info("Creating treatment for Appointment ID: {}", treatment.getAppointments().get(0).getAppointmentID());
+		logger.info("Creating treatment for Appointment ID: {}", treatment.getAppointment().getAppointmentID());
 
 		validateTreatment(treatment);
 
-		// Get the latest appointment that was provided when creating the treatment
-		Appointment latestAppointment = appointmentService
-				.getAppointmentDetails(treatment.getAppointments().get(0).getAppointmentID());
+		Appointment appointment = appointmentService
+				.getAppointmentDetails(treatment.getAppointment().getAppointmentID());
 
-		// Initialize the appointments list if it's null
-		if (treatment.getAppointments() == null) {
-			treatment.setAppointments(new ArrayList<>());
-		}
-
-		// Clear any existing appointments and add the latest one
-		treatment.getAppointments().clear();
-		treatment.getAppointments().add(latestAppointment);
+		treatment.setAppointment(appointment);
 
 		Treatment savedTreatment = treatmentRepository.save(treatment);
 		logger.info("Successfully saved treatment with ID: {}", savedTreatment.getTreatmentID());
@@ -57,8 +48,8 @@ public class TreatmentServiceImpl implements TreatmentService {
 	}
 
 	private void validateTreatment(Treatment treatment) {
-		if (treatment == null || treatment.getAppointments() == null
-				|| treatment.getAppointments().get(0).getAppointmentID() == null) {
+		if (treatment == null || treatment.getAppointment() == null
+				|| treatment.getAppointment().getAppointmentID() == null) {
 			throw new IllegalArgumentException("Invalid treatment data: Appointment details are missing.");
 		}
 	}
@@ -110,7 +101,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 
 		return treatmentRepository.findPatientByDoctorID(doctorID);
 	}
-
+	
 	@Override
 	public List<Long> getDoctorListByPatient(Long patientID) {
 		logger.info("Fetching Doctor IDs for Patient ID: {}", patientID);
@@ -132,5 +123,5 @@ public class TreatmentServiceImpl implements TreatmentService {
 
 		return treatmentRepository.findByPatient(patientID);
 	}
-
+	
 }

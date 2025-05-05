@@ -2,7 +2,6 @@ package com.healthcaremngnt.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,8 +16,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -57,8 +57,9 @@ public class Treatment {
 	@Column(name = "treatment_date")
 	private LocalDate treatmentDate;
 
-	@OneToMany(mappedBy = "treatment", fetch = FetchType.EAGER)
-	private List<Appointment> appointments;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "appointment_id", unique = true, nullable = false)
+	Appointment appointment;
 
 	@Column(name = "doctor_id") // Redundant, but useful
 	private Long doctorID; // No direct relationship, data from appointment
@@ -85,22 +86,17 @@ public class Treatment {
 	}
 
 	private void updateDoctorAndPatientIDs() {
+
 		logger.info("Treatment Entity::: updateDoctorAndPatientIDs()");
+		if (appointment != null) {
 
-		if (appointments != null && !appointments.isEmpty()) {
-			// Get details from the first appointment (or you could implement a different
-			// logic)
-			Appointment primaryAppointment = appointments.get(0);
-
-			if (primaryAppointment.getDoctor() != null && primaryAppointment.getPatient() != null) {
+			if (appointment.getDoctor() != null && appointment.getPatient() != null) {
 				logger.debug("To set doctorID and patientID");
-				this.doctorID = primaryAppointment.getDoctor().getDoctorID();
-				this.patientID = primaryAppointment.getPatient().getPatientID();
+				this.doctorID = appointment.getDoctor().getDoctorID();
+				this.patientID = appointment.getPatient().getPatientID();
 			} else {
 				logger.error("Warning: Doctor or Patient is null in updateDoctorAndPatientIDs()");
 			}
-		} else {
-			logger.warn("No appointments associated with this treatment");
 		}
 	}
 
@@ -217,17 +213,17 @@ public class Treatment {
 	}
 
 	/**
-	 * @return the appointments
+	 * @return the appointment
 	 */
-	public List<Appointment> getAppointments() {
-		return appointments;
+	public Appointment getAppointment() {
+		return appointment;
 	}
 
 	/**
-	 * @param appointments the appointments to set
+	 * @param appointment the appointment to set
 	 */
-	public void setAppointments(List<Appointment> appointments) {
-		this.appointments = appointments;
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
 	}
 
 	/**
@@ -296,9 +292,9 @@ public class Treatment {
 	@Override
 	public String toString() {
 		return "Treatment [treatmentID=" + treatmentID + ", diagnosis=" + diagnosis + ", treatmentDetails="
-				+ treatmentDetails + ", notes=" + notes + ", treatmentStatus=" + treatmentStatus + ", followUpNeeded="
-				+ followUpNeeded + ", invoiceGenerated=" + invoiceGenerated + ", treatmentDate=" + treatmentDate
-				+ ", appointments=" + appointments + ", doctorID=" + doctorID + ", patientID=" + patientID
+				+ treatmentDetails + ", notes=" + notes + ", treatmentStatus=" + treatmentStatus
+				+ ", followUpNeeded=" + followUpNeeded + ", invoiceGenerated=" + invoiceGenerated + ", treatmentDate="
+				+ treatmentDate + ", appointment=" + appointment + ", doctorID=" + doctorID + ", patientID=" + patientID
 				+ ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + "]";
 	}
 

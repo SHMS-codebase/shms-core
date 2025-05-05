@@ -102,7 +102,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public void updateAppointmentDetails(Appointment appointment) throws AppointmentNotFoundException {
+	public Appointment updateAppointmentDetails(Appointment appointment) throws AppointmentNotFoundException {
 		logger.info("Updating appointment details for ID: {}", appointment.getAppointmentID());
 
 		// Ensure the appointment exists; otherwise, throw an exception
@@ -111,7 +111,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 
 		// Save the updated appointment
-		appointmentRepository.save(appointment);
+		return appointmentRepository.save(appointment);
 	}
 
 	@Override

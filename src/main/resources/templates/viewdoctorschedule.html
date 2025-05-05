@@ -262,11 +262,11 @@ input[type="date"], input[type="time"], input[type="number"], select {
 				<label>Schedule Status:</label> <select
 					th:field="*{doctorScheduleList[0].scheduleStatus}" disabled>
 					<option value="APPROVED"
-						th:selected="${doctorScheduleWrapper.doctorScheduleList[0].scheduleStatus == T(com.healthcaremngnt.enums.ScheduleStatus).APPROVED}">Approved</option>
+						th:selected="${doctorScheduleWrapper.doctorScheduleList[0].scheduleStatus.name() == 'APPROVED'}">Approved</option>
 					<option value="PENDING"
-						th:selected="${doctorScheduleWrapper.doctorScheduleList[0].scheduleStatus == T(com.healthcaremngnt.enums.ScheduleStatus).PENDING}">Pending</option>
+						th:selected="${doctorScheduleWrapper.doctorScheduleList[0].scheduleStatus.name() == 'PENDING'}">Pending</option>
 					<option value="REJECTED"
-						th:selected="${doctorScheduleWrapper.doctorScheduleList[0].scheduleStatus == T(com.healthcaremngnt.enums.ScheduleStatus).REJECTED}">Rejected</option>
+						th:selected="${doctorScheduleWrapper.doctorScheduleList[0].scheduleStatus.name() == 'REJECTED'}">Rejected</option>
 				</select>
 			</div>
 			<div class="form-group">

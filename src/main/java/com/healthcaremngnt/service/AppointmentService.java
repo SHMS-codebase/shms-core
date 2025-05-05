@@ -15,7 +15,7 @@ public interface AppointmentService {
 
 	Appointment getAppointmentDetails(Long appointmentID) throws AppointmentNotFoundException;
 
-	void updateAppointmentDetails(Appointment appointment) throws AppointmentNotFoundException;
+	Appointment updateAppointmentDetails(Appointment appointment) throws AppointmentNotFoundException;
 
 	List<Appointment> getTodaysAppointments(Doctor doctor);
 
