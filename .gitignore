@@ -1,0 +1,8 @@
+# Ignore Java build files and folders
+*.class
+*.jar
+*.war
+*.ear
+target/
+build/
+out/
