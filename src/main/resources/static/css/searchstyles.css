@@ -39,6 +39,7 @@ form .buttons {
 	flex-direction: row;
 	justify-content: center; /* Center the buttons */
 	margin-top: 10px;
+	gap: 15px; /* Spacing between buttons */
 }
 
 form label, form input, form select {
@@ -47,8 +48,27 @@ form label, form input, form select {
 }
 
 form button {
-	width: auto;
-	margin-right: 10px;
+	background-color: hsl(31, 82%, 64%);
+	padding: 5px 15px;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transition for hover/active effects */
+    margin-top: 15px;
+}
+
+/* Hover Effects */
+form button:hover {
+    background-color: hsl(31, 82%, 54%); /* Slightly darker shade on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add subtle shadow effect */
+    transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+/* Active States */
+form button:active { 
+    background-color: hsl(31, 82%, 44%); /* Darker shade for active state */
+    transform: scale(0.98); /* Slightly shrink the button on press */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow intensity */
 }
 
 form input, form select {

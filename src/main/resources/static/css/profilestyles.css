@@ -16,36 +16,6 @@ body {
 	min-height: 100vh; /* Makes the body full height of the viewport */
 }
 
-header {
-	width: 100%;
-	display: flex;
-	justify-content: space-between; /* Space between header content */
-	align-items: center;
-	padding: 0;
-	background-color: rgb(138, 6, 145);
-	color: white;
-	box-shadow: 0px 0px 10px 0px #0000001a;
-	text-align: center;
-	font-family: 'Helvetica', sans-serif;
-	margin-bottom: 20px; /* Add space between header and form */
-	position: fixed; /* Fix the header at the top of the page */
-	top: 0; /* Position it at the top */
-	left: 0; /* Position it at the left edge */
-	z-index: 1000; /* Ensure it stays on top of other elements */
-	box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-header .header-content {
-	flex-grow: 1; /* Make the header content take up the available space */
-	text-align: center; /* Center the text within the available space */
-}
-
-home-link, .search-link, .logout-link {
-    color: white; /* Set the link color to white */
-    text-decoration: none; /* Remove underline from links */
-    margin: 0 20px; /* Optional: Add some space to the right and left of the links */
-}
-
 form {
 	display: flex;
 	flex-direction: column;
@@ -69,6 +39,13 @@ form input, form select {
 	/* Include padding and border in element's total width and height */
 }
 
+.form-group select,
+.form-group input {
+    width: 300px;
+    min-width: 150px;
+    max-width: 100%;
+}
+
 /* Common styling for adminFields, doctorFields, and patientFields */
 #adminFields, #doctorFields, #patientFields {
 	display: flex;
@@ -78,9 +55,9 @@ form input, form select {
 	padding: 20px;
 	background-color: #fff;
 	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
+	border-radius: 25px;
 	width: 100%; /* Set the width to 100% of the parent container */
-	max-width: 400px;
+	max-width: 600px;
 	/* Optionally set a maximum width for the div elements */
 	margin: 0 auto; /* Center the div elements horizontally */
 }
@@ -89,7 +66,8 @@ form input, form select {
 	#doctorFields input, #patientFields label, #patientFields input {
 	display: block;
 	margin-bottom: 5px; /* Adds some space between each field */
-	width: 100%; /* Ensure inputs take the full width */
+	width:250px; /* Ensure inputs take the full width */
+	border-radius: 24px; /* Rounded corners for inputs */
 }
 
 #adminFields input, #doctorFields input, #patientFields input {
@@ -101,36 +79,15 @@ form input, form select {
 	/* Ensures padding and border are included in the element's total width and height */
 }
 
-footer {
-	background-color: rgb(138, 6, 145);
-	color: #fff; /* White text color */
-	padding: 10px 0;
-	text-align: center;
-	position: fixed;
-	width: 100%;
-	bottom: 0;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-footer p {
-	margin: 0;
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-footer a, footer span {
-	color: #fff; /* White link and text color */
-	text-decoration: none;
-}
-
-footer .center {
-	order: 2;
-	flex-grow: 1;
-	text-align: center;
+#doctorFields select, #adminFields select, #patientFields select {
+    width: 80%;
+    min-width: 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background: #fff;
 }
 
 .content {
@@ -148,14 +105,15 @@ footer .center {
 
 .form-group {
 	display: flex;
+	flex-direction: row;      /* Keep row for label and input side by side */
 	align-items: center;
 	margin-bottom: 10px;
 }
 
 label {
 	width: 150px;
-	text-align: right;
-	margin-right: 10px;
+	text-align: left;
+	margin-right: 80px ;
 }
 
 input, select {
@@ -171,7 +129,7 @@ input[type="email"] {
 	display: flex;
 	gap: 20px;
 	justify-content: center;
-}
+}	
 
 .large-textarea {
     width: 100%; /* Adjust to fit the form's width */

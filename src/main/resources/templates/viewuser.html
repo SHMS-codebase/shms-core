@@ -72,8 +72,11 @@ form {
 	width: 100%;
 	max-width: 600px;
 	padding: 30px;
-	margin-top: 500px;
-	margin-bottom: 200px;
+	margin-top: 30px;
+	margin-bottom: 15px;
+	/* Add max-height and scrolling */
+    max-height: calc(100vh - 180px); /* Adjust 180px to header+footer height */
+    overflow-y: auto;
 }
 
 .error-message {
@@ -92,20 +95,47 @@ form {
 }
 
 button {
-	background-color: #4285f4;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	padding: 12px 20px;
-	font-size: 16px;
-	cursor: pointer;
-	width: 100%;
-	transition: background-color 0.3s;
-	font-weight: 500;
+	color: #fff;
+	background-color: hsl(31, 82%, 64%);
+	padding: 5px 15px;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transition for hover/active effects */
+    margin-top: 15px;
 }
 
+/* Hover Effects */
 button:hover {
-	background-color: #3367d6;
+    background-color: hsl(31, 82%, 54%); /* Slightly darker shade on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add subtle shadow effect */
+    transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+/* Active States */
+button:active { 
+    background-color: hsl(31, 82%, 44%); /* Darker shade for active state */
+    transform: scale(0.98); /* Slightly shrink the button on press */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow intensity */
+}
+
+button[disabled] {
+    background-color: #ccc !important;   /* Muted gray */
+    color: #888 !important;              /* Dimmed text */
+    cursor: not-allowed !important;      /* Not-allowed cursor */
+    opacity: 0.7;                        /* Slightly faded */
+    box-shadow: none !important;         /* Remove shadow */
+    transform: none !important;          /* Remove transform */
+    pointer-events: none;                /* Prevent all mouse events */
+}
+
+/* Prevent hover/active effects on disabled buttons */
+button[disabled]:hover,
+button[disabled]:active {
+    background-color: #ccc !important;
+    color: #888 !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 </style>
 </head>
