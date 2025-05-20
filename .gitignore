@@ -3,6 +3,8 @@
 *.jar
 *.war
 *.ear
+*.log
+*.gz
 target/
 build/
 out/
