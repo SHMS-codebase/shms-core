@@ -5,6 +5,9 @@
 *.ear
 *.log
 *.gz
+*.java
+*.properties
+*.json
 target/
 build/
 out/
