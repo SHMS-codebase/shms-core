@@ -51,6 +51,51 @@
 			});
 </script>
 <style>
+/* Styles for the form elements without overriding common code in createstyles.css*/
+.container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 650px;
+    padding: 30px;
+    margin-top: 110px;      /* Minimum gap from header */
+    margin-bottom: 50px;   /* Minimum gap from footer */
+    /* Ensure the container never exceeds the viewport minus header/footer */
+    max-height: calc(100vh - 64px); /* 32px top + 32px bottom */
+    overflow-y: auto;
+}
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 18px;
+    width: 100%;
+    max-width: 500px; /* Adjust as needed */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group label {
+    width: 170px;         /* Adjust for your longest label */
+    min-width: 150px;
+    text-align: left;
+    margin-right: 12px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    width: 260px;         /* Uniform width for all fields */
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background: #fff;
+}
+
 /* Additional styles to make card look consistent with existing design */
 body {
 	background-color: rgb(220, 223, 239);
@@ -77,7 +122,7 @@ form {
 	text-align: center;
 }
 
-.container {
+/* .container {
 	background-color: white;
 	border-radius: 8px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -85,7 +130,7 @@ form {
 	max-width: 650px;
 	padding: 30px;
 	margin-top: 100px;
-}
+} */
 
 .error-message {
 	color: #d93025;

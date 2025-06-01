@@ -50,12 +50,12 @@ form {
 	border-radius: 8px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	width: 100%;
-	max-width: 450px;
+	max-width: 650px;
 	padding: 30px;
 	margin-top: 300px;
 }
 
-.form-group {
+/* .form-group {
 	margin-bottom: 20px;
 }
 
@@ -73,14 +73,14 @@ input {
 	border-radius: 4px;
 	font-size: 16px;
 	transition: border-color 0.3s;
-}
+} */
 
 input:focus {
 	outline: none;
 	border-color: #4285f4;
 }
 
-button {
+/* button {
 	background-color: #4285f4;
 	color: white;
 	border: none;
@@ -95,7 +95,7 @@ button {
 
 button:hover {
 	background-color: #3367d6;
-}
+} */
 
 .error-message {
 	color: #d93025;
@@ -112,7 +112,42 @@ button:hover {
 	display: block;
 }
 
-.form-row {
+/* Styles for the form elements without overriding common code in createstyles.css*/
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 18px;
+    width: 100%;
+    max-width: 500px; /* Adjust as needed */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group label {
+    width: 170px;         /* Adjust for your longest label */
+    min-width: 150px;
+    text-align: left;
+    margin-right: 12px;
+    font-weight: 500;
+    margin-bottom: 0;     /* Remove bottom margin for horizontal alignment */
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 260px;         /* Uniform width for all fields */
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background: #fff;
+    resize: vertical;     /* For textarea */
+}
+
+/* .form-row {
 	display: flex;
 	align-items: center;
 	margin-bottom: 20px;
@@ -126,7 +161,7 @@ button:hover {
 
 .form-row select, .form-row input {
 	width: 60%;
-}
+} */
 </style>
 </head>
 <body>

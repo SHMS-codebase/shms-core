@@ -28,12 +28,38 @@ body {
 	margin: 0;
 	padding: 0;
 	line-height: 1.6;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center; /* Center the form vertically */
-	height: 100vh; /* Ensure the body takes the full viewport height */
-	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 18px;
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group label {
+    width: 170px;
+    min-width: 140px;
+    text-align: left;
+    margin-right: 12px;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.form-group input,
+.form-group select {
+    width: 260px;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background: #fff;
 }
 
 form {
@@ -225,7 +251,7 @@ form {
 					type="date" id="patient.dob" name="patient.dob"
 					th:value="${userDetails.patient.dob}">
 			</div>
-			<button type="submit">Update</button>
+			<button type="submit" style="width: auto; min-width: 0;">Update</button>
 		</form>
 
 	</div>
