@@ -57,6 +57,7 @@ form {
 	max-width: max-content;
 	width: 100%;
 	border-radius: 25px;
+	margin-left: 150px;
 }
 
 .centered-text {
@@ -75,6 +76,10 @@ form {
 	margin-bottom: 50px;
 	display: flex;
 	flex-direction: column;
+}
+
+.searchuser-container {
+    margin-top: 200px;
 }
 
 .error-message {
@@ -129,7 +134,7 @@ form {
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
 
-	<div class="container">
+	<div class="container searchuser-container">
 
 		<div class="search-section">
 			<h4 class="centered-text"
