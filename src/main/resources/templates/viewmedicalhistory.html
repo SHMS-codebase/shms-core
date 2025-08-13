@@ -18,7 +18,6 @@
 <link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
 <link rel="stylesheet" th:href="@{/css/profilestyles.css}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="/path/to/formValidation.js"></script>
 <script>
 	$(document)
 			.ready(
@@ -162,8 +161,8 @@ form {
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	width: 100%;
 	max-width: 600px;
-	padding: 30px;
-	margin-top: 200px;
+	margin-top: 12px;
+	margin-bottom: 12px
 }
 
 .error-message {
@@ -182,20 +181,66 @@ form {
 }
 
 button {
-	background-color: #4285f4;
-	color: white;
+	background-color: hsl(31, 82%, 64%);
+	padding: 5px 15px;
 	border: none;
-	border-radius: 4px;
-	padding: 12px 20px;
-	font-size: 16px;
+	border-radius: 24px;
 	cursor: pointer;
-	width: 100%;
-	transition: background-color 0.3s;
-	font-weight: 500;
+	transition: all 0.3s ease;
+	/* Smooth transition for hover/active effects */
 }
 
 button:hover {
-	background-color: #3367d6;
+	background-color: hsl(31, 82%, 54%);
+	/* Slightly darker shade on hover */
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+	/* Add subtle shadow effect */
+	transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+button.reset:hover {
+	background-color: hsl(31, 82%, 54%);
+	/* Same hover effect as "Register" */
+}
+
+/* Active States */
+button:active {
+	background-color: hsl(31, 82%, 44%); /* Darker shade for active state */
+	transform: scale(0.98); /* Slightly shrink the button on press */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow intensity */
+}
+
+button[disabled] {
+	background-color: #ccc !important;
+	/* Muted gray */
+	color: #888 !important; /* Dimmed text */
+	cursor: not-allowed !important; /* Not-allowed cursor */
+	opacity: 0.7; /* Slightly faded */
+	box-shadow: none !important; /* Remove shadow */
+	transform: none !important; /* Remove transform */
+	pointer-events: none; /* Prevent all mouse events */
+}
+
+/* Prevent hover/active effects on disabled buttons */
+button[disabled]:hover, button[disabled]:active {
+	background-color: #ccc !important;
+	color: #888 !important;
+	box-shadow: none !important;
+	transform: none !important;
+}
+
+form button {
+	width: auto !important;
+	min-width: 110px; /* or your preferred width */
+	text-align: center;
+	padding: 5px 15px;
+	display: inline-block;
+	font-size: 16px;
+}
+
+#addForm button {
+	font-size: 16px; /* Match the other buttons */
+	min-width: 110px;
 }
 </style>
 </head>

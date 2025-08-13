@@ -37,8 +37,12 @@ body {
 	min-height: 100vh; /* Makes the body full height of the viewport */
 }
 
-.centered-text {
-	text-align: center;
+.form-group {
+	margin-bottom: 20px;
+}
+
+form {
+	margin-top: 10px;
 }
 
 .container {
@@ -48,49 +52,71 @@ body {
 	width: 100%;
 	max-width: 450px;
 	padding: 30px;
-	margin-top: 50px;
+	margin-top: 150px;
 }
 
-.form-group {
-	margin-bottom: 20px;
+.centered-text {
+	text-align: center;
+	margin-bottom: 18px; /* Reduce space below title */
 }
 
-label {
-	display: block;
-	margin-bottom: 8px;
-	font-weight: 500;
-	color: #555;
-}
-
-input {
+.form-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 16px;
 	width: 100%;
-	padding: 12px;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	font-size: 16px;
-	transition: border-color 0.3s;
+	max-width: 370px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-input:focus {
-	outline: none;
-	border-color: #4285f4;
+.form-row label {
+	width: 160px;
+	min-width: 140px;
+	text-align: left;
+	margin-right: 10px;
+	font-weight: 500;
+	margin-bottom: 0;
+}
+
+.form-row input, .form-row select {
+	width: 200px;
+	min-width: 0;
+	padding: 8px 10px;
+	border: 1px solid #ddd;
+	border-radius: 24px;
+	font-size: 16px;
+	box-sizing: border-box;
+	background: #fff;
 }
 
 button {
-	background-color: #4285f4;
-	color: white;
+	background-color: hsl(31, 82%, 64%);
+	color: #fff;
 	border: none;
-	border-radius: 4px;
-	padding: 12px 20px;
+	border-radius: 24px;
+	padding: 10px 28px;
 	font-size: 16px;
-	cursor: pointer;
-	width: 100%;
-	transition: background-color 0.3s;
 	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	margin: 18px auto 0 auto;
+	display: block;
+	min-width: 110px;
+	text-align: center;
 }
 
 button:hover {
-	background-color: #3367d6;
+	background-color: hsl(31, 82%, 54%);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+	transform: scale(1.05);
+}
+
+button:active {
+	background-color: hsl(31, 82%, 44%);
+	transform: scale(0.98);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .error-message {
@@ -177,9 +203,9 @@ button:hover {
 
 		<form id="reportForm" th:action="@{/reports/appointmentreport}"
 			method="post">
-			
+
 			<input type="hidden" name="source" th:value="${source}">
-			
+
 			<div class="form-row">
 				<label for="reportType">Select Report Type:</label> <select
 					id="reportType" name="reportType" required>

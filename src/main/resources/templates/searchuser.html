@@ -32,11 +32,6 @@ table, th, td {
 	margin-bottom: 15px;
 }
 
-.buttons {
-	margin-top: 20px;
-	margin-bottom: 20px;
-}
-
 body {
 	background-color: rgb(220, 223, 239);
 	font-family: 'Helvetica', sans-serif;
@@ -49,12 +44,14 @@ body {
 	flex-direction: column;
 	align-items: center;
 	min-height: 100vh; /* Makes the body full height of the viewport */
+	padding-top: 80px; /* Add this: height of your fixed header */
 }
 
 form {
 	margin-top: 10px;
-	max-width: 1000px;
+	max-width: max-content;
 	width: 100%;
+	border-radius: 25px;
 }
 
 .centered-text {
@@ -64,14 +61,20 @@ form {
 .container {
 	background-color: white;
 	border-radius: 8px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	width: 100%;
-	max-width: 1200px;
-	padding: 30px;
-	margin-top: 100px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); width : 100%; max-width :
+	1250px; padding : 30px; margin-top : 0; /* Remove or set to 0 */
+	/* margin-top: 100px; */
 	margin-bottom: 50px;
 	display: flex;
 	flex-direction: column;
+	width: 100%;
+	max-width: 1250px;
+	padding: 30px;
+	margin-top: 0;
+}
+
+.searchuser-container {
+	margin-top: 200px;
 }
 
 .error-message {
@@ -126,7 +129,7 @@ form {
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
 
-	<div class="container">
+	<div class="container searchuser-container">
 
 		<div class="search-section">
 			<h4 class="centered-text"
@@ -139,7 +142,8 @@ form {
 
 			<form id="searchForm" th:action="@{/searchuser}" method="POST">
 				<div class="form-row">
-					<div class="form-group" th:if="${source != 'doctordashboard' and source != 'patientdashboard'}">
+					<div class="form-group"
+						th:if="${source != 'doctordashboard' and source != 'patientdashboard'}">
 						<label for="roleName">Role:</label> <select id="roleName"
 							name="roleName">
 							<option value="" disabled selected>Select Role</option>
@@ -151,13 +155,11 @@ form {
 
 					<!-- Hidden input when source is doctordashboard -->
 					<input th:if="${source == 'doctordashboard'}" type="hidden"
-						name="roleName" value="Patient"> 
-						
+						name="roleName" value="Patient">
+
 					<!-- Hidden input when source is patientdashboard -->
 					<input th:if="${source == 'patientdashboard'}" type="hidden"
-						name="roleName" value="Doctor"> 
-						
-					<input type="hidden"
+						name="roleName" value="Doctor"> <input type="hidden"
 						name="source" th:value="${source}">
 
 					<div class="form-group">

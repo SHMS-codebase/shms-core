@@ -98,6 +98,7 @@ public class MessageConstants {
 	public static final String PRESCRIPTION_CRTED_FAILURE = "Error creating Prescription Details.";
 
 	public static final String UNBILLED_TREATMENTS_LOAD_ERROR = "An error occurred while loading the unbilled treatments list";
+	public static final String FOLLOWUP_APMNT_LOAD_ERROR = "An error occurred while loading the followup appointment list";
 
 	public static final String INVOICE_CREATED_SUCCESS = "Invoice generated successfully";
 	public static final String INVOICE_CREATED_FAILURE = "Error generating invoice";

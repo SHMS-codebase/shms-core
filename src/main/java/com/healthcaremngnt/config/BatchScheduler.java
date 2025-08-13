@@ -34,7 +34,7 @@ public class BatchScheduler {
 //	private Job appointmentReminderJob;
 
 	// @Scheduled(fixedRate = 60000) // Runs every minute for testing purposes
-	@Scheduled(cron = "0 0 0 * * ?")
+	@Scheduled(cron = "0 0 0 * * ?") // actual working!!!!!
 	public void performDeleteExpiredSchedulesJob() {
 		logger.info("BatchScheduler - performDeleteExpiredSchedulesJob");
 		JobParameters params = new JobParametersBuilder().addLong("time", System.currentTimeMillis()).toJobParameters();

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Follow-up Appointments</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<link rel="stylesheet" th:href="@{/css/profilestyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+form {
+	margin-top: 10px;
+	max-width: 1000px;
+	width: 100%;
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 1200px;
+	padding: 30px;
+	margin-top: 300px;
+	margin-bottom: 300px;
+	display: flex;
+	flex-direction: column;
+}
+
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+
+.table-container {
+	max-height: 600px; /* Set a fixed height for vertical scrolling */
+	overflow-y: auto; /* Enable vertical scrolling */
+	overflow-x: auto; /* Keep horizontal scrolling */
+	margin-bottom: 20px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+table, th, td {
+	border: 1px solid #ddd;
+}
+
+th, td {
+	padding: 10px;
+	text-align: left;
+	word-wrap: break-word;
+}
+
+th {
+	background-color: #f2f2f2;
+	position: sticky; /* Make headers sticky */
+	top: 0; /* Stick to the top */
+	z-index: 1; /* Ensure headers appear above content */
+}
+
+button {
+	padding: 6px 12px;
+	cursor: pointer;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+}
+
+@media screen and (max-width: 768px) {
+	.container {
+		width: 95%;
+	}
+}
+</style>
+</head>
+<body>
+	<!-- Include Header Fragment -->
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
+
+	<div class="container">
+
+		<h4 class="centered-text">Follow-up Appointments</h4>
+
+		<div th:if="${errorMessage}" class="error-message">
+			<p th:text="${errorMessage}"></p>
+		</div>
+		<div th:if="${message}" class="success-message">
+			<p th:text="${message}"></p>
+		</div>
+		<div th:if="${#lists.isEmpty(followupAppointments)}">
+			<p>No Pending Follow-up Appointments</p>
+		</div>
+		<div th:unless="${#lists.isEmpty(followupAppointments)}">
+			<div class="table-container">
+				<!-- Added container with fixed height for vertical scrolling -->
+				<table>
+					<thead>
+						<tr>
+							<th>Treatment ID</th>
+							<th>Diagnosis</th>
+							<th>Patient Name</th>
+							<th>Doctor Name</th>
+							<th>Appointment Date</th>
+							<th>Additional Notes</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="treatment : ${followupAppointments}">
+							<td th:text="${treatment.treatmentID}"></td>
+							<td th:text="${treatment.diagnosis}"></td>
+							<td th:text="${treatment.appointment.patient.patientName}"></td>
+							<td th:text="${treatment.appointment.doctor.doctorName}"></td>
+							<td th:text="${treatment.appointment.appointmentDate}"></td>
+							<td th:text="${treatment.notes}"></td>
+							<td>
+								<button th:data-treatment-id="${treatment.treatmentID}"
+									th:data-doctor-id="${treatment.appointment.doctor.doctorID}"
+									th:data-patient-id="${treatment.appointment.patient.patientID}"
+									th:data-appointment-id="${treatment.appointment.appointmentID}"
+									th:data-source="${source}"
+									onclick="bookFollowupAppointment(this)">Book
+									Appointment</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<script>
+		function bookFollowupAppointment(button) {
+			const treatmentID = button.getAttribute('data-treatment-id');
+			const doctorID = button.getAttribute('data-doctor-id');
+			const patientID = button.getAttribute('data-patient-id');
+			const parentAppointmentID = button.getAttribute('data-appointment-id');
+			const source = button.getAttribute('data-source');
+			window.location.href = `/appointments/createappointment?treatmentID=${treatmentID}&doctorID=${doctorID}&patientID=${patientID}&parentAppointmentID=${parentAppointmentID}&source=${source}&isFollowup=true`;
+		}
+	</script>
+
+	<!-- Include Footer Fragment -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
