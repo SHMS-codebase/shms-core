@@ -1,6 +1,8 @@
 package com.healthcaremngnt.model;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.enums.Priority;
@@ -14,15 +16,13 @@ public class AppointmentRequest {
 	private String reason;
 	private Priority priority;
 	private AppointmentStatus appointmentStatus;
-	private boolean isFollowup;
-	private Long parentAppointmentID;
 
 	// Constructors
 	public AppointmentRequest() {
 	}
 
 	public AppointmentRequest(Long patientID, Long doctorID, LocalDate date, String time, String reason,
-			Priority priority, AppointmentStatus appointmentStatus, boolean isFollowup, Long parentAppointmentID) {
+			Priority priority, AppointmentStatus appointmentStatus) {
 		this.patientID = patientID;
 		this.doctorID = doctorID;
 		this.date = date;
@@ -30,8 +30,6 @@ public class AppointmentRequest {
 		this.reason = reason;
 		this.priority = priority;
 		this.appointmentStatus = appointmentStatus;
-		this.isFollowup = isFollowup;
-		this.parentAppointmentID = parentAppointmentID;
 	}
 
 	// Getters and Setters
@@ -103,33 +101,38 @@ public class AppointmentRequest {
 		this.appointmentStatus = appointmentStatus;
 	}
 
-	public boolean isFollowup() {
-		return isFollowup;
-	}
-
-	public void setFollowup(boolean isFollowup) {
-		this.isFollowup = isFollowup;
-	}
-
-	/**
-	 * @return the parentAppointmentID
-	 */
-	public Long getParentAppointmentID() {
-		return parentAppointmentID;
-	}
-
-	/**
-	 * @param parentAppointmentID the parentAppointmentID to set
-	 */
-	public void setParentAppointmentID(Long parentAppointmentID) {
-		this.parentAppointmentID = parentAppointmentID;
-	}
-
 	@Override
 	public String toString() {
 		return "AppointmentRequest [patientID=" + patientID + ", doctorID=" + doctorID + ", date=" + date + ", time="
 				+ time + ", reason=" + reason + ", priority=" + priority + ", appointmentStatus=" + appointmentStatus
-				+ ", isFollowup=" + isFollowup + ", parentAppointmentID=" + parentAppointmentID + "]";
+				+ "]";
+	}
+
+	public Appointment toEntity() {
+		Appointment appointment = new Appointment();
+
+		// Setting patient and doctor IDs
+		Patient patient = new Patient();
+		patient.setPatientID(this.patientID);
+		appointment.setPatient(patient);
+
+		Doctor doctor = new Doctor();
+		doctor.setDoctorID(this.doctorID);
+		appointment.setDoctor(doctor);
+
+		appointment.setAppointmentDate(this.date);
+
+		// Splitting the time slot into startTime and endTime
+		String[] timeSlots = this.time.split(" - ");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+		LocalTime startTime = LocalTime.parse(timeSlots[0], formatter);
+//		LocalTime endTime = LocalTime.parse(timeSlots[1], formatter);
+		appointment.setAppointmentTime(startTime);
+		appointment.setPriority(this.priority);
+		appointment.setAppointmentStatus(this.appointmentStatus);
+		appointment.setReasonToVisit(this.reason);
+
+		return appointment;
 	}
 
 }

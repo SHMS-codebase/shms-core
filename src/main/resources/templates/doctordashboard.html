@@ -82,8 +82,6 @@
 				</div>
 				<div id="Appointments" class="tabcontent">
 					<h2>Today's Appointments</h2>
-					<br>
-					<h3>New Appointments</h3>
 					<div th:if="${appointments != null and !appointments.isEmpty()}">
 						<table>
 							<thead>
@@ -96,40 +94,12 @@
 							</thead>
 							<tbody>
 								<tr th:each="appointment : ${appointments}">
-									<th:block th:if="${!appointment.isFollowup}">
-										<td th:text="${appointment.appointmentTime}"></td>
-										<td><a
-											th:href="@{'/treatments/createtreatment'(appointmentID=${appointment.appointmentID}, source='doctordashboard')}"
-											th:text="${appointment.patient.patientName}"></a></td>
-										<td th:text="${appointment.reasonToVisit}"></td>
-										<td th:text="${appointment.appointmentStatus}"></td>
-									</th:block>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<br>
-					<h3>Follow-up Appointments</h3>
-					<div th:if="${appointments != null and !appointments.isEmpty()}">
-						<table>
-							<thead>
-								<tr>
-									<th>Time</th>
-									<th>Patient Name</th>
-									<th>Reason for Visit</th>
-									<th>Schedule</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="appointment : ${appointments}">
-									<th:block th:if="${appointment.isFollowup}">
-										<td th:text="${appointment.appointmentTime}"></td>
-										<td><a
-											th:href="@{'/treatments/createtreatment'(appointmentID=${appointment.appointmentID}, source='doctordashboard')}"
-											th:text="${appointment.patient.patientName}"></a></td>
-										<td th:text="${appointment.reasonToVisit}"></td>
-										<td th:text="${appointment.appointmentStatus}"></td>
-									</th:block>
+									<td th:text="${appointment.appointmentTime}"></td>
+									<td><a
+										th:href="@{'/treatments/createtreatment'(appointmentID=${appointment.appointmentID}, source='doctordashboard')}"
+										th:text="${appointment.patient.patientName}"></a></td>
+									<td th:text="${appointment.reasonToVisit}"></td>
+									<td th:text="${appointment.appointmentStatus}"></td>
 								</tr>
 							</tbody>
 						</table>

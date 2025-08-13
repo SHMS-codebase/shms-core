@@ -8,11 +8,10 @@ import com.healthcaremngnt.model.Appointment;
 import com.healthcaremngnt.model.AppointmentRequest;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
-import com.healthcaremngnt.model.Treatment;
 
 public interface AppointmentService {
 
-	Appointment bookAppointment(AppointmentRequest appointmentRequest, Long treatmentID, Long parentAppointmentID, boolean isFollowup);
+	Appointment bookAppointment(AppointmentRequest appointmentRequest);
 
 	Appointment getAppointmentDetails(Long appointmentID) throws AppointmentNotFoundException;
 
@@ -22,8 +21,8 @@ public interface AppointmentService {
 
 	List<Appointment> getUpcomingAppointments(Patient patient);
 
-	void updateAppointmentStatusAndTreatment(Long appointmentID, AppointmentStatus appointmentStatus,
-			Treatment treatment) throws AppointmentNotFoundException;
+	void updateAppointmentStatus(Long appointmentID, AppointmentStatus appointmentStatus)
+			throws AppointmentNotFoundException;
 
 	List<Appointment> getRecentVisits(Long patientID);
 

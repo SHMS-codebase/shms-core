@@ -7,8 +7,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +18,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
-import com.healthcaremngnt.exceptions.DoctorNotFoundException;
-import com.healthcaremngnt.exceptions.PatientNotFoundException;
 import com.healthcaremngnt.model.Appointment;
 import com.healthcaremngnt.model.AppointmentRequest;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
-import com.healthcaremngnt.model.Treatment;
 import com.healthcaremngnt.service.AppointmentService;
 import com.healthcaremngnt.service.DoctorScheduleService;
 import com.healthcaremngnt.service.DoctorService;
 import com.healthcaremngnt.service.PatientService;
-import com.healthcaremngnt.service.TreatmentService;
 
 @Controller
 @RequestMapping("/appointments")
@@ -43,63 +37,21 @@ public class AppointmentController {
 	private final PatientService patientService;
 	private final DoctorScheduleService doctorScheduleService;
 	private final AppointmentService appointmentService;
-	private final TreatmentService treatmentService;
 
 	public AppointmentController(DoctorService doctorService, PatientService patientService,
-			DoctorScheduleService doctorScheduleService, AppointmentService appointmentService,
-			TreatmentService treatmentService) {
+			DoctorScheduleService doctorScheduleService, AppointmentService appointmentService) {
 		this.doctorService = doctorService;
 		this.patientService = patientService;
 		this.doctorScheduleService = doctorScheduleService;
 		this.appointmentService = appointmentService;
-		this.treatmentService = treatmentService;
 	}
 
 	@GetMapping("/createappointment")
-	public String viewCreateAppointment(
-			@RequestParam(value = RequestParamConstants.TREATMENT_ID, required = false) Long treatmentID,
-			@RequestParam(value = RequestParamConstants.DOCTOR_ID, required = false) Long doctorID,
-			@RequestParam(value = RequestParamConstants.PATIENT_ID, required = false) Long patientID,
-			@RequestParam(value = RequestParamConstants.PARENT_APPOINTMENT_ID, required = false) Long parentAppointmentID,
-			@RequestParam(value = RequestParamConstants.IS_FOLLOWUP, required = false) Boolean isFollowup,
-			@RequestParam(RequestParamConstants.SOURCE) String source, Model model)
-			throws DoctorNotFoundException, PatientNotFoundException {
+	public String viewCreateAppointment(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading Create Appointment");
-
-		Optional.ofNullable(treatmentID).ifPresent(id -> logger.debug("treatmentID : {}", id));
-		Optional.ofNullable(doctorID).ifPresent(id -> logger.debug("doctorID : {}", id));
-		Optional.ofNullable(patientID).ifPresent(id -> logger.debug("patientID : {}", id));
-		Optional.ofNullable(parentAppointmentID).ifPresent(id -> logger.debug("parentAppointmentID : {}", id));
-		Optional.ofNullable(isFollowup).ifPresent(id -> logger.debug("isFollowup : {}", id));
-
-		if (treatmentID != null) {
-			populateDoctorAndPatientDetails(model, doctorID, patientID);
-			model.addAttribute("isFollowup", true);
-			model.addAttribute("parentAppointmentID", parentAppointmentID);
-
-		} else {
-			populateDoctorsAndPatients(model);
-			model.addAttribute("isFollowup", false);
-		}
-
+		populateModelWithDoctorsAndPatients(model);
 		model.addAttribute("source", source);
 		return "createappointment";
-	}
-
-	private void populateDoctorAndPatientDetails(Model model, Long doctorID, Long patientID)
-			throws DoctorNotFoundException, PatientNotFoundException {
-
-		logger.info("Populating Model With Doctor And Patient details of that treatment!");
-
-		if (doctorID != null) {
-			Doctor doctor = doctorService.getDoctorDetails(doctorID);
-			model.addAttribute("doctor", doctor);
-		}
-
-		if (patientID != null) {
-			Patient patient = patientService.getPatientDetails(patientID);
-			model.addAttribute("patient", patient);
-		}
 	}
 
 	@GetMapping("/available-dates")
@@ -118,60 +70,29 @@ public class AppointmentController {
 
 	@PostMapping("/bookAppointment")
 	public String bookAppointment(AppointmentRequest appointmentRequest,
-			@RequestParam(RequestParamConstants.SOURCE) String source,
-			@RequestParam(value = RequestParamConstants.TREATMENT_ID, required = false) Long treatmentID,
-			@RequestParam(value = RequestParamConstants.PARENT_APPOINTMENT_ID, required = false) Long parentAppointmentID,
-			@RequestParam(value = RequestParamConstants.IS_FOLLOWUP, required = false) Boolean isFollowup,
-			Model model) {
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Booking Appointment: {}", appointmentRequest);
 
-		Optional.ofNullable(treatmentID).ifPresent(id -> logger.debug("treatmentID : {}", id));
-		Optional.ofNullable(parentAppointmentID).ifPresent(id -> logger.debug("parentAppointmentID : {}", id));
-		Optional.ofNullable(isFollowup).ifPresent(id -> logger.debug("isFollowup : {}", id));
-		
 		model.addAttribute("source", source);
 
 		try {
-
-			boolean followupFlag = (isFollowup != null) ? isFollowup : false;
-
-			Appointment appointment = appointmentService.bookAppointment(appointmentRequest, treatmentID, parentAppointmentID,
-					followupFlag);
-
+			Appointment appointment = appointmentService.bookAppointment(appointmentRequest);
 			logger.debug("{}", MessageConstants.APMNT_BOOKING_SUCCESS);
 			model.addAttribute("message", MessageConstants.APMNT_BOOKING_SUCCESS);
-			populateDoctorsAndPatients(model);
+			populateModelWithDoctorsAndPatients(model);
 
 			// Call async method
 			CompletableFuture.runAsync(() -> appointmentService.sendAppointmentEmail(appointment));
 
 			return "createappointment";
-		} catch (JpaSystemException e) {
-			logger.error("JPA System Exception during appointment booking: ", e);
-			// Log the root cause
-			Throwable rootCause = e.getRootCause();
-			if (rootCause != null) {
-				logger.error("Root cause: {}", rootCause.getMessage(), rootCause);
-			}
-			model.addAttribute("errorMessage", "Database error occurred. Please check your input and try again.");
-			populateDoctorsAndPatients(model);
-			return "createappointment";
-
-		} catch (DataIntegrityViolationException e) {
-			logger.error("Data integrity violation: ", e);
-			model.addAttribute("errorMessage", "Appointment conflict detected. Please choose a different time slot.");
-			populateDoctorsAndPatients(model);
-			return "createappointment";
-
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.APMNT_BOOKING_ERROR, e);
 			model.addAttribute("errorMessage", MessageConstants.APMNT_BOOKING_ERROR);
-			populateDoctorsAndPatients(model);
 			return "createappointment";
 		}
 	}
 
-	private void populateDoctorsAndPatients(Model model) {
+	private void populateModelWithDoctorsAndPatients(Model model) {
 		logger.info("Populating Model With Doctors And Patients");
 		List<Doctor> doctors = doctorService.getDoctorsWithSchedule();
 		List<Patient> patients = patientService.getAllPatients();
@@ -181,7 +102,7 @@ public class AppointmentController {
 
 	@GetMapping("/viewappointment")
 	public String viewAppointment(
-			@RequestParam(value = RequestParamConstants.APPOINTMENT_ID, required = false) Long appointmentID,
+			@RequestParam(value = RequestParamConstants.APPOINTMENTID, required = false) Long appointmentID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading View Appointment");
 		Optional.ofNullable(appointmentID).ifPresent(id -> logger.debug("Appointment ID: {}", id));
@@ -212,7 +133,7 @@ public class AppointmentController {
 
 	@PostMapping("/updateappointment")
 	public String updateAppointment(@ModelAttribute Appointment appointment,
-			@RequestParam(value = RequestParamConstants.APPOINTMENT_ID, required = false) Long appointmentID,
+			@RequestParam(value = RequestParamConstants.APPOINTMENTID, required = false) Long appointmentID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Updating Appointments");
 		Optional.ofNullable(appointment).ifPresent(id -> logger.debug("appointment: {}", id));
@@ -222,7 +143,7 @@ public class AppointmentController {
 		try {
 			Appointment updatedAppointment = appointmentService.updateAppointmentDetails(appointment);
 			logger.debug("updatedAppointment: {}", updatedAppointment);
-
+			
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.APMNT_UPDATE_FAILURE, e);
 			model.addAttribute("errorMessage", MessageConstants.APMNT_UPDATE_FAILURE);
@@ -238,26 +159,6 @@ public class AppointmentController {
 		model.addAttribute("source", source);
 
 		return "viewappointment";
-	}
-
-	@GetMapping("/followupappointments")
-	public String viewFollowupAppointments(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
-
-		logger.info("Loading all Follow-Up Appointments for booking Follow-Up Appointment!!");
-
-		try {
-			List<Treatment> followupAppointments = treatmentService.getFollowUpTreatments();
-			logger.debug("followupAppointments: {}", followupAppointments);
-			model.addAttribute("followupAppointments", followupAppointments);
-		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.FOLLOWUP_APMNT_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.FOLLOWUP_APMNT_LOAD_ERROR);
-			return source;
-		}
-
-		model.addAttribute("source", source);
-
-		return "followupappointments";
 	}
 
 }

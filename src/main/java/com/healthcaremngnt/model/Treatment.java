@@ -49,10 +49,10 @@ public class Treatment {
 	private TreatmentStatus treatmentStatus;
 
 	@Column(name = "followup_needed")
-	private Boolean followUpNeeded = false;
+	private Boolean followUpNeeded;
 
 	@Column(name = "invoice_generated")
-	private Boolean invoiceGenerated = false;
+	private Boolean invoiceGenerated;
 
 	@Column(name = "treatment_date")
 	private LocalDate treatmentDate;
@@ -78,42 +78,25 @@ public class Treatment {
 		createdDate = LocalDateTime.now();
 		updatedDate = LocalDateTime.now();
 		updateDoctorAndPatientIDs(); // Call this only on creation
-
-		validateBusinessRules();
-
-		// Auto-set treatment date if not provided
-		if (treatmentDate == null && appointment != null) {
-			treatmentDate = appointment.getAppointmentDate();
-		}
 	}
 
 	@PreUpdate
 	protected void onUpdate() {
-		updatedDate = LocalDateTime.now();
-
-		validateBusinessRules();
+		updatedDate = LocalDateTime.now(); //
 	}
 
 	private void updateDoctorAndPatientIDs() {
+
 		logger.info("Treatment Entity::: updateDoctorAndPatientIDs()");
 		if (appointment != null) {
+
 			if (appointment.getDoctor() != null && appointment.getPatient() != null) {
-				logger.debug("Setting doctorID and patientID from appointment");
+				logger.debug("To set doctorID and patientID");
 				this.doctorID = appointment.getDoctor().getDoctorID();
 				this.patientID = appointment.getPatient().getPatientID();
 			} else {
 				logger.error("Warning: Doctor or Patient is null in updateDoctorAndPatientIDs()");
 			}
-		} else {
-			logger.error("Warning: Appointment is null in updateDoctorAndPatientIDs()");
-		}
-	}
-
-	private void validateBusinessRules() {
-		// Ensure treatment dates are consistent
-		if (appointment != null && treatmentDate != null && !treatmentDate.equals(appointment.getAppointmentDate())) {
-			logger.warn("Treatment date {} differs from appointment date {} for treatment {}", treatmentDate,
-					appointment.getAppointmentDate(), treatmentID);
 		}
 	}
 
@@ -309,9 +292,9 @@ public class Treatment {
 	@Override
 	public String toString() {
 		return "Treatment [treatmentID=" + treatmentID + ", diagnosis=" + diagnosis + ", treatmentDetails="
-				+ treatmentDetails + ", notes=" + notes + ", treatmentStatus=" + treatmentStatus + ", followUpNeeded="
-				+ followUpNeeded + ", invoiceGenerated=" + invoiceGenerated + ", treatmentDate=" + treatmentDate
-				+ ", appointment=" + appointment + ", doctorID=" + doctorID + ", patientID=" + patientID
+				+ treatmentDetails + ", notes=" + notes + ", treatmentStatus=" + treatmentStatus
+				+ ", followUpNeeded=" + followUpNeeded + ", invoiceGenerated=" + invoiceGenerated + ", treatmentDate="
+				+ treatmentDate + ", appointment=" + appointment + ", doctorID=" + doctorID + ", patientID=" + patientID
 				+ ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + "]";
 	}
 

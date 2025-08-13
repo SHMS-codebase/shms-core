@@ -15,7 +15,6 @@ public class DataSourceConfig {
 	public DataSource dataSource() {
 		DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
 		dataSourceBuilder.url("jdbc:mysql://localhost:3306/healthcare_mngnt");
-//		dataSourceBuilder.url("jdbc:mysql://host.docker.internal:3306/healthcare_mngnt");
 		dataSourceBuilder.username("root");
 		dataSourceBuilder.password("Zoey@28");
 		dataSourceBuilder.driverClassName("com.mysql.cj.jdbc.Driver");

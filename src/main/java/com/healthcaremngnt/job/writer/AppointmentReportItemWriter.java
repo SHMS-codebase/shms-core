@@ -99,7 +99,7 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 				writer.write("Doctor: " + appointment.getDoctor().getDoctorName() + "\n");
 				writer.write("Appointment Status: " + appointment.getAppointmentStatus() + "\n");
 				writer.write("Priority: " + appointment.getPriority() + "\n");
-				writer.write("Needs Reminder: " + appointment.getNeedsReminder() + "\n");
+				writer.write("Needs Reminder: " + appointment.isNeedsReminder() + "\n");
 				writer.write("\n");
 			}
 		}
@@ -175,7 +175,7 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 				contentStream.newLine();
 				contentStream.showText("Priority: " + appointment.getPriority());
 				contentStream.newLine();
-				contentStream.showText("Needs Reminder: " + appointment.getNeedsReminder());
+				contentStream.showText("Needs Reminder: " + appointment.isNeedsReminder());
 				contentStream.newLine();
 				contentStream.showText("--------------------------------------------"); // Separator
 				contentStream.newLine();
@@ -243,7 +243,7 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 			run.addBreak();
 			run.setText("Priority: " + appointment.getPriority());
 			run.addBreak();
-			run.setText("Needs Reminder: " + appointment.getNeedsReminder());
+			run.setText("Needs Reminder: " + appointment.isNeedsReminder());
 			run.addBreak();
 			run.addBreak();
 		}
@@ -291,7 +291,7 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 			row.createCell(4).setCellValue(appointment.getDoctor().getDoctorName());
 			row.createCell(5).setCellValue(appointment.getAppointmentStatus().name());
 			row.createCell(6).setCellValue(appointment.getPriority().name());
-			row.createCell(7).setCellValue(appointment.getNeedsReminder());
+			row.createCell(7).setCellValue(appointment.isNeedsReminder());
 		}
 
 		try (FileOutputStream fileOut = new FileOutputStream(excelFilename)) {

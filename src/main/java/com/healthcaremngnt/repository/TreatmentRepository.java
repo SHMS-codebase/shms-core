@@ -18,9 +18,6 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
 
 	@Query("SELECT t FROM Treatment t WHERE t.invoiceGenerated = false AND t.treatmentStatus = :status")
 	List<Treatment> findTreatmentsByStatus(@Param("status") TreatmentStatus status);
-	
-	@Query("SELECT t FROM Treatment t WHERE t.followUpNeeded = true AND t.treatmentStatus = :status")
-	List<Treatment> findFollowupTreatmentsByStatus(@Param("status") TreatmentStatus status);
 
 	@Query("SELECT t FROM Treatment t WHERE (:patientID IS NULL OR t.patientID = :patientID) "
 			+ "AND (:treatmentID IS NULL OR t.treatmentID = :treatmentID) "

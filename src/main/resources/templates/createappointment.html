@@ -13,8 +13,12 @@
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
 	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
 <link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
 <link rel="stylesheet" th:href="@{/css/createstyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/path/to/formValidation.js"></script>
 <style>
 body {
 	background-color: rgb(220, 223, 239);
@@ -24,103 +28,72 @@ body {
 	margin: 0;
 	padding: 0;
 	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; /* Center the form vertically */
+	height: 100vh; /* Ensure the body takes the full viewport height */
+	min-height: 100vh; /* Makes the body full height of the viewport */
 }
 
 form {
-	margin-top: 30px;
+	margin-top: 0px;
+	margin-bottom: 40px;
 }
 
-.main-content {
-	display: flex;
-	justify-content: center;
-	padding: 20px;
-	margin-top: 20px;
-	margin-bottom: 20px;
+.centered-text {
+	text-align: center;
 }
 
-.form-container {
+.container {
 	background-color: white;
 	border-radius: 8px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	width: 100%;
-	max-width: 600px;
+	max-width: 450px;
 	padding: 30px;
-	margin-top: 520px;
+	margin-top: 300px;
 }
 
-.form-title {
-	text-align: center;
-	margin-bottom: 25px;
-	color: #333;
-	font-weight: 600;
-}
-
-.form-row {
-	display: flex;
-	align-items: center;
+.form-group {
 	margin-bottom: 20px;
 }
 
-.form-label {
-	width: 40%;
-	text-align: right;
-	padding-right: 15px;
+label {
+	display: block;
+	margin-bottom: 8px;
 	font-weight: 500;
 	color: #555;
 }
 
-.form-input {
-	width: 60%;
-}
-
-.form-control {
+input {
 	width: 100%;
-	padding: 10px;
+	padding: 12px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	font-size: 16px;
 	transition: border-color 0.3s;
 }
 
-.form-control:focus {
+input:focus {
 	outline: none;
 	border-color: #4285f4;
-	box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
 }
 
-textarea.form-control {
-	min-height: 100px;
-	resize: vertical;
-}
-
-.info-text {
-	font-weight: 500;
-	color: #333;
-	padding: 10px;
-	background-color: #f8f9fa;
-	border-radius: 4px;
-	border-left: 4px solid #4285f4;
-}
-
-.btn-container {
-	display: flex;
-	justify-content: center;
-	margin-top: 30px;
-}
-
-.btn-submit {
+button {
 	background-color: #4285f4;
 	color: white;
 	border: none;
 	border-radius: 4px;
-	padding: 12px 30px;
+	padding: 12px 20px;
 	font-size: 16px;
 	cursor: pointer;
+	width: 100%;
 	transition: background-color 0.3s;
 	font-weight: 500;
 }
 
-.btn-submit:hover {
+button:hover {
 	background-color: #3367d6;
 }
 
@@ -137,32 +110,22 @@ textarea.form-control {
 	font-size: 16px;
 	margin: 20px 0;
 	display: block;
-	padding: 10px;
-	background-color: #e8f5e9;
-	border-radius: 4px;
 }
 
-/* Message box styles */
-.message-box {
+.form-row {
+	display: flex;
+	align-items: center;
 	margin-bottom: 20px;
-	padding: 10px 15px;
-	border-radius: 4px;
-	text-align: center;
 }
 
-/* Responsive adjustments */
-@media ( max-width : 768px) {
-	.form-row {
-		flex-direction: column;
-		align-items: flex-start;
-	}
-	.form-label, .form-input {
-		width: 100%;
-		text-align: left;
-	}
-	.form-label {
-		margin-bottom: 8px;
-	}
+.form-row label {
+	width: 40%;
+	margin-bottom: 0;
+	margin-right: 10px;
+}
+
+.form-row select, .form-row input {
+	width: 60%;
 }
 </style>
 </head>
@@ -170,283 +133,143 @@ textarea.form-control {
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-	<div class="main-content">
-		<div class="form-container">
-			<h3 class="form-title">Book Doctor Appointment</h3>
 
-			<!-- Display error or success message if available -->
-			<div th:if="${errorMessage}" class="message-box error-message">
-				<p th:text="${errorMessage}"></p>
-			</div>
-			<div th:if="${message}" class="message-box success-message">
-				<p th:text="${message}"></p>
-			</div>
+	<div class="container">
 
-			<form th:action="@{/appointments/bookAppointment}" method="POST"
-				id="appointmentForm">
-				<!-- Hidden fields for URL parameters -->
-				<input type="hidden" th:value="${source}" name="source"> <input
-					type="hidden" th:value="${isFollowup}" name="isFollowup"> <input
-					type="hidden" th:value="${treatmentID}" name="treatmentID"
-					th:if="${treatmentID != null}"> <input
-					type="hidden" th:value="${parentAppointmentID}" name="parentAppointmentID"
-					th:if="${parentAppointmentID != null}">
+		<h4 class="centered-text">Book Doctor Appointment</h4>
 
-				<!-- Patient Information -->
-				<div class="form-row">
-					<div class="form-label required">Patient:</div>
-					<div class="form-input">
-						<th:block th:if="${patient != null}">
-							<div class="info-text" th:text="${patient.patientName}"></div>
-							<input type="hidden" id="patientID" name="patientID"
-								th:value="${patient.patientID}" />
-						</th:block>
-						<th:block th:unless="${patient != null}">
-							<select class="form-control" id="patientID" name="patientID"
-								required aria-required="true">
-								<option value="" disabled selected>Select Patient</option>
-								<th:block th:each="pat : ${patients}">
-									<option th:value="${pat.patientID}"
-										th:text="${pat.patientName}"></option>
-								</th:block>
-							</select>
-							<span class="error-message" id="patientIDError"></span>
-						</th:block>
-					</div>
-				</div>
-
-				<!-- Doctor Information -->
-				<div class="form-row">
-					<div class="form-label required">Doctor:</div>
-					<div class="form-input">
-						<th:block th:if="${doctor != null}">
-							<div class="info-text" th:text="${doctor.doctorName}"></div>
-							<input type="hidden" id="doctorID" name="doctorID"
-								th:value="${doctor.doctorID}" />
-						</th:block>
-						<th:block th:unless="${doctor != null}">
-							<select class="form-control" id="doctorID" name="doctorID"
-								required aria-required="true">
-								<option value="" disabled selected>Select Doctor</option>
-								<th:block th:each="doc : ${doctors}">
-									<option th:value="${doc.doctorID}" th:text="${doc.doctorName}"></option>
-								</th:block>
-							</select>
-							<span class="error-message" id="doctorIDError"></span>
-						</th:block>
-					</div>
-				</div>
-
-				<!-- Available Date -->
-				<div class="form-row">
-					<div class="form-label required">Available Date:</div>
-					<div class="form-input">
-						<select class="form-control" id="date" name="date" required
-							aria-required="true">
-							<option value="" disabled selected>Select Date</option>
-						</select> <span class="error-message" id="dateError"></span>
-					</div>
-				</div>
-
-				<!-- Available Time Slots -->
-				<div class="form-row">
-					<div class="form-label required">Available Time Slots:</div>
-					<div class="form-input">
-						<select class="form-control" id="time" name="time" required
-							aria-required="true">
-							<option value="" disabled selected>Select Time Slot</option>
-						</select> <span class="error-message" id="timeError"></span>
-					</div>
-				</div>
-
-				<!-- Reason for Visit -->
-				<div class="form-row">
-					<div class="form-label">Reason for Visit:</div>
-					<div class="form-input">
-						<textarea class="form-control" id="reason" name="reason"
-							placeholder="Please describe your symptoms or reason for visit"></textarea>
-					</div>
-				</div>
-
-				<!-- Priority Selection -->
-				<div class="form-row">
-					<div class="form-label required">Priority:</div>
-					<div class="form-input">
-						<select class="form-control" id="priority" name="priority"
-							required aria-required="true">
-							<option
-								th:each="priority : ${T(com.healthcaremngnt.enums.Priority).values()}"
-								th:value="${priority}" th:text="${priority}"></option>
-						</select> <span class="error-message" id="priorityError"></span>
-					</div>
-				</div>
-
-				<!-- Appointment Status -->
-				<div class="form-row">
-					<div class="form-label">Appointment Status:</div>
-					<div class="form-input">
-						<select class="form-control" id="appointmentStatus"
-							name="appointmentStatus">
-							<option value="SCHEDULED" selected>SCHEDULED</option>
-							<th:block
-								th:each="status : ${T(com.healthcaremngnt.enums.AppointmentStatus).values()}">
-								<option th:if="${status.name() == 'FOLLOWUP'}"
-									th:value="${status}" th:text="${status}"></option>
-							</th:block>
-						</select>
-					</div>
-				</div>
-
-				<!-- Submit Button -->
-				<div class="btn-container">
-					<button type="submit" class="btn-submit">Book Appointment</button>
-				</div>
-			</form>
+		<div th:if="${errorMessage}" class="error-message">
+			<p th:text="${errorMessage}"></p>
 		</div>
-	</div>
+		<div th:if="${message}" class="success-message">
+			<p th:text="${message}"></p>
+		</div>
+		<form th:action="@{/appointments/bookAppointment}" method="POST">
 
+			<input type="hidden" th:value="${source}" name="source">
+			<div class="form-group">
+				<label for="patientID" class="required">Patient Name:</label> <select
+					id="patientID" name="patientID" required>
+					<option value="" disabled selected>Select Patient</option>
+					<th:block th:each="patient : ${patients}">
+						<option th:value="${patient.patientID}"
+							th:text="${patient.patientName}"></option>
+					</th:block>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="doctorID" class="required">Doctor Name:</label> <select
+					id="doctorID" name="doctorID" required>
+					<option value="" disabled selected>Select Doctor</option>
+					<th:block th:each="doctor : ${doctors}">
+						<option th:value="${doctor.doctorID}"
+							th:text="${doctor.doctorName}"></option>
+					</th:block>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="date" class="required">Available Date:</label> <select
+					id="date" name="date" required>
+					<option value="" disabled selected>Select Date</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="time" class="required">Available Time Slots:</label> <select
+					id="time" name="time" required>
+					<option value="" disabled selected>Select Time Slot</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="reason">Reason for Visit:</label>
+				<textarea id="reason" name="reason"></textarea>
+			</div>
+
+			<div class="form-group">
+				<label for="priority" class="required">Priority:</label> <select
+					id="priority" name="priority">
+					<option
+						th:each="priority : ${T(com.healthcaremngnt.enums.Priority).values()}"
+						th:value="${priority}" th:text="${priority}"></option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label for="appointmentStatus">Appointment Status:</label> <select
+					id="appointmentStatus" name="appointmentStatus">
+					<option value="SCHEDULED" selected>SCHEDULED</option>
+					<th:block
+						th:each="status : ${T(com.healthcaremngnt.enums.AppointmentStatus).values()}">
+						<option th:if="${status.name() == 'FOLLOWUP'}"
+							th:value="${status}" th:text="${status}"></option>
+					</th:block>
+				</select>
+			</div>
+
+			<div class="buttons-container">
+				<button type="submit">Book Appointment</button>
+			</div>
+		</form>
+	</div>
 	<!-- Include Footer Fragment -->
 	<div th:replace="~{fragments/footer :: footer}"></div>
-
 	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script>
+		// JavaScript to dynamically update available dates and time slots based on selected doctor
 		$(document)
 				.ready(
 						function() {
-							// Form validation
-							function validateForm() {
-								let isValid = true;
+							$('#doctorID')
+									.change(
+											function() {
+												var doctorID = $('#doctorID')
+														.val();
 
-								// Clear previous error messages
-								$('.error-message').text('');
-
-								// Only validate fields that are visible/enabled
-								if ($('#doctorID').is(':visible')
-										&& !$('#doctorID').val()) {
-									$('#doctorIDError').text(
-											'Please select a doctor');
-									isValid = false;
-								}
-
-								if ($('#patientID').is(':visible')
-										&& !$('#patientID').val()) {
-									$('#patientIDError').text(
-											'Please select a patient');
-									isValid = false;
-								}
-
-								if (!$('#date').val()) {
-									$('#dateError')
-											.text('Please select a date');
-									isValid = false;
-								}
-
-								if (!$('#time').val()) {
-									$('#timeError').text(
-											'Please select a time slot');
-									isValid = false;
-								}
-
-								if (!$('#priority').val()) {
-									$('#priorityError').text(
-											'Please select a priority');
-									isValid = false;
-								}
-
-								return isValid;
-							}
-
-							// Form submission handler
-							$('#appointmentForm').on('submit', function(e) {
-								if (!validateForm()) {
-									e.preventDefault();
-								}
-							});
-
-							// Get doctorID - either from visible select or hidden input
-							function getDoctorID() {
-								return $('#doctorID').is(':visible') ? $(
-										'#doctorID').val() : $('#doctorID')
-										.val();
-							}
-
-							// Load available dates immediately if doctor is pre-selected
-							if ($('#doctorID').val()
-									&& !$('#doctorID').is(':visible')) {
-								loadAvailableDates(getDoctorID());
-							}
-
-							// Dynamically update available dates based on selected doctor
-							$('#doctorID').change(function() {
-								var doctorID = getDoctorID();
-								if (doctorID) {
-									loadAvailableDates(doctorID);
-								}
-							});
-
-							// Function to load available dates
-							function loadAvailableDates(doctorID) {
-								$('#date')
-										.empty()
-										.append(
-												'<option value="" disabled selected>Select Date</option>');
-								$('#time')
-										.empty()
-										.append(
-												'<option value="" disabled selected>Select Time Slot</option>');
-
-								$
-										.ajax({
-											url : '/appointments/available-dates',
-											method : 'GET',
-											data : {
-												doctorID : doctorID
-											},
-											success : function(response) {
-												if (response
-														&& response.length > 0) {
+												if (doctorID) {
 													$
-															.each(
-																	response,
-																	function(
-																			key,
-																			value) {
-																		$(
-																				'#date')
-																				.append(
-																						$(
-																								'<option></option>')
-																								.attr(
-																										'value',
-																										value)
-																								.text(
-																										value));
-																	});
-												} else {
-													$('#dateError')
-															.text(
-																	'No available dates for this doctor');
+															.ajax({
+																url : '/appointments/available-dates',
+																method : 'GET',
+																data : {
+																	doctorID : doctorID
+																},
+																success : function(
+																		response) {
+																	var dates = $('#date');
+																	dates
+																			.empty();
+																	dates
+																			.append('<option value="" disabled selected>Select Date</option>'); // Add placeholder option
+																	$
+																			.each(
+																					response,
+																					function(
+																							key,
+																							value) {
+																						dates
+																								.append($(
+																										'<option></option>')
+																										.attr(
+																												'value',
+																												value)
+																										.text(
+																												value));
+																					});
+																}
+															});
 												}
-											},
-											error : function() {
-												$('#dateError')
-														.text(
-																'Failed to load available dates');
-											}
-										});
-							}
+											});
 
-							// Dynamically update available time slots based on selected date
 							$('#date')
 									.change(
 											function() {
-												var doctorID = getDoctorID();
+												var doctorID = $('#doctorID')
+														.val();
 												var date = $('#date').val();
-												$('#time')
-														.empty()
-														.append(
-																'<option value="" disabled selected>Select Time Slot</option>');
 
 												if (doctorID && date) {
 													$
@@ -459,42 +282,33 @@ textarea.form-control {
 																},
 																success : function(
 																		response) {
-																	if (response
-																			&& response.length > 0) {
-																		$
-																				.each(
-																						response,
-																						function(
-																								key,
-																								value) {
-																							$(
-																									'#time')
-																									.append(
-																											$(
-																													'<option></option>')
-																													.attr(
-																															'value',
-																															value)
-																													.text(
-																															value));
-																						});
-																	} else {
-																		$(
-																				'#timeError')
-																				.text(
-																						'No available time slots for this date');
-																	}
-																},
-																error : function() {
-																	$(
-																			'#timeError')
-																			.text(
-																					'Failed to load available time slots');
+																	var timeSlots = $('#time');
+																	timeSlots
+																			.empty();
+																	timeSlots
+																			.append('<option value="" disabled selected>Select Time Slot</option>'); // Add placeholder option
+																	$
+																			.each(
+																					response,
+																					function(
+																							key,
+																							value) {
+																						timeSlots
+																								.append($(
+																										'<option></option>')
+																										.attr(
+																												'value',
+																												value)
+																										.text(
+																												value));
+																					});
 																}
 															});
 												}
 											});
 						});
 	</script>
+	<!-- Include Footer Fragment -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

@@ -100,7 +100,7 @@ public class TreatmentController {
 		try {
 			// Save treatment
 			Treatment savedTreatment = treatmentService.createTreatment(treatment);
-			
+
 			// When clicked on 'Create Treatment & Continue to Prescription' button
 			if (continueTreatment != null && continueTreatment) {
 				logger.info("Redirecting to Create Prescriptions!!!");
@@ -116,28 +116,10 @@ public class TreatmentController {
 				}
 			}
 
-			if (savedTreatment != null) {
-				// Update appointment with treatment details and appointment status
-				logger.debug("savedTreatment.getTreatmentID(): {}", savedTreatment.getTreatmentID());
-				logger.debug("savedTreatment.getDiagnosis(): {}", savedTreatment.getDiagnosis());
-				logger.debug("savedTreatment.getDoctorID(): {}", savedTreatment.getDoctorID());
-				logger.debug("savedTreatment.getFollowUpNeeded(): {}", savedTreatment.getFollowUpNeeded());
-				logger.debug("savedTreatment.getInvoiceGenerated(): {}", savedTreatment.getInvoiceGenerated());
-				logger.debug("savedTreatment.getNotes(): {}", savedTreatment.getNotes());
-				logger.debug("savedTreatment.getPatientID(): {}", savedTreatment.getPatientID());
-				logger.debug("savedTreatment.getTreatmentDetails(): {}", savedTreatment.getTreatmentDetails());
-				logger.debug("savedTreatment.getAppointment(): {}", savedTreatment.getAppointment());
-				logger.debug("savedTreatment.getCreatedDate(): {}", savedTreatment.getCreatedDate());
-				logger.debug("savedTreatment.getTreatmentDate(): {}", savedTreatment.getTreatmentDate());
-				logger.debug("savedTreatment.getTreatmentStatus(): {}", savedTreatment.getTreatmentStatus());
-				logger.debug("savedTreatment.getUpdatedDate(): {}", savedTreatment.getUpdatedDate());
-				
-				appointmentService.updateAppointmentStatusAndTreatment(appointmentID, AppointmentStatus.COMPLETED,
-						savedTreatment);
+			// Update appointment status
+			appointmentService.updateAppointmentStatus(appointmentID, AppointmentStatus.COMPLETED);
 
-				logger.debug("{}", MessageConstants.TREATMENT_PLAN_SUCCESS);
-
-			}
+			logger.debug("{}", MessageConstants.TREATMENT_PLAN_SUCCESS);
 
 			model.addAttribute("treatmentForm", treatmentForm);
 			model.addAttribute("message", MessageConstants.TREATMENT_PLAN_SUCCESS);
@@ -160,7 +142,7 @@ public class TreatmentController {
 			@RequestParam(value = RequestParamConstants.TREATMENT_ID, required = false) Long treatmentID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading View Treatment");
-
+		
 		Optional.ofNullable(treatmentID).ifPresent(id -> logger.debug("Treatment ID: {}", id));
 
 		try {

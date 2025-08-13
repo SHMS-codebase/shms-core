@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +21,13 @@ import com.healthcaremngnt.model.Appointment;
 import com.healthcaremngnt.model.AppointmentRequest;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
-import com.healthcaremngnt.model.Treatment;
 import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.AppointmentRepository;
 import com.healthcaremngnt.repository.DoctorRepository;
 import com.healthcaremngnt.repository.DoctorScheduleRepository;
 import com.healthcaremngnt.repository.PatientRepository;
-import com.healthcaremngnt.repository.TreatmentRepository;
 import com.healthcaremngnt.service.AppointmentService;
 import com.healthcaremngnt.service.EmailService;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -44,22 +40,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private final DoctorScheduleRepository doctorScheduleRepository;
 	private final PatientRepository patientRepository;
 	private final EmailService emailService;
-	private final TreatmentRepository treatmentRepository;
 
 	public AppointmentServiceImpl(AppointmentRepository appointmentRepository, DoctorRepository doctorRepository,
 			DoctorScheduleRepository doctorScheduleRepository, PatientRepository patientRepository,
-			EmailService emailService, TreatmentRepository treatmentRepository) {
+			EmailService emailService) {
 		this.appointmentRepository = appointmentRepository;
 		this.doctorRepository = doctorRepository;
 		this.doctorScheduleRepository = doctorScheduleRepository;
 		this.patientRepository = patientRepository;
 		this.emailService = emailService;
-		this.treatmentRepository = treatmentRepository;
 	}
 
 	@Override
-	public Appointment bookAppointment(AppointmentRequest appointmentRequest, Long treatmentID, Long parentAppointmentID,
-			boolean isFollowup) {
+	public Appointment bookAppointment(AppointmentRequest appointmentRequest) {
 		logger.info("Booking appointment for Doctor ID: {} on Date: {} at Time: {}", appointmentRequest.getDoctorID(),
 				appointmentRequest.getDate(), appointmentRequest.getTime());
 
@@ -80,82 +73,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					schedule.setAvailableCount(schedule.getAvailableCount() - 1);
 					doctorScheduleRepository.save(schedule);
 
-					// Creating Appointment from the request
-					Appointment appointment = createAppointmentFromRequest(appointmentRequest, treatmentID,
-							parentAppointmentID, isFollowup);
-					
-					appointment = appointmentRepository.save(appointment);
-
-					// Update treatment followupNeeded field if this is a followup appointment
-					if (isFollowup && treatmentID != null) {
-						logger.debug("Updating followupNeeded for treatment ID: {}", treatmentID);
-						updateTreatmentFollowupStatus(treatmentID);
-					}
-					else {
-						logger.debug("Not updating followupNeeded");
-					}
-
-					return appointment;
+					return appointmentRepository.save(appointmentRequest.toEntity());
 				}).orElseThrow(() -> new BookingException("No available schedule found for the given time slot."));
-	}
-
-	private void updateTreatmentFollowupStatus(Long treatmentID) {
-		try {
-			Treatment treatment = treatmentRepository.findById(treatmentID)
-					.orElseThrow(() -> new EntityNotFoundException("Treatment not found with ID: " + treatmentID));
-
-			treatment.setFollowUpNeeded(false);
-			treatmentRepository.save(treatment);
-
-			logger.info("Updated followupNeeded to false for treatment ID: {}", treatmentID);
-		} catch (Exception e) {
-			logger.error("Failed to update followupNeeded for treatment ID: {}", treatmentID, e);
-			// Don't throw exception here to avoid rolling back the appointment
-		}
-	}
-
-	private Appointment createAppointmentFromRequest(AppointmentRequest request, Long treatmentID, Long parentAppointmentID,
-			boolean isFollowup) {
-
-		logger.info(
-				"Creating appointment from request: {} with Treatment ID: {}, Parent Appointment ID: {} and isFollowp: {} ",
-				request, treatmentID, parentAppointmentID, isFollowup);
-		Appointment appointment = new Appointment();
-
-		// Fetch existing entities from database
-		Doctor doctor = doctorRepository.findById(request.getDoctorID())
-				.orElseThrow(() -> new EntityNotFoundException("Doctor not found with ID: " + request.getDoctorID()));
-
-		Patient patient = patientRepository.findById(request.getPatientID())
-				.orElseThrow(() -> new EntityNotFoundException("Patient not found with ID: " + request.getPatientID()));
-
-		// Set the fetched entities
-		appointment.setDoctor(doctor);
-		appointment.setPatient(patient);
-
-		// Set other properties
-		appointment.setAppointmentDate(request.getDate());
-
-		// Parse time
-		String[] timeSlots = request.getTime().split(" - ");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-		LocalTime startTime = LocalTime.parse(timeSlots[0], formatter);
-		appointment.setAppointmentTime(startTime);
-
-		appointment.setPriority(request.getPriority());
-		appointment.setAppointmentStatus(request.getAppointmentStatus());
-		appointment.setReasonToVisit(request.getReason());
-		appointment.setIsFollowup(isFollowup);
-
-		// Handle parent appointment if exists
-		if (request.getParentAppointmentID() != null) {
-			Appointment parentAppointment = appointmentRepository.findById(request.getParentAppointmentID())
-					.orElseThrow(() -> new EntityNotFoundException(
-							"Parent appointment not found with ID: " + request.getParentAppointmentID()));
-			appointment.setParentAppointment(parentAppointment);
-		}
-
-		return appointment;
 	}
 
 	private void validateTimeSlot(String timeSlot) {
@@ -191,7 +110,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			throw new AppointmentNotFoundException("Appointment not found with ID: " + appointment.getAppointmentID());
 		}
 
-		logger.debug("appointment: {}", appointment);
 		// Save the updated appointment
 		return appointmentRepository.save(appointment);
 	}
@@ -200,10 +118,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public List<Appointment> getTodaysAppointments(Doctor doctor) {
 		logger.info("Fetching today's appointments for Doctor ID: {}", doctor.getDoctorID());
 
-		List<AppointmentStatus> statuses = Arrays.asList(AppointmentStatus.SCHEDULED, AppointmentStatus.FOLLOWUP);
-		return appointmentRepository.findByDoctorAndAppointmentDateAndAppointmentStatusIn(doctor, LocalDate.now(),
-				statuses);
-
+		return appointmentRepository.findByDoctorAndAppointmentDateAndAppointmentStatus(doctor, LocalDate.now(),
+				AppointmentStatus.SCHEDULED);
 	}
 
 	@Override
@@ -215,15 +131,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public void updateAppointmentStatusAndTreatment(Long appointmentID, AppointmentStatus appointmentStatus,
-			Treatment treatment) throws AppointmentNotFoundException {
+	public void updateAppointmentStatus(Long appointmentID, AppointmentStatus appointmentStatus)
+			throws AppointmentNotFoundException {
 		logger.info("Updating appointment status for ID: {} to {}", appointmentID, appointmentStatus);
 
 		if (!appointmentRepository.existsById(appointmentID)) {
 			throw new AppointmentNotFoundException("Appointment not found with ID: " + appointmentID);
 		}
 
-		appointmentRepository.updateAppointmentStatusAndTreatment(appointmentID, appointmentStatus, treatment);
+		appointmentRepository.updateAppointmentStatus(appointmentID, appointmentStatus);
 	}
 
 	@Override
@@ -244,7 +160,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return recentVisits;
 	}
 
-	// @Async
+	@Async
 	@Override
 	public void sendAppointmentEmail(Appointment appointment) {
 		if (appointment == null) {
