@@ -346,9 +346,10 @@ public class PrescriptionController {
 		}
 
 		Prescription prescription = new Prescription();
-
+		Treatment treatment = new Treatment();
 		if (treatmentID != null) {
-			Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
+			treatment = treatmentService.getTreatmentDetails(treatmentID);
+			logger.debug("treatment: {}", treatment);
 			prescription.setTreatment(treatment);
 		}
 
@@ -370,7 +371,8 @@ public class PrescriptionController {
 						prescriptionForm.getPrescriptionDetails());
 				logger.debug("savedPrescription: {}", savedPrescription);
 				logger.debug("Update the status of Appointment with ID: {}", appointmentID);
-				appointmentService.updateAppointmentStatus(appointmentID, AppointmentStatus.COMPLETED);
+				appointmentService.updateAppointmentStatusAndTreatment(appointmentID, AppointmentStatus.COMPLETED,
+						treatment);
 			}
 
 			logger.debug("{}", MessageConstants.PRESCRIPTION_CRTED_SUCCESS);

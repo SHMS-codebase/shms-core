@@ -13,6 +13,7 @@ import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.model.Appointment;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
+import com.healthcaremngnt.model.Treatment;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -25,8 +26,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
 //	List<Appointment> findByDoctorAndAppointmentDate(Doctor doctor, LocalDate appointmentDate);
 
-	List<Appointment> findByDoctorAndAppointmentDateAndAppointmentStatus(Doctor doctor, LocalDate appointmentDate,
-			AppointmentStatus appointmentStatus);
+	List<Appointment> findByDoctorAndAppointmentDateAndAppointmentStatusIn(Doctor doctor, LocalDate appointmentDate,
+			List<AppointmentStatus> appointmentStatuses);
 
 	@Query("SELECT a FROM Appointment a " + "JOIN a.patient p " + "JOIN a.doctor d "
 			+ "WHERE (:patientID IS NULL OR p.patientID = :patientID) "
@@ -34,14 +35,18 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 			+ "AND (:appointmentDate IS NULL OR a.appointmentDate = :appointmentDate) "
 			+ "AND (:appointmentStatus IS NULL OR a.appointmentStatus = :appointmentStatus)")
 	List<Appointment> findAppointments(@Param("patientID") Long patientID, @Param("doctorID") Long doctorID,
-			@Param("appointmentDate") LocalDate appointmentDate, @Param("appointmentStatus") AppointmentStatus appointmentStatus);
+			@Param("appointmentDate") LocalDate appointmentDate,
+			@Param("appointmentStatus") AppointmentStatus appointmentStatus);
 
 	List<Appointment> findByPatientAndAppointmentStatusAndAppointmentDateGreaterThanEqual(Patient patient,
 			AppointmentStatus appointmentStatus, LocalDate appointmentDate);
 
 	@Modifying
-	@Query("UPDATE Appointment a SET a.appointmentStatus = :status WHERE a.appointmentID = :id")
-	void updateAppointmentStatus(@Param("id") Long appointmentID, @Param("status") AppointmentStatus appointmentStatus);
+	@Query("UPDATE Appointment a SET a.appointmentStatus = :status, a.treatment = :treatment WHERE a.appointmentID = :id")
+	void updateAppointmentStatusAndTreatment(@Param("id") Long appointmentID,
+			@Param("status") AppointmentStatus appointmentStatus, @Param("treatment") Treatment treatment);
+	
+	
 
 	// Example of a derived query (if needed):
 	// List<Appointment> findByPatient_PatientID(Long patientID);

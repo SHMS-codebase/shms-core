@@ -101,7 +101,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 
 		return treatmentRepository.findPatientByDoctorID(doctorID);
 	}
-	
+
 	@Override
 	public List<Long> getDoctorListByPatient(Long patientID) {
 		logger.info("Fetching Doctor IDs for Patient ID: {}", patientID);
@@ -123,5 +123,18 @@ public class TreatmentServiceImpl implements TreatmentService {
 
 		return treatmentRepository.findByPatient(patientID);
 	}
-	
+
+	@Override
+	public List<Treatment> getFollowUpTreatments() {
+		logger.info("Fetching all treatments with FOLLOWUP status.");
+
+		List<Treatment> treatments = treatmentRepository.findFollowupTreatmentsByStatus(TreatmentStatus.FOLLOWUP);
+
+		if (treatments.isEmpty()) {
+			logger.warn("No followup treatments found.");
+		}
+
+		return treatments;
+	}
+
 }

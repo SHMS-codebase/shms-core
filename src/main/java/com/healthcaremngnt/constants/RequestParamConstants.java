@@ -4,8 +4,6 @@ public class RequestParamConstants {
 
 	public static final String SOURCE = "source";
 
-	public static final String APPOINTMENTID = "appointmentID";
-
 	public static final String TOKEN = "token";
 	public static final String USER_NAME = "userName";
 	public static final String USER_ID = "userID";
@@ -50,21 +48,25 @@ public class RequestParamConstants {
 	public static final String NOTES = "notes";
 	public static final String FOLLOWUP_NEEDED = "followUpNeeded";
 
+	public static final String IS_FOLLOWUP = "isFollowup";
+
 	public static final String CONTINUE_TREATMENT = "continue";
 	public static final String SAVED_TREATMENT = "savedTreatment";
 
 	public static final String TREATMENT_ID = "treatmentID";
 	public static final String TREATMENT_DATE = "treatmentDate";
 	public static final String TREATMENT_STATUS = "treatmentStatus";
-	
+
 	public static final String TREATMENT_COST = "treatmentCost";
 	public static final String PRESCRIPTION_COST = "prescriptionCost";
 	public static final String TOTAL_AMOUNT = "totalAmount";
-	
+
 	public static final String INVOICE_ID = "invoiceID";
 	public static final String INVOICE_DATE = "invoiceDate";
 	public static final String INVOICE_STATUS = "invoiceStatus";
 
 	public static final String ADMISSION_YEAR = "admissionYear";
+
+	public static final String PARENT_APPOINTMENT_ID = "parentAppointmentID";
 
 }

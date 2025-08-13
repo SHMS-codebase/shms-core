@@ -18,7 +18,6 @@
 <link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
 <link rel="stylesheet" th:href="@{/css/createstyles.css}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="/path/to/formValidation.js"></script>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -51,6 +50,49 @@
 			});
 </script>
 <style>
+
+/* Styles for the form elements without overriding common code in createstyles.css*/
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 650px;
+	padding: 30px;
+	margin-top: 300px;
+	margin-bottom: 40px;
+}
+
+.form-group {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 18px;
+	width: 100%;
+	max-width: 500px; /* Adjust as needed */
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.form-group label {
+	width: 170px; /* Adjust for your longest label */
+	min-width: 150px;
+	text-align: left;
+	margin-right: 12px;
+	font-weight: 500;
+}
+
+.form-group input, .form-group select {
+	width: 260px; /* Uniform width for all fields */
+	min-width: 0;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 24px;
+	font-size: 16px;
+	box-sizing: border-box;
+	background: #fff;
+}
+
 /* Additional styles to make card look consistent with existing design */
 body {
 	background-color: rgb(220, 223, 239);
@@ -75,16 +117,6 @@ form {
 
 .centered-text {
 	text-align: center;
-}
-
-.container {
-	background-color: white;
-	border-radius: 8px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	width: 100%;
-	max-width: 650px;
-	padding: 30px;
-	margin-top: 100px;
 }
 
 .error-message {
