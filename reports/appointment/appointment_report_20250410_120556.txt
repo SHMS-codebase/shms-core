@@ -1,0 +1,756 @@
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 1
+Appointment Date: 2025-03-01
+Appointment Time: 13:06
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 2
+Appointment Date: 2025-03-01
+Appointment Time: 13:06
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 3
+Appointment Date: 2025-03-01
+Appointment Time: 13:06
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 4
+Appointment Date: 2025-03-02
+Appointment Time: 19:44
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 5
+Appointment Date: 2025-03-04
+Appointment Time: 10:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 6
+Appointment Date: 2025-03-04
+Appointment Time: 10:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 7
+Appointment Date: 2025-03-05
+Appointment Time: 15:51
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 8
+Appointment Date: 2025-03-05
+Appointment Time: 15:51
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 9
+Appointment Date: 2025-03-05
+Appointment Time: 15:51
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 10
+Appointment Date: 2025-03-05
+Appointment Time: 15:51
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 11
+Appointment Date: 2025-03-05
+Appointment Time: 15:51
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 12
+Appointment Date: 2025-03-05
+Appointment Time: 15:51
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 13
+Appointment Date: 2025-03-06
+Appointment Time: 10:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 14
+Appointment Date: 2025-03-06
+Appointment Time: 10:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 15
+Appointment Date: 2025-03-07
+Appointment Time: 12:52
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 16
+Appointment Date: 2025-03-07
+Appointment Time: 12:52
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 17
+Appointment Date: 2025-03-06
+Appointment Time: 10:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 18
+Appointment Date: 2025-03-06
+Appointment Time: 10:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 19
+Appointment Date: 2025-03-07
+Appointment Time: 12:52
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 20
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 21
+Appointment Date: 2025-03-07
+Appointment Time: 12:52
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 22
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 23
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 24
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 25
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 26
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 27
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 28
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 29
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 30
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 31
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 32
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 33
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 34
+Appointment Date: 2025-03-07
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 35
+Appointment Date: 2025-03-09
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 36
+Appointment Date: 2025-03-09
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 37
+Appointment Date: 2025-03-09
+Appointment Time: 18:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 38
+Appointment Date: 2025-03-09
+Appointment Time: 18:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 39
+Appointment Date: 2025-03-09
+Appointment Time: 20:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 40
+Appointment Date: 2025-03-09
+Appointment Time: 20:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 41
+Appointment Date: 2025-03-10
+Appointment Time: 10:10
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 42
+Appointment Date: 2025-03-10
+Appointment Time: 10:10
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: FOLLOWUP
+Priority: HIGH
+Needs Reminder: false
+
+Appointment ID: 43
+Appointment Date: 2025-03-10
+Appointment Time: 10:10
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 44
+Appointment Date: 2025-03-12
+Appointment Time: 20:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 45
+Appointment Date: 2025-03-12
+Appointment Time: 20:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 46
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 47
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 48
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 49
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 50
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 51
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 52
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 53
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 54
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 55
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 56
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 57
+Appointment Date: 2025-03-15
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 58
+Appointment Date: 2025-03-17
+Appointment Time: 19:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 59
+Appointment Date: 2025-03-17
+Appointment Time: 19:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 60
+Appointment Date: 2025-03-21
+Appointment Time: 18:30
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 61
+Appointment Date: 2025-03-21
+Appointment Time: 18:30
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: CANCELLED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 62
+Appointment Date: 2025-03-21
+Appointment Time: 18:30
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 63
+Appointment Date: 2025-03-21
+Appointment Time: 18:30
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 64
+Appointment Date: 2025-03-21
+Appointment Time: 18:30
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 65
+Appointment Date: 2025-03-21
+Appointment Time: 18:30
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 66
+Appointment Date: 2025-03-22
+Appointment Time: 10:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 67
+Appointment Date: 2025-03-22
+Appointment Time: 10:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 68
+Appointment Date: 2025-03-22
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 69
+Appointment Date: 2025-03-22
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 70
+Appointment Date: 2025-03-24
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 71
+Appointment Date: 2025-03-24
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 72
+Appointment Date: 2025-03-24
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 73
+Appointment Date: 2025-03-24
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 74
+Appointment Date: 2025-03-24
+Appointment Time: 17:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 75
+Appointment Date: 2025-03-24
+Appointment Time: 17:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 76
+Appointment Date: 2025-03-29
+Appointment Time: 10:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 77
+Appointment Date: 2025-03-29
+Appointment Time: 10:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 78
+Appointment Date: 2025-03-29
+Appointment Time: 16:00
+Patient: Prestine
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 79
+Appointment Date: 2025-03-29
+Appointment Time: 16:00
+Patient: Jane Smith
+Doctor: Dr. Smith
+Appointment Status: SCHEDULED
+Priority: LOW
+Needs Reminder: false
+
+Appointment ID: 80
+Appointment Date: 2025-04-03
+Appointment Time: 13:00
+Patient: Prestine
+Doctor: Dr. Rock
+Appointment Status: COMPLETED
+Priority: LOW
+Needs Reminder: false
+
+Appointment Report generated on::: 2025-04-10
+
+Appointment ID: 81
+Appointment Date: 2025-04-08
+Appointment Time: 10:00
+Patient: Prestine
+Doctor: Dr. Rock
+Appointment Status: SCHEDULED
+Priority: MEDIUM
+Needs Reminder: false
+
+Appointment ID: 82
+Appointment Date: 2025-04-08
+Appointment Time: 10:00
+Patient: Jane Smith
+Doctor: Dr. Rock
+Appointment Status: FOLLOWUP
+Priority: HIGH
+Needs Reminder: false
+
