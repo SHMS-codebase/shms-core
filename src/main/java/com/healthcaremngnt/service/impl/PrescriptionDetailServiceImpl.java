@@ -44,7 +44,7 @@ public class PrescriptionDetailServiceImpl implements PrescriptionDetailService 
 
 		prescriptionDetails.forEach(detail -> detail.setPrescription(prescription));
 
-		List<PrescriptionDetail> savedDetails = prescriptionDetailRepository.saveAll(prescriptionDetails);
+		var savedDetails = prescriptionDetailRepository.saveAll(prescriptionDetails);
 
 		for (PrescriptionDetail prescriptionDetail : savedDetails) {
 
@@ -132,7 +132,7 @@ public class PrescriptionDetailServiceImpl implements PrescriptionDetailService 
 		}
 
 		// Fetch existing details to compare with updated ones
-		List<PrescriptionDetail> existingDetails = prescriptionDetailRepository.findByPrescription(prescription);
+		var existingDetails = prescriptionDetailRepository.findByPrescription(prescription);
 		logger.debug("existingDetails: {}", existingDetails);
 
 		Set<Long> existingIDs = existingDetails.stream().map(PrescriptionDetail::getPrescriptionDetailID)
@@ -157,7 +157,7 @@ public class PrescriptionDetailServiceImpl implements PrescriptionDetailService 
 		logger.debug("Prescription Details: {}, Prescription: {}", detail, prescription);
 
 		if (detail.getPrescriptionDetailID() != null && detail.getPrescriptionDetailID() > 0) {
-			PrescriptionDetail existingDetail = prescriptionDetailRepository.findById(detail.getPrescriptionDetailID())
+			var existingDetail = prescriptionDetailRepository.findById(detail.getPrescriptionDetailID())
 					.orElseThrow(() -> new EntityNotFoundException("Prescription detail not found"));
 
 			updateExistingPrescriptionDetail(existingDetail, detail);

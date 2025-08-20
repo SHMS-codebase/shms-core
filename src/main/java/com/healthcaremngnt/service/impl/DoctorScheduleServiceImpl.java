@@ -46,7 +46,7 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
 
 		validateDoctorSchedule(doctorSchedule);
 
-		DoctorSchedule savedSchedule = doctorScheduleRepository.save(doctorSchedule);
+		var savedSchedule = doctorScheduleRepository.save(doctorSchedule);
 
 		logger.info("Successfully saved doctor schedule with ID: {}", savedSchedule.getScheduleID());
 		return savedSchedule;
@@ -133,7 +133,7 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
 		LocalTime startTime = LocalTime.parse(request.getStartTime());
 		LocalTime endTime = LocalTime.parse(request.getEndTime());
 
-		boolean overlapFound = doctorScheduleRepository.findByDoctor_DoctorIDAndAvailableDate(doctorID, availableDate)
+		var overlapFound = doctorScheduleRepository.findByDoctor_DoctorIDAndAvailableDate(doctorID, availableDate)
 				.stream().anyMatch(schedule -> schedule.getStartTime().isBefore(endTime)
 						&& schedule.getEndTime().isAfter(startTime));
 
@@ -196,7 +196,7 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
 		AtomicReference<Long> resolvedDoctorID = new AtomicReference<>(doctorID);
 
 		if (scheduleID != null) {
-			DoctorSchedule schedule = doctorScheduleRepository.findByScheduleID(scheduleID);
+			var schedule = doctorScheduleRepository.findByScheduleID(scheduleID);
 			resolvedDoctorID.set(schedule.getDoctor().getDoctorID()); // Modify using `set()`
 		}
 

@@ -31,8 +31,8 @@ import com.healthcaremngnt.job.reader.BillingReportItemReader;
 import com.healthcaremngnt.job.reader.PatientReportItemReader;
 import com.healthcaremngnt.job.tasklet.AppointmentNoShowTasklet;
 import com.healthcaremngnt.job.tasklet.ArchivePatientRecordsTasklet;
-import com.healthcaremngnt.job.tasklet.DeleteExpiredSchedulesTasklet;
 import com.healthcaremngnt.job.tasklet.DeletePatientRecordsTasklet;
+import com.healthcaremngnt.job.tasklet.ExpireOutdatedSchedulesTasklet;
 import com.healthcaremngnt.job.tasklet.ReportsSendEmailTasklet;
 import com.healthcaremngnt.job.writer.AppointmentReportItemWriter;
 import com.healthcaremngnt.job.writer.BillingReportItemWriter;
@@ -87,7 +87,7 @@ public class BatchConfig {
 	private ReportsSendEmailTasklet reportsSendEmailTasklet;
 
 	@Autowired
-	private DeleteExpiredSchedulesTasklet deleteExpiredSchedulesTasklet;
+	private ExpireOutdatedSchedulesTasklet expireOutdatedSchedulesTasklet;
 
 	@Autowired
 	private AppointmentNoShowTasklet appointmentNoShowTasklet;
@@ -276,16 +276,16 @@ public class BatchConfig {
 
 	// Delete doctor schedules having schedule date < current date at 12 am.
 	@Bean
-	public Job deleteExpiredSchedulesJob() {
-		logger.info("BatchConfig - deleteExpiredSchedulesJob");
-		return new JobBuilder("deleteExpiredSchedulesJob", jobRepository).start(deleteExpiredSchedulesStep()).build();
+	public Job expireOutdatedSchedulesJob() {
+		logger.info("BatchConfig - expireOutdatedSchedulesJob");
+		return new JobBuilder("expireOutdatedSchedulesJob", jobRepository).start(expireOutdatedSchedulesStep()).build();
 	}
 
 	@Bean
-	public Step deleteExpiredSchedulesStep() {
-		logger.info("BatchConfig - deleteExpiredSchedulesStep");
-		return new StepBuilder("deleteExpiredSchedulesStep", jobRepository)
-				.tasklet(deleteExpiredSchedulesTasklet, transactionManager).transactionManager(transactionManager)
+	public Step expireOutdatedSchedulesStep() {
+		logger.info("BatchConfig - expireOutdatedSchedulesStep");
+		return new StepBuilder("expireOutdatedSchedulesStep", jobRepository)
+				.tasklet(expireOutdatedSchedulesTasklet, transactionManager).transactionManager(transactionManager)
 				.build();
 	}
 

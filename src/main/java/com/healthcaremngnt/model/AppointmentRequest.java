@@ -2,7 +2,6 @@ package com.healthcaremngnt.model;
 
 import java.time.LocalDate;
 
-import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.enums.Priority;
 
 public class AppointmentRequest {
@@ -13,7 +12,6 @@ public class AppointmentRequest {
 	private String time;
 	private String reason;
 	private Priority priority;
-	private AppointmentStatus appointmentStatus;
 	private boolean isFollowup;
 	private Long parentAppointmentID;
 
@@ -22,14 +20,13 @@ public class AppointmentRequest {
 	}
 
 	public AppointmentRequest(Long patientID, Long doctorID, LocalDate date, String time, String reason,
-			Priority priority, AppointmentStatus appointmentStatus, boolean isFollowup, Long parentAppointmentID) {
+			Priority priority, boolean isFollowup, Long parentAppointmentID) {
 		this.patientID = patientID;
 		this.doctorID = doctorID;
 		this.date = date;
 		this.time = time;
 		this.reason = reason;
 		this.priority = priority;
-		this.appointmentStatus = appointmentStatus;
 		this.isFollowup = isFollowup;
 		this.parentAppointmentID = parentAppointmentID;
 	}
@@ -89,20 +86,6 @@ public class AppointmentRequest {
 		this.priority = priority;
 	}
 
-	/**
-	 * @return the appointmentStatus
-	 */
-	public AppointmentStatus getAppointmentStatus() {
-		return appointmentStatus;
-	}
-
-	/**
-	 * @param appointmentStatus the appointmentStatus to set
-	 */
-	public void setAppointmentStatus(AppointmentStatus appointmentStatus) {
-		this.appointmentStatus = appointmentStatus;
-	}
-
 	public boolean isFollowup() {
 		return isFollowup;
 	}
@@ -128,8 +111,8 @@ public class AppointmentRequest {
 	@Override
 	public String toString() {
 		return "AppointmentRequest [patientID=" + patientID + ", doctorID=" + doctorID + ", date=" + date + ", time="
-				+ time + ", reason=" + reason + ", priority=" + priority + ", appointmentStatus=" + appointmentStatus
-				+ ", isFollowup=" + isFollowup + ", parentAppointmentID=" + parentAppointmentID + "]";
+				+ time + ", reason=" + reason + ", priority=" + priority + ", isFollowup=" + isFollowup
+				+ ", parentAppointmentID=" + parentAppointmentID + "]";
 	}
 
 }

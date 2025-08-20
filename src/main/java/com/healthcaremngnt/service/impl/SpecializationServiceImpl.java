@@ -27,7 +27,7 @@ public class SpecializationServiceImpl implements SpecializationService {
 	public List<Specialization> getAllSpecializations() {
 		logger.info("Fetching all specializations from the database.");
 
-		List<Specialization> specializations = specializationRepository.findAll();
+		var specializations = specializationRepository.findAll();
 
 		if (specializations.isEmpty()) {
 			logger.warn("No specializations found in the database.");

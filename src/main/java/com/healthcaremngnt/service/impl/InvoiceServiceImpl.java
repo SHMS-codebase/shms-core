@@ -27,7 +27,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 		validateInvoice(invoice);
 
-		Invoice savedInvoice = invoiceRepository.save(invoice);
+		var savedInvoice = invoiceRepository.save(invoice);
 		logger.info("Invoice successfully generated with ID: {}", savedInvoice.getInvoiceID());
 
 		return savedInvoice;
@@ -53,7 +53,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 		validateInvoice(invoice);
 
-		Invoice updatedInvoice = invoiceRepository.save(invoice);
+		var updatedInvoice = invoiceRepository.save(invoice);
 		logger.info("Invoice status successfully updated for ID: {}", updatedInvoice.getInvoiceID());
 
 		return updatedInvoice;

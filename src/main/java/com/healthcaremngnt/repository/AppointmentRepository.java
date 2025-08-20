@@ -24,10 +24,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
 	List<Appointment> findByAppointmentDateBetween(LocalDate startDate, LocalDate endDate);
 
-//	List<Appointment> findByDoctorAndAppointmentDate(Doctor doctor, LocalDate appointmentDate);
+	List<Appointment> findByAppointmentStatusAndAppointmentDateGreaterThanEqualAndAppointmentDateLessThanEqual(AppointmentStatus appointmentStatus,
+			LocalDate startDate, LocalDate endDate);
 
-	List<Appointment> findByDoctorAndAppointmentDateAndAppointmentStatusIn(Doctor doctor, LocalDate appointmentDate,
-			List<AppointmentStatus> appointmentStatuses);
+	List<Appointment> findByDoctorAndAppointmentDateAndAppointmentStatus(Doctor doctor, LocalDate appointmentDate,
+			AppointmentStatus appointmentStatus);
 
 	@Query("SELECT a FROM Appointment a " + "JOIN a.patient p " + "JOIN a.doctor d "
 			+ "WHERE (:patientID IS NULL OR p.patientID = :patientID) "
@@ -45,8 +46,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 	@Query("UPDATE Appointment a SET a.appointmentStatus = :status, a.treatment = :treatment WHERE a.appointmentID = :id")
 	void updateAppointmentStatusAndTreatment(@Param("id") Long appointmentID,
 			@Param("status") AppointmentStatus appointmentStatus, @Param("treatment") Treatment treatment);
-	
-	
+
+	// Need to qrite the query for cancelled appointments
+
+	List<Appointment> findByAppointmentStatus(AppointmentStatus appointmentStatus);
 
 	// Example of a derived query (if needed):
 	// List<Appointment> findByPatient_PatientID(Long patientID);

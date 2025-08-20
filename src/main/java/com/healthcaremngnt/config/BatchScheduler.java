@@ -19,7 +19,7 @@ public class BatchScheduler {
 	private JobLauncher jobLauncher;
 
 	@Autowired
-	private Job deleteExpiredSchedulesJob;
+	private Job expireOutdatedSchedulesJob;
 
 	@Autowired
 	private Job appointmentNoShowJob;
@@ -39,9 +39,9 @@ public class BatchScheduler {
 		logger.info("BatchScheduler - performDeleteExpiredSchedulesJob");
 		JobParameters params = new JobParametersBuilder().addLong("time", System.currentTimeMillis()).toJobParameters();
 		try {
-			jobLauncher.run(deleteExpiredSchedulesJob, params);
+			jobLauncher.run(expireOutdatedSchedulesJob, params);
 		} catch (Exception e) {
-			logger.error("Error executing deleteExpiredSchedulesJob", e);
+			logger.error("Error executing expireOutdatedSchedulesJob", e);
 		}
 	}
 
@@ -94,9 +94,9 @@ public class BatchScheduler {
 //		logger.info("BatchScheduler - performDeleteExpiredSchedulesJob");
 //		JobParameters params = new JobParametersBuilder().addLong("time", System.currentTimeMillis()).toJobParameters();
 //		try {
-//			jobLauncher.run(deleteExpiredSchedulesJob, params);
+//			jobLauncher.run(expireOutdatedSchedulesJob, params);
 //		} catch (Exception e) {
-//			logger.error("Error executing deleteExpiredSchedulesJob", e);
+//			logger.error("Error executing expireOutdatedSchedulesJob", e);
 //		}
 //	}
 

@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 
 		validateUserID(userID);
 
-		User user = userRepository.findById(userID)
+		var user = userRepository.findById(userID)
 				.orElseThrow(() -> new RuntimeException("User not found with ID: " + userID));
 
 		UserDetails userDetails = mapUserToUserDetails(user);
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
 		userDetails.setUserName(user.getUserName());
 		userDetails.setEmailID(user.getEmailID());
 
-		Role role = roleRepository.findById(user.getRole().getRoleID())
+		var role = roleRepository.findById(user.getRole().getRoleID())
 				.orElseThrow(() -> new RuntimeException("Role not found for User ID: " + user.getUserID()));
 
 		setRoleSpecificDetails(userDetails, role, user);
@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
 
 		validateUserDetails(userDetails);
 
-		User user = userRepository.findById(userDetails.getUserID())
+		var user = userRepository.findById(userDetails.getUserID())
 				.orElseThrow(() -> new IllegalArgumentException("User not found: " + userDetails.getUserID()));
 
 		updateBasicUserDetails(user, userDetails);
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
 
 	private void updateRoleSpecificDetails(UserDetails userDetails) {
 		if (userDetails.getDoctor() != null) {
-			Doctor existingDoctor = doctorRepository.findById(userDetails.getDoctor().getDoctorID()).orElseThrow(
+			var existingDoctor = doctorRepository.findById(userDetails.getDoctor().getDoctorID()).orElseThrow(
 					() -> new IllegalArgumentException("Doctor not found: " + userDetails.getDoctor().getDoctorID()));
 
 			updateDoctorDetails(existingDoctor, userDetails.getDoctor());
@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		if (userDetails.getPatient() != null) {
-			Patient existingPatient = patientRepository.findById(userDetails.getPatient().getPatientID())
+			var existingPatient = patientRepository.findById(userDetails.getPatient().getPatientID())
 					.orElseThrow(() -> new IllegalArgumentException(
 							"Patient not found: " + userDetails.getPatient().getPatientID()));
 
@@ -306,7 +306,7 @@ public class UserServiceImpl implements UserService {
 
 		validateUserName(userName);
 
-		User user = userRepository.findByUserName(userName)
+		var user = userRepository.findByUserName(userName)
 				.orElseThrow(() -> new RuntimeException("User not found with username: " + userName));
 
 		UserDetails userDetails = mapUserToUserDetails(user);

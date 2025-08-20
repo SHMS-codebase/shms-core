@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -201,12 +202,12 @@ public class DoctorController {
 
 		ScheduleStatus scheduleStatus = null;
 
-		if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("ADMIN"))) {
-			scheduleStatus = ScheduleStatus.APPROVED;
-		} else if (userDetails.getAuthorities().stream()
-				.anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("DOCTOR"))) {
-			scheduleStatus = ScheduleStatus.PENDING;
-		}
+		// Using Switch Expression to determine schedule status based on user role
+		scheduleStatus = switch (getUserRole(userDetails)) {
+		case "ADMIN" -> ScheduleStatus.APPROVED;
+		case "DOCTOR" -> ScheduleStatus.PENDING;
+		default -> scheduleStatus;
+		};
 
 		model.addAttribute("source", source);
 
@@ -245,6 +246,11 @@ public class DoctorController {
 
 			return "createschedule";
 		}
+	}
+
+	private String getUserRole(UserDetails userDetails) {
+		return userDetails.getAuthorities().stream().map(auth -> auth.getAuthority().toUpperCase())
+				.filter(role -> Set.of("ADMIN", "DOCTOR").contains(role)).findFirst().orElse("UNKNOWN");
 	}
 
 	@GetMapping("/approveschedule")

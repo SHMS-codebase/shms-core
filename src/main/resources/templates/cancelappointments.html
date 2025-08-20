@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cancel Appointments</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<link rel="stylesheet" th:href="@{/css/profilestyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+body {
+	background-color: rgb(220, 223, 239);
+	font-family: 'Helvetica', sans-serif;
+	font-size: 16px;
+	color: #333;
+	margin: 0;
+	padding: 0;
+	line-height: 1.6;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-height: 100vh; /* Makes the body full height of the viewport */
+}
+
+form {
+	margin-top: 10px;
+	max-width: 1500px;
+	width: 100%;
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 1200px;
+	padding: 30px;
+	margin-top: 550px;
+	margin-bottom: 300px;
+	display: flex;
+	flex-direction: column;
+}
+
+.error-message {
+	color: #d93025;
+	font-size: 14px;
+	margin-top: 5px;
+	display: block;
+}
+
+.table-container {
+	max-height: 600px; /* Set a fixed height for vertical scrolling */
+	overflow-y: auto; /* Enable vertical scrolling */
+	overflow-x: auto; /* Keep horizontal scrolling */
+	margin-bottom: 20px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+table, th, td {
+	border: 1px solid #ddd;
+}
+
+th, td {
+	padding: 10px;
+	text-align: left;
+	word-wrap: break-word;
+}
+
+th {
+	background-color: #f2f2f2;
+	position: sticky; /* Make headers sticky */
+	top: 0; /* Stick to the top */
+	z-index: 1; /* Ensure headers appear above content */
+}
+
+button {
+	padding: 6px 12px;
+	cursor: pointer;
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	border-radius: 4px;
+}
+
+@media screen and (max-width: 768px) {
+	.container {
+		width: 95%;
+	}
+}
+
+.main-content {
+	padding: 20px;
+	background-color: #f8f9fa;
+	min-height: 100vh;
+}
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+.filter-section {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+.appointments-table {
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+}
+
+.table th {
+	background-color: #495057;
+	color: white;
+	font-weight: 500;
+}
+
+.eligible-cancel {
+	color: #198754;
+	font-weight: 500;
+}
+
+.not-eligible {
+	color: #dc3545;
+	font-size: 0.9em;
+}
+
+.bulk-actions {
+	background: #e9ecef;
+	padding: 15px;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.appointment-time {
+	font-weight: 500;
+	color: #495057;
+}
+
+.time-remaining {
+	font-size: 0.85em;
+	color: #6c757d;
+}
+</style>
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
+	<div class="container main-content">
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>
+						<i class="fas fa-calendar-times me-2"></i>Cancel Appointments
+					</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a href="/admindashboard">Dashboard</a></li>
+							<li class="breadcrumb-item active">Cancel Appointments</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
+
+		<!-- Filter Section -->
+		<div class="filter-section">
+			<h5 class="mb-3">
+				<i class="fas fa-filter me-2"></i>Filter Appointments
+			</h5>
+			<form id="filterForm">
+				<div class="row align-items-center">
+					<div class="col-12">
+						<div class="d-flex align-items-center gap-3 flex-wrap">
+							<!-- Doctor -->
+							<div class="d-flex align-items-center">
+								<label for="doctorID" class="form-label-inline me-2">Doctor</label>
+								<select class="form-select" id="doctorID" name="doctorID">
+									<option value="" disabled selected>All Doctors</option>
+									<th:block th:each="doctor : ${doctors}">
+										<option th:value="${doctor.doctorID}"
+											th:text="${doctor.doctorName}"></option>
+									</th:block>
+								</select>
+							</div>
+							<!-- From Date -->
+							<div class="d-flex align-items-center">
+								<label for="dateFrom" class="form-label-inline me-2">From
+								</label> <input type="date" class="form-control form-control-inline"
+									id="dateFrom" name="dateFrom" value="2025-08-20">
+							</div>
+
+							<!-- To Date -->
+							<div class="d-flex align-items-center">
+								<label for="dateTo" class="form-label-inline me-2">To </label> <input
+									type="date" class="form-control form-control-inline"
+									id="dateTo" name="dateTo" value="2025-08-27">
+							</div>
+
+							<!-- Patient Name -->
+							<div class="d-flex align-items-center">
+								<label for="patientSearch" class="form-label-inline me-2">Patient
+									Name</label> <input type="text"
+									class="form-control form-control-inline" id="patientSearch"
+									name="patientName" placeholder="Search patient...">
+							</div>
+
+							<!-- Buttons -->
+							<div class="d-flex align-items-center gap-2 ms-3">
+								<button type="button" class="btn btn-primary btn-sm"
+									onclick="filterAppointments()">
+									<i class="fas fa-search me-1"></i>Filter
+								</button>
+								<button type="button" class="btn btn-secondary btn-sm"
+									onclick="clearFilters()">
+									<i class="fas fa-times me-1"></i>Clear
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!-- Appointments Table -->
+		<div class="appointments-table">
+			<!-- Bulk Actions Bar -->
+			<div class="bulk-actions">
+				<div class="row align-items-center">
+					<div class="col-md-6">
+						<div class="form-check d-flex align-items-center">
+							<input class="form-check-input me-2" type="checkbox"
+								id="selectAll" onchange="toggleSelectAll()"> <label
+								class="form-check-label fw-bold mb-0" for="selectAll">
+								Select All Eligible Appointments </label>
+						</div>
+						<small class="text-muted">Selected: <span
+							id="selectedCount">0</span> appointments
+						</small>
+					</div>
+					<div class="col-md-6 text-end">
+						<select class="form-select d-inline-block me-2"
+							style="width: 200px;" id="bulkCancellationReason">
+							<option value="">Select Cancellation Reason</option>
+							<option value="Patient unavailable">Patient unavailable</option>
+							<option value="Doctor unavailable">Doctor unavailable</option>
+							<option value="System auto-cancelled">Hospital
+								Maintenance</option>
+						</select>
+						<button class="btn btn-danger" onclick="bulkCancelAppointments()"
+							id="bulkCancelBtn" disabled>
+							<i class="fas fa-times-circle me-1"></i>Cancel Selected
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Table -->
+			<div class="table-responsive">
+				<table class="table table-hover mb-0">
+					<thead>
+						<tr>
+							<th width="40px"><input type="checkbox"
+								class="form-check-input" disabled style="visibility: hidden;">
+							</th>
+							<th>Patient Name</th>
+							<th>Doctor</th>
+							<th>Appointment Date</th>
+							<th>Time</th>
+							<th>Department</th>
+							<th>Status</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody id="appointmentsTableBody">
+						<tr th:each="appointment : ${upcomingAppointments}">
+							<td><input type="checkbox"
+								class="form-check-input appointment-checkbox"
+								th:value="${appointment.appointmentID}"
+								onchange="updateSelectedCount()"></td>
+							<td><strong th:text="${appointment.patientName}">Patient
+									Name</strong><br> <small class="text-muted"
+								th:text="'Patient ID: ' + ${appointment.patientID}">Patient
+									ID</small></td>
+							<td th:text="${appointment.doctorName}">Doctor</td>
+							<td th:text="${#temporals.format(appointment.appointmentDate, 'yyyy-MM-dd')}">Date</td>
+							<td>
+								<div class="appointment-time"
+									th:text="${appointment.appointmentTime}">Time</div>
+								<div class="time-remaining"
+									th:text="${appointment.remainingTime}">Remaining</div>
+							</td>
+							<td th:text="${appointment.specialization}">Department</td>
+							<td><span class="badge bg-success"
+								th:if="${appointment.appointmentStatus == 'SCHEDULED'}">Scheduled</span>
+								<!-- Add other status badges as needed --></td>
+							<td><span th:if="${appointment.eligibleForCancellation}"
+								class="eligible-cancel"> <i
+									class="fas fa-check-circle me-1"></i>Eligible for cancellation
+							</span> <span th:unless="${appointment.eligibleForCancellation}"
+								class="not-eligible"> <i
+									class="fas fa-exclamation-triangle me-1"></i>Not eligible -
+									within 24 hrs
+							</span></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- Confirmation Modal -->
+	<div class="modal fade" id="confirmationModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Confirm Bulk Cancellation</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<p>
+						Are you sure you want to cancel <strong id="confirmCount">0</strong>
+						selected appointments?
+					</p>
+					<p>
+						<strong>Cancellation Reason:</strong> <span id="confirmReason"></span>
+					</p>
+					<div class="alert alert-warning">
+						<i class="fas fa-exclamation-triangle me-2"></i> This action
+						cannot be undone. Patients will be notified automatically.
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-danger"
+						onclick="confirmBulkCancellation()">
+						<i class="fas fa-times-circle me-1"></i>Proceed with Cancellation
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<script>
+        
+    	// Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setMinDate();
+            
+            // Update "To Date" minimum when "From Date" changes
+            document.getElementById('dateFrom').addEventListener('change', function() {
+                const fromDate = this.value;
+                const toDateInput = document.getElementById('dateTo');
+                
+                if (fromDate) {
+                    // Set "To Date" minimum to "From Date"
+                    toDateInput.setAttribute('min', fromDate);
+                    
+                    // If "To Date" is earlier than "From Date", update it to match "From Date"
+                    if (toDateInput.value && toDateInput.value < fromDate) {
+                        toDateInput.value = fromDate;
+                    }
+                }
+            });
+            
+         	// Validate "To Date" when it changes
+            document.getElementById('dateTo').addEventListener('change', function() {
+                const fromDate = document.getElementById('dateFrom').value;
+                const toDate = this.value;
+                
+                if (fromDate && toDate && toDate < fromDate) {
+                    alert('To Date cannot be earlier than From Date');
+                    this.value = fromDate; // Reset to From Date
+                }
+            });
+        });
+            
+     	// Set minimum date for both date fields
+        function setMinDate() {
+            const today = new Date();
+            const todayString = today.toISOString().split('T')[0];
+            
+            const fromDateInput = document.getElementById('dateFrom');
+            const toDateInput = document.getElementById('dateTo');
+            
+            // Set minimum date to today for both fields
+            fromDateInput.setAttribute('min', todayString);
+            toDateInput.setAttribute('min', todayString);
+            
+            // Set default values to today if current values are in the past or empty
+            if (!fromDateInput.value || fromDateInput.value < todayString) {
+                fromDateInput.value = todayString;
+            }
+            if (!toDateInput.value || toDateInput.value < todayString) {
+                toDateInput.value = todayString;
+            }
+        }
+     
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.appointment-checkbox');
+            const eligibleCheckboxes = Array.from(checkboxes).filter(cb => {
+                const row = cb.closest('tr');
+                return row.querySelector('.eligible-cancel') !== null;
+            });
+
+            eligibleCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const selectedCheckboxes = document.querySelectorAll('.appointment-checkbox:checked');
+            const count = selectedCheckboxes.length;
+            
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('bulkCancelBtn').disabled = count === 0;
+            
+            // Update select all checkbox state
+            const eligibleCheckboxes = document.querySelectorAll('.appointment-checkbox');
+            const eligibleCount = Array.from(eligibleCheckboxes).filter(cb => {
+                const row = cb.closest('tr');
+                return row.querySelector('.eligible-cancel') !== null;
+            }).length;
+            
+            const selectAll = document.getElementById('selectAll');
+            selectAll.checked = count === eligibleCount && count > 0;
+            selectAll.indeterminate = count > 0 && count < eligibleCount;
+        }
+
+        function filterAppointments() {
+        	
+        	const doctorID = document.getElementById('doctorID').value;
+        	const dateFrom = document.getElementById('dateFrom').value;
+        	const dateTo = document.getElementById('dateTo').value;
+        	const patientName = document.getElementById('patientSearch').value;
+        	    
+        	// Validate date range
+        	if (dateFrom && dateTo && dateFrom > dateTo) {
+        		alert('From Date cannot be later than To Date');
+        	    return;
+        	}
+        	    
+        	console.log('Filter criteria:', {
+        	    doctorID,
+        	    dateFrom,
+        	    dateTo,
+        	    patientName
+        	});
+        	    
+        	// Call controller method
+            fetch('/appointments/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(filterData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the appointments table/list with filtered results
+                updateAppointmentsList(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error filtering appointments');
+            });
+        }
+
+        function clearFilters() {
+            document.getElementById('filterForm').reset();
+            const today = new Date();
+            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            document.getElementById('dateFrom').value = today.toISOString().split('T')[0];
+            document.getElementById('dateTo').value = nextWeek.toISOString().split('T')[0];
+        }
+
+        function bulkCancelAppointments() {
+            const selectedCheckboxes = document.querySelectorAll('.appointment-checkbox:checked');
+            const reason = document.getElementById('bulkCancellationReason').value;
+            
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one appointment to cancel.');
+                return;
+            }
+            
+            if (!reason) {
+                alert('Please select a cancellation reason.');
+                return;
+            }
+            
+            // Show confirmation modal
+            document.getElementById('confirmCount').textContent = selectedCheckboxes.length;
+            document.getElementById('confirmReason').textContent = reason;
+            
+            const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            modal.show();
+        }
+
+        function confirmBulkCancellation() {
+            const selectedCheckboxes = document.querySelectorAll('.appointment-checkbox:checked');
+            const appointmentIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+            const reason = document.getElementById('bulkCancellationReason').value;
+            
+            // This would submit to your Spring Boot controller
+            console.log('Cancelling appointments:', appointmentIds, 'Reason:', reason);
+            
+            // For demo purposes
+            alert(`Would cancel appointments: ${appointmentIds.join(', ')} with reason: ${reason}`);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmationModal'));
+            modal.hide();
+            
+            // In real implementation, you would submit form or make AJAX call here
+        }
+    </script>
+</body>
+</html>

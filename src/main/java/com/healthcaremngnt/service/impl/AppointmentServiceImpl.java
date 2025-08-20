@@ -1,15 +1,17 @@
 package com.healthcaremngnt.service.impl;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import com.healthcaremngnt.model.AppointmentRequest;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.model.Treatment;
+import com.healthcaremngnt.model.UpcomingAppointment;
 import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.AppointmentRepository;
 import com.healthcaremngnt.repository.DoctorRepository;
@@ -58,8 +61,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public Appointment bookAppointment(AppointmentRequest appointmentRequest, Long treatmentID, Long parentAppointmentID,
-			boolean isFollowup) {
+	public Appointment bookAppointment(AppointmentRequest appointmentRequest, Long treatmentID,
+			Long parentAppointmentID, boolean isFollowup) {
 		logger.info("Booking appointment for Doctor ID: {} on Date: {} at Time: {}", appointmentRequest.getDoctorID(),
 				appointmentRequest.getDate(), appointmentRequest.getTime());
 
@@ -83,15 +86,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 					// Creating Appointment from the request
 					Appointment appointment = createAppointmentFromRequest(appointmentRequest, treatmentID,
 							parentAppointmentID, isFollowup);
-					
+
 					appointment = appointmentRepository.save(appointment);
 
 					// Update treatment followupNeeded field if this is a followup appointment
 					if (isFollowup && treatmentID != null) {
 						logger.debug("Updating followupNeeded for treatment ID: {}", treatmentID);
 						updateTreatmentFollowupStatus(treatmentID);
-					}
-					else {
+					} else {
 						logger.debug("Not updating followupNeeded");
 					}
 
@@ -101,21 +103,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private void updateTreatmentFollowupStatus(Long treatmentID) {
 		try {
-			Treatment treatment = treatmentRepository.findById(treatmentID)
+			var treatment = treatmentRepository.findById(treatmentID)
 					.orElseThrow(() -> new EntityNotFoundException("Treatment not found with ID: " + treatmentID));
 
 			treatment.setFollowUpNeeded(false);
-			treatmentRepository.save(treatment);
 
-			logger.info("Updated followupNeeded to false for treatment ID: {}", treatmentID);
+			try {
+				treatmentRepository.save(treatment);
+				logger.info("Updated followUpNeeded to false for treatment ID: {}", treatmentID);
+			} catch (DataAccessException dae) {
+				logger.error("Database error while saving treatment ID: {}", treatmentID, dae);
+			} catch (Exception e) {
+				logger.error("Unexpected error while saving treatment ID: {}", treatmentID, e);
+			}
+
+		} catch (EntityNotFoundException enfe) {
+			logger.warn("Treatment not found for update. ID: {}", treatmentID);
 		} catch (Exception e) {
-			logger.error("Failed to update followupNeeded for treatment ID: {}", treatmentID, e);
-			// Don't throw exception here to avoid rolling back the appointment
+			logger.error("Unexpected error during follow-up status update for treatment ID: {}", treatmentID, e);
 		}
 	}
 
-	private Appointment createAppointmentFromRequest(AppointmentRequest request, Long treatmentID, Long parentAppointmentID,
-			boolean isFollowup) {
+	private Appointment createAppointmentFromRequest(AppointmentRequest request, Long treatmentID,
+			Long parentAppointmentID, boolean isFollowup) {
 
 		logger.info(
 				"Creating appointment from request: {} with Treatment ID: {}, Parent Appointment ID: {} and isFollowp: {} ",
@@ -123,10 +133,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Appointment appointment = new Appointment();
 
 		// Fetch existing entities from database
-		Doctor doctor = doctorRepository.findById(request.getDoctorID())
+		var doctor = doctorRepository.findById(request.getDoctorID())
 				.orElseThrow(() -> new EntityNotFoundException("Doctor not found with ID: " + request.getDoctorID()));
 
-		Patient patient = patientRepository.findById(request.getPatientID())
+		var patient = patientRepository.findById(request.getPatientID())
 				.orElseThrow(() -> new EntityNotFoundException("Patient not found with ID: " + request.getPatientID()));
 
 		// Set the fetched entities
@@ -143,13 +153,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		appointment.setAppointmentTime(startTime);
 
 		appointment.setPriority(request.getPriority());
-		appointment.setAppointmentStatus(request.getAppointmentStatus());
+		appointment.setAppointmentStatus(AppointmentStatus.SCHEDULED);
 		appointment.setReasonToVisit(request.getReason());
 		appointment.setIsFollowup(isFollowup);
 
 		// Handle parent appointment if exists
 		if (request.getParentAppointmentID() != null) {
-			Appointment parentAppointment = appointmentRepository.findById(request.getParentAppointmentID())
+			var parentAppointment = appointmentRepository.findById(request.getParentAppointmentID())
 					.orElseThrow(() -> new EntityNotFoundException(
 							"Parent appointment not found with ID: " + request.getParentAppointmentID()));
 			appointment.setParentAppointment(parentAppointment);
@@ -200,9 +210,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public List<Appointment> getTodaysAppointments(Doctor doctor) {
 		logger.info("Fetching today's appointments for Doctor ID: {}", doctor.getDoctorID());
 
-		List<AppointmentStatus> statuses = Arrays.asList(AppointmentStatus.SCHEDULED, AppointmentStatus.FOLLOWUP);
-		return appointmentRepository.findByDoctorAndAppointmentDateAndAppointmentStatusIn(doctor, LocalDate.now(),
-				statuses);
+		return appointmentRepository.findByDoctorAndAppointmentDateAndAppointmentStatus(doctor, LocalDate.now(),
+				AppointmentStatus.SCHEDULED);
 
 	}
 
@@ -230,10 +239,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public List<Appointment> getRecentVisits(Long patientID) {
 		logger.info("Fetching Recent Visits for the Patient ID: {}", patientID);
 
-		Optional<Patient> patientOptional = patientRepository.findById(patientID);
+		var patientOptional = patientRepository.findById(patientID);
 		List<Appointment> recentVisits = new ArrayList<>();
 
-		LocalDate dateLimit = LocalDate.now().minusMonths(3);
+		var dateLimit = LocalDate.now().minusMonths(3);
 		logger.debug("dateLimit: {}", dateLimit);
 
 		if (patientOptional.isPresent()) {
@@ -278,6 +287,52 @@ public class AppointmentServiceImpl implements AppointmentService {
 		});
 
 		logger.debug("Final appointment state: {}", appointment);
+	}
+
+	@Override
+	public List<Appointment> getUpcomingAppointments() {
+		logger.info("Fetching all appointments for Cancellation.");
+
+		List<Appointment> appointments = appointmentRepository.findByAppointmentStatus(AppointmentStatus.SCHEDULED);
+
+		if (appointments.isEmpty()) {
+			logger.warn("No appointments are available for Cancellation.");
+		}
+
+		return appointments;
+	}
+
+	@Override
+	public List<UpcomingAppointment> getUpcomingAppointmentBetween(LocalDate nextWeekDay, LocalDate today) {
+		logger.info("Fetching all scheduled appointments for the next 7 days.");
+
+		logger.debug("today: {}, nextWeekDay: {}", today, nextWeekDay);
+
+		List<Appointment> appointments = appointmentRepository
+				.findByAppointmentStatusAndAppointmentDateGreaterThanEqualAndAppointmentDateLessThanEqual(
+						AppointmentStatus.SCHEDULED, today, nextWeekDay);
+
+		if (appointments.isEmpty()) {
+			logger.warn("No appointments are available for Cancellation.");
+		}
+
+		return appointments.stream().map(appointment -> {
+			Patient patient = appointment.getPatient();
+			Doctor doctor = appointment.getDoctor();
+
+			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime apptDateTime = LocalDateTime.of(appointment.getAppointmentDate(),
+					appointment.getAppointmentTime());
+			long hours = Duration.between(now, apptDateTime).toHours();
+			String remaining = hours + " hrs remaining";
+			boolean eligible = appointment.getAppointmentDate().isAfter(LocalDate.now());
+
+			return new UpcomingAppointment(appointment.getAppointmentID(), patient.getPatientID(),
+					patient.getPatientName(), doctor.getDoctorName(), doctor.getSpecialization(),
+					appointment.getAppointmentDate(), appointment.getAppointmentTime(),
+					appointment.getAppointmentStatus().name(), remaining, eligible);
+		}).toList();
+		// return appointments;
 	}
 
 }

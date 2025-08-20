@@ -79,7 +79,7 @@ public class HomeController {
 			logger.debug("User Authorities/Role: {}", userDetails::getAuthorities);
 
 			// Using a stream to extract roles and join them as a single string
-			String roleName = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+			var roleName = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 					.collect(Collectors.joining(", "));
 
 			model.addAttribute("userName", userDetails.getUsername());
@@ -89,7 +89,7 @@ public class HomeController {
 			session.setAttribute("roleName", roleName);
 		}
 
-		String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+		var role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.filter(authority -> List.of("ADMIN", "DOCTOR", "PATIENT").contains(authority.toUpperCase()))
 				.findFirst().orElse("HOME");
 

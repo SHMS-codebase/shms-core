@@ -126,5 +126,6 @@ public class MessageConstants {
 	public static final String VIEW_PRESC_DETAILS_LOAD_ERROR = "An error occurred while loading the Prescription Details page.";
 
 	public static final String PASSWORD_PATTERN_MISMATCH = "Password must be at least 8 characters and must include at least 1 number and 1 symbol";
+	public static final String CANCEL_APMNT_LOAD_ERROR = "An error occurred while loading the cancel appointments list";
 
 }

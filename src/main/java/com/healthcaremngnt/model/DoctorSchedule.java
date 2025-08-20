@@ -21,6 +21,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity
 @Table(name = "doctorschedules")
@@ -59,6 +60,12 @@ public class DoctorSchedule {
 
 	@Column(name = "updated_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
 	private LocalDateTime updatedDate;
+
+	@Column(name = "expired_date", nullable = true, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+	private LocalDateTime expiredDate;
+
+	@Version
+	private Integer version;
 
 	@PrePersist
 	protected void onCreate() {
@@ -197,11 +204,40 @@ public class DoctorSchedule {
 		this.updatedDate = updatedDate;
 	}
 
+	/**
+	 * @return the expiredDate
+	 */
+	public LocalDateTime getExpiredDate() {
+		return expiredDate;
+	}
+
+	/**
+	 * @param expiredDate the expiredDate to set
+	 */
+	public void setExpiredDate(LocalDateTime expiredDate) {
+		this.expiredDate = expiredDate;
+	}
+
+	/**
+	 * @return the version
+	 */
+	public Integer getVersion() {
+		return version;
+	}
+
+	/**
+	 * @param version the version to set
+	 */
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
 	@Override
 	public String toString() {
-		return "DoctorSchedule [scheduleID=" + scheduleID + availableDate + ", startTime=" + startTime + ", endTime="
-				+ endTime + ", scheduleStatus=" + scheduleStatus + ", availableCount=" + availableCount
-				+ ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + "]";
+		return "DoctorSchedule [scheduleID=" + scheduleID + ", doctor=" + doctor + ", availableDate=" + availableDate
+				+ ", startTime=" + startTime + ", endTime=" + endTime + ", scheduleStatus=" + scheduleStatus
+				+ ", availableCount=" + availableCount + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate
+				+ ", expiredDate=" + expiredDate + ", version=" + version + "]";
 	}
 
 }

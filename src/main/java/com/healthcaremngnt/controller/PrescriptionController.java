@@ -94,7 +94,7 @@ public class PrescriptionController {
 			model.addAttribute("prescription", prescription);
 
 			// Get all medicine details from the repository
-			List<MedicineDetail> medicineDetails = medicineDetailRepository.findAll(Sort.by("medicineName"));
+			var medicineDetails = medicineDetailRepository.findAll(Sort.by("medicineName"));
 
 			// Create a simplified data structure for JavaScript
 			List<Map<String, Object>> simpleMedicineList = new ArrayList<>();
@@ -298,7 +298,7 @@ public class PrescriptionController {
 		}
 
 		// Get all medicine details from the repository
-		List<MedicineDetail> medicineDetails = medicineDetailRepository.findAll(Sort.by("medicineName"));
+		var medicineDetails = medicineDetailRepository.findAll(Sort.by("medicineName"));
 
 		// Structure data to support cascading dropdowns
 		Map<String, Map<String, List<String>>> uniqueMedicineNames = new LinkedHashMap<>();

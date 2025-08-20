@@ -1,13 +1,13 @@
 package com.healthcaremngnt.job.tasklet;
 
 //@ExtendWith(MockitoExtension.class)
-public class DeleteExpiredSchedulesTaskletTest {
+public class ExpireOutdatedSchedulesTaskletTest {
 
 //	@Mock
 //	private DoctorScheduleRepository doctorScheduleRepository;
 //
 //	@InjectMocks
-//	private DeleteExpiredSchedulesTasklet deleteExpiredSchedulesTasklet;
+//	private ExpireOutdatedSchedulesTasklet expireOutdatedSchedulesTasklet;
 //
 //	@Mock
 //	private StepContribution stepContribution;
@@ -18,10 +18,10 @@ public class DeleteExpiredSchedulesTaskletTest {
 //	@Test
 //	public void testExecute() throws Exception {
 //		// Act
-//		RepeatStatus status = deleteExpiredSchedulesTasklet.execute(stepContribution, chunkContext);
+//		RepeatStatus status = expireOutdatedSchedulesTasklet.execute(stepContribution, chunkContext);
 //
 //		// Assert
-//		verify(doctorScheduleRepository, times(1)).deleteExpiredSchedules();
+//		verify(doctorScheduleRepository, times(1)).expireOutdatedSchedules();
 //		assertEquals(RepeatStatus.FINISHED, status);
 //	}
 	

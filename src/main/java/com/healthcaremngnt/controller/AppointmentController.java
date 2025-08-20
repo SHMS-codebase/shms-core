@@ -27,6 +27,7 @@ import com.healthcaremngnt.model.AppointmentRequest;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.model.Treatment;
+import com.healthcaremngnt.model.UpcomingAppointment;
 import com.healthcaremngnt.service.AppointmentService;
 import com.healthcaremngnt.service.DoctorScheduleService;
 import com.healthcaremngnt.service.DoctorService;
@@ -128,15 +129,15 @@ public class AppointmentController {
 		Optional.ofNullable(treatmentID).ifPresent(id -> logger.debug("treatmentID : {}", id));
 		Optional.ofNullable(parentAppointmentID).ifPresent(id -> logger.debug("parentAppointmentID : {}", id));
 		Optional.ofNullable(isFollowup).ifPresent(id -> logger.debug("isFollowup : {}", id));
-		
+
 		model.addAttribute("source", source);
 
 		try {
 
 			boolean followupFlag = (isFollowup != null) ? isFollowup : false;
 
-			Appointment appointment = appointmentService.bookAppointment(appointmentRequest, treatmentID, parentAppointmentID,
-					followupFlag);
+			Appointment appointment = appointmentService.bookAppointment(appointmentRequest, treatmentID,
+					parentAppointmentID, followupFlag);
 
 			logger.debug("{}", MessageConstants.APMNT_BOOKING_SUCCESS);
 			model.addAttribute("message", MessageConstants.APMNT_BOOKING_SUCCESS);
@@ -258,6 +259,60 @@ public class AppointmentController {
 		model.addAttribute("source", source);
 
 		return "followupappointments";
+	}
+
+	@GetMapping("/cancelappointments")
+	public String viewCancelAppointments(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+
+		logger.info("Loading Cancel Appointments Page for cancellation with not eligible ones marked!!");
+
+		try {
+
+			LocalDate today = LocalDate.now();
+			LocalDate nextWeekDay = today.plusDays(7);
+
+			// Load the upcoming appointments from today till next week i.e., 7 days on load
+			List<UpcomingAppointment> upcomingAppointments = appointmentService.getUpcomingAppointmentBetween(nextWeekDay, today);
+			logger.debug("upcomingAppointments: {}", upcomingAppointments);
+			model.addAttribute("upcomingAppointments", upcomingAppointments);
+
+			List<Doctor> doctors = doctorService.getAllDoctors();
+			model.addAttribute("doctors", doctors);
+
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.CANCEL_APMNT_LOAD_ERROR, e);
+			model.addAttribute("errorMessage", MessageConstants.CANCEL_APMNT_LOAD_ERROR);
+			return source;
+		}
+
+		model.addAttribute("source", source);
+
+		return "cancelappointments";
+	}
+
+	@GetMapping("/fetchappointments")
+	public String FetchCancelAppointments(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+
+		logger.info("Loading all Appointments for cancellation and mark the ones not eligible too!!");
+
+		try {
+			
+			List<Appointment> upcomingAppointments = appointmentService.getUpcomingAppointments();
+			logger.debug("upcomingAppointments: {}", upcomingAppointments);
+			model.addAttribute("upcomingAppointments", upcomingAppointments);
+
+			List<Doctor> doctors = doctorService.getAllDoctors();
+			model.addAttribute("doctors", doctors);
+
+		} catch (Exception e) {
+			logger.error("{}: {}", MessageConstants.CANCEL_APMNT_LOAD_ERROR, e);
+			model.addAttribute("errorMessage", MessageConstants.CANCEL_APMNT_LOAD_ERROR);
+			return source;
+		}
+
+		model.addAttribute("source", source);
+
+		return "cancelappointments";
 	}
 
 }

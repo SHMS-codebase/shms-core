@@ -10,19 +10,19 @@ public class BatchConfigIntegrationTest {
 //	private JobLauncher jobLauncher;
 //
 //	@Autowired
-//	private Job deleteExpiredSchedulesJob;
+//	private Job expireOutdatedSchedulesJob;
 //
 //	@Mock
 //	private DoctorScheduleRepository doctorScheduleRepository;
 //
 //	@InjectMocks
-//	private DeleteExpiredSchedulesTasklet deleteExpiredSchedulesTasklet;
+//	private ExpireOutdatedSchedulesTasklet expireOutdatedSchedulesTasklet;
 //
 //	@Test
-//	public void testDeleteExpiredSchedulesJob() throws Exception {
-//		doNothing().when(doctorScheduleRepository).deleteExpiredSchedules();
+//	public void testExpireOutdatedSchedulesJob() throws Exception {
+//		doNothing().when(doctorScheduleRepository).expireOutdatedSchedules();
 //
-//		JobExecution jobExecution = jobLauncher.run(deleteExpiredSchedulesJob,
+//		JobExecution jobExecution = jobLauncher.run(expireOutdatedSchedulesJob,
 //				new JobParametersBuilder().addLong("time", System.currentTimeMillis()).toJobParameters());
 //
 //		// Wait for the job to complete

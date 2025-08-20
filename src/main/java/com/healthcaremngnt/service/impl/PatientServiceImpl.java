@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.healthcaremngnt.exceptions.PatientNotFoundException;
 import com.healthcaremngnt.model.MedicalHistory;
 import com.healthcaremngnt.model.Patient;
-import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.MedicalHistoryRepository;
 import com.healthcaremngnt.repository.PatientRepository;
 import com.healthcaremngnt.repository.UserRepository;
@@ -39,7 +38,7 @@ public class PatientServiceImpl implements PatientService {
 
 		validatePatient(patient);
 
-		Patient savedPatient = patientRepository.save(patient);
+		var savedPatient = patientRepository.save(patient);
 		logger.info("Patient successfully registered with ID: {}", savedPatient.getPatientID());
 
 		return savedPatient;
@@ -55,7 +54,7 @@ public class PatientServiceImpl implements PatientService {
 	public Patient getPatientInfoCard(String userName) throws PatientNotFoundException {
 		logger.info("Retrieving patient info card for username: {}", userName);
 
-		User user = userRepository.findByUserName(userName)
+		var user = userRepository.findByUserName(userName)
 				.orElseThrow(() -> new PatientNotFoundException("User not found with username: " + userName));
 
 		return patientRepository.findByUser(user).orElseThrow(
@@ -66,10 +65,10 @@ public class PatientServiceImpl implements PatientService {
 	public List<MedicalHistory> findMedicalHistory(Long patientID) throws PatientNotFoundException {
 		logger.info("Finding medical history for Patient ID: {}", patientID);
 
-		Patient patient = patientRepository.findById(patientID)
+		var patient = patientRepository.findById(patientID)
 				.orElseThrow(() -> new PatientNotFoundException("Patient not found with ID: " + patientID));
 
-		List<MedicalHistory> medicalHistory = medicalHistoryRepository.findByPatient(patient);
+		var medicalHistory = medicalHistoryRepository.findByPatient(patient);
 		logger.info("Found {} medical history records for Patient ID: {}", medicalHistory.size(), patientID);
 
 		return medicalHistory;
@@ -91,14 +90,14 @@ public class PatientServiceImpl implements PatientService {
 	public MedicalHistory addMedicalHistory(String newMedicalHistory, Long patientID) throws PatientNotFoundException {
 		logger.info("Adding medical history for Patient ID: {}", patientID);
 
-		Patient patient = patientRepository.findById(patientID)
+		var patient = patientRepository.findById(patientID)
 				.orElseThrow(() -> new PatientNotFoundException("Patient not found with ID: " + patientID));
 
 		MedicalHistory medicalHistory = new MedicalHistory();
 		medicalHistory.setPatient(patient);
 		medicalHistory.setMedicalHistory(newMedicalHistory);
 
-		MedicalHistory savedHistory = medicalHistoryRepository.save(medicalHistory);
+		var savedHistory = medicalHistoryRepository.save(medicalHistory);
 		logger.info("Medical history successfully added for Patient ID: {}", savedHistory.getPatient().getPatientID());
 
 		return savedHistory;

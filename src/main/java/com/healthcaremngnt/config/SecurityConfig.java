@@ -41,8 +41,7 @@ public class SecurityConfig {
 						// Redirect to /dashboard after successful login
 						.permitAll())
 				.logout(logout -> logout.permitAll())
-				.rememberMe(rememberMe -> rememberMe.key("REMEMBER_ME_KEY").tokenValiditySeconds(60 * 60 * 24) // 24
-																												// hours
+				.rememberMe(rememberMe -> rememberMe.key("REMEMBER_ME_KEY").tokenValiditySeconds(60 * 60 * 24) // 24 hours
 				).csrf(csrf -> csrf.disable()); // Disable CSRF for simplicity
 
 		return http.build();

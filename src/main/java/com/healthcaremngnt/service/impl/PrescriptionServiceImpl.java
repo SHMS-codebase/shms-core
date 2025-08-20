@@ -51,10 +51,10 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
 		validatePrescriptionData(prescription, prescriptionDetails);
 
-		Prescription savedPrescription = prescriptionRepository.save(prescription);
+		var savedPrescription = prescriptionRepository.save(prescription);
 		logger.debug("Prescription saved: {}", savedPrescription);
 
-		List<PrescriptionDetail> savedDetails = prescriptionDetailService.createPrescriptionDetails(savedPrescription,
+		var savedDetails = prescriptionDetailService.createPrescriptionDetails(savedPrescription,
 				prescriptionDetails);
 
 		if (!savedDetails.isEmpty()) {

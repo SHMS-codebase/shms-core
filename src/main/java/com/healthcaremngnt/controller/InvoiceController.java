@@ -132,10 +132,14 @@ public class InvoiceController {
 			invoice.setTreatmentCost(treatmentCost);
 			invoice.setPrescriptionCost(prescriptionCost);
 			invoice.setTotalAmount(totalAmount);
-			if (invoiceStatus.equals(InvoiceStatus.DRAFT))
-				invoice.setInvoiceStatus(InvoiceStatus.REVIEWED);
-			else if (invoiceStatus.equals(InvoiceStatus.REVIEWED))
-				invoice.setInvoiceStatus(InvoiceStatus.FINALIZED);
+
+			// Switch Expression to set the invoice status
+			invoice.setInvoiceStatus(switch (invoiceStatus) {
+			case DRAFT -> InvoiceStatus.REVIEWED;
+			case REVIEWED -> InvoiceStatus.FINALIZED;
+			default -> invoiceStatus;
+			});
+
 			invoice.setInvoiceDate(LocalDateTime.now());
 
 			// Retrieve the treatment entity
@@ -268,39 +272,44 @@ public class InvoiceController {
 					source);
 		}
 
-		String treatmentID = null;
-		try {
-
-			Invoice invoice = invoiceService.getInvoiceDetails(invoiceID);
-
-			if (invoiceStatus.equals(InvoiceStatus.PAID.name()))
-				invoice.setInvoiceStatus(InvoiceStatus.PAID);
-			else if (invoiceStatus.equals(InvoiceStatus.CANCELLED.name()))
-				invoice.setInvoiceStatus(InvoiceStatus.CANCELLED);
-
-			invoiceService.updateInvoiceStatus(invoice);
-
-			if (invoice.getTreatment() != null) {
-				Treatment treatment = invoice.getTreatment();
-				treatmentID = treatment.getTreatmentID().toString();
-			}
-
-		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.INVOICE_STATUS_UPDATE_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.INVOICE_STATUS_UPDATE_ERROR);
+		// Validating input parameters
+		if (invoiceID == null || invoiceStatus == null || source == null) {
+			model.addAttribute("errorMessage", "Missing required parameters");
 			return source;
 		}
 
-		model.addAttribute("source", source);
+		try {
 
-		if (invoiceStatus.equals(InvoiceStatus.PAID.name()))
-			return "redirect:/invoices/viewinvoice?invoiceID=" + invoiceID + "&source=" + source;
-		else if (invoiceStatus.equals(InvoiceStatus.CANCELLED.name())) {
-			redirectAttributes.addAttribute("treatmentID", treatmentID);
-			redirectAttributes.addAttribute("source", source);
-			return "redirect:/invoices/generate-invoice";
+			InvoiceStatus status = InvoiceStatus.valueOf(invoiceStatus);
+
+			Invoice invoice = invoiceService.getInvoiceDetails(invoiceID);
+			invoice.setInvoiceStatus(status);
+			invoiceService.updateInvoiceStatus(invoice);
+
+			model.addAttribute("source", source);
+
+			// Switch Expression to determine the redirect path based on invoice status
+			return switch (status) {
+			case PAID -> "redirect:/invoices/viewinvoice?invoiceID=" + invoiceID + "&source=" + source;
+			case CANCELLED -> {
+				if (invoice.getTreatment() != null) {
+					redirectAttributes.addAttribute("treatmentID", invoice.getTreatment().getTreatmentID().toString());
+				}
+				redirectAttributes.addAttribute("source", source);
+				yield "redirect:/invoices/generate-invoice";
+			}
+			default -> "viewinvoice";
+			};
+
+		} catch (IllegalArgumentException e) {
+			logger.error("Invalid invoice status: {}", invoiceStatus, e);
+			model.addAttribute("errorMessage", "Invalid invoice status: " + invoiceStatus);
+			return source;
+		} catch (Exception e) {
+			logger.error("Error updating invoice status: {}", e.getMessage(), e);
+			model.addAttribute("errorMessage", MessageConstants.INVOICE_STATUS_UPDATE_ERROR);
+			return source;
 		}
-		return "viewinvoice";
 
 	}
 

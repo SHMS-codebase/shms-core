@@ -1,5 +1,6 @@
 package com.healthcaremngnt.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.healthcaremngnt.enums.AppointmentStatus;
@@ -9,6 +10,7 @@ import com.healthcaremngnt.model.AppointmentRequest;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.model.Treatment;
+import com.healthcaremngnt.model.UpcomingAppointment;
 
 public interface AppointmentService {
 
@@ -28,5 +30,9 @@ public interface AppointmentService {
 	List<Appointment> getRecentVisits(Long patientID);
 
 	void sendAppointmentEmail(Appointment appointment);
+
+	List<Appointment> getUpcomingAppointments();
+
+	List<UpcomingAppointment> getUpcomingAppointmentBetween(LocalDate nextWeekDay, LocalDate today);
 
 }

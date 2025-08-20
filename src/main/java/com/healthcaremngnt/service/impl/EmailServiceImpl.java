@@ -47,9 +47,22 @@ public class EmailServiceImpl implements EmailService {
 			PasswordResetToken resetToken = generateAndSavePasswordResetToken(emailID, user);
 
 			String subject = "Password Reset Request";
-			String text = String.format(
-					"To reset your password, click the link below:\nhttp://localhost:8080/auth/reset-password?token=%s",
-					resetToken.getToken());
+//			String text = String.format(
+//					"To reset your password, click the link below:\nhttp://localhost:8080/auth/reset-password?token=%s",
+//					resetToken.getToken());
+
+			// Using Text Blocks for better readability
+			String text = String.format("""
+					Dear %s,
+
+					You have requested to reset your password. If you did not request this, please ignore this email.
+
+					Otherwisse, to reset your password, click the link below:
+					http://localhost:8080/auth/reset-password?token=%s
+
+					Best Regards,
+					Smart HealthCare Management System
+					""", user.getUserName(), resetToken.getToken());
 
 			sendSimpleEmail(emailID, subject, text);
 			return true;
@@ -79,9 +92,21 @@ public class EmailServiceImpl implements EmailService {
 
 		try {
 			String subject = "Registration Successful";
-			String text = String.format(
-					"Dear %s,\n\nYour registration is successful!\nUsername: %s\nPassword: %s\n\nBest regards,\nSmart HealthCare Management System",
-					userName, generatedUserName, generatedPassword);
+//			String text = String.format(
+//					"Dear %s,\n\nYour registration is successful!\nUsername: %s\nPassword: %s\n\nBest regards,\nSmart HealthCare Management System",
+//					userName, generatedUserName, generatedPassword);
+
+			// Using Text Blocks for better readability
+			String text = String.format("""
+					Dear %s,
+
+					Your registration is successful!
+					Username: %s
+					Password: %s
+
+					Best Regards,
+					Smart HealthCare Management System
+					""", userName, generatedUserName, generatedPassword);
 
 			sendSimpleEmail(emailID, subject, text);
 		} catch (Exception e) {
@@ -150,42 +175,58 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public void sendAppointmentEmail(String emailID, Appointment appointment) {
-	    if (appointment == null) {
-	        logger.warn("Appointment is null, email will not be sent.");
-	        return;
-	    }
+		if (appointment == null) {
+			logger.warn("Appointment is null, email will not be sent.");
+			return;
+		}
 
-	    logger.info("Sending Appointment Email to: {}", emailID);
-	    logger.debug("Appointment Details: {}", appointment);
+		logger.info("Sending Appointment Email to: {}", emailID);
+		logger.debug("Appointment Details: {}", appointment);
 
-	    try {
-	        Patient patient = appointment.getPatient();
-	        Doctor doctor = appointment.getDoctor();
+		try {
+			Patient patient = appointment.getPatient();
+			Doctor doctor = appointment.getDoctor();
 
-	        if (patient == null || doctor == null) {
-	            logger.error("Patient or Doctor information missing, email will not be sent.");
-	            return;
-	        }
+			if (patient == null || doctor == null) {
+				logger.error("Patient or Doctor information missing, email will not be sent.");
+				return;
+			}
 
-	        String appointmentDate = String.valueOf(appointment.getAppointmentDate());
-	        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a"); // 12-hour format with AM/PM
-	        String appointmentTime = appointment.getAppointmentTime().format(timeFormatter);
-	        String reasonToVisit = appointment.getReasonToVisit();
-	        String subject = "Appointment Notification";
+			String appointmentDate = String.valueOf(appointment.getAppointmentDate());
+			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a"); // 12-hour format with AM/PM
+			String appointmentTime = appointment.getAppointmentTime().format(timeFormatter);
+			String reasonToVisit = appointment.getReasonToVisit();
+			String subject = "Appointment Notification";
 
-	        String emailContent = String.format(
-	            "Dear %s,\n\nYour appointment with %s is scheduled successfully!\n\n"
-	            + "Find the appointment details below:\n"
-	            + "Appointment Date: %s\nAppointment Time: %s\nReason To Visit: %s\n\n"
-	            + "Best regards,\nSmart HealthCare Management System",
-	            patient.getPatientName(), doctor.getDoctorName(), appointmentDate, appointmentTime, reasonToVisit
-	        );
+//			String emailContent = String.format(
+//					"Dear %s,\n\nYour appointment with %s is scheduled successfully!\n\n"
+//							+ "Find the appointment details below:\n"
+//							+ "Appointment Date: %s\nAppointment Time: %s\nReason To Visit: %s\n\n"
+//							+ "Best regards,\nSmart HealthCare Management System",
+//					patient.getPatientName(), doctor.getDoctorName(), appointmentDate, appointmentTime, reasonToVisit);
 
-	        sendSimpleEmail(emailID, subject, emailContent);
-	    } catch (Exception e) {
-	        logger.error("Error sending appointment email: {}", e.getMessage(), e);
-	        throw new EmailSendException("Failed to send appointment email", e);
-	    }
+			// Using Text Blocks for better readability
+
+			String emailContent = String.format("""
+					Dear %s,
+
+					Your appointment with %s is scheduled successfully!
+
+					Find the appointment details below:
+					Appointment Date: %s
+					Appointment Time: %s
+					Reason To Visit: %s
+
+					Best Regards,
+					Smart HealthCare Management System
+					""", patient.getPatientName(), doctor.getDoctorName(), appointmentDate, appointmentTime,
+					reasonToVisit);
+
+			sendSimpleEmail(emailID, subject, emailContent);
+		} catch (Exception e) {
+			logger.error("Error sending appointment email: {}", e.getMessage(), e);
+			throw new EmailSendException("Failed to send appointment email", e);
+		}
 	}
 
 	// Appointment Reports sent via Email

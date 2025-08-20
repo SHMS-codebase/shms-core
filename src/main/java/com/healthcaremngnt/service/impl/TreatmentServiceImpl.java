@@ -41,7 +41,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 
 		treatment.setAppointment(appointment);
 
-		Treatment savedTreatment = treatmentRepository.save(treatment);
+		var savedTreatment = treatmentRepository.save(treatment);
 		logger.info("Successfully saved treatment with ID: {}", savedTreatment.getTreatmentID());
 
 		return savedTreatment;
@@ -70,7 +70,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 	public List<Treatment> getAllUnbilledTreatments() {
 		logger.info("Fetching all unbilled treatments with COMPLETED status.");
 
-		List<Treatment> treatments = treatmentRepository.findTreatmentsByStatus(TreatmentStatus.COMPLETED);
+		var treatments = treatmentRepository.findTreatmentsByStatus(TreatmentStatus.COMPLETED);
 
 		if (treatments.isEmpty()) {
 			logger.warn("No unbilled treatments found.");
@@ -85,7 +85,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 
 		validateTreatment(treatment);
 
-		Treatment updatedTreatment = treatmentRepository.save(treatment);
+		var updatedTreatment = treatmentRepository.save(treatment);
 		logger.info("Successfully updated treatment with ID: {}", updatedTreatment.getTreatmentID());
 
 		return updatedTreatment;
@@ -128,7 +128,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 	public List<Treatment> getFollowUpTreatments() {
 		logger.info("Fetching all treatments with FOLLOWUP status.");
 
-		List<Treatment> treatments = treatmentRepository.findFollowupTreatmentsByStatus(TreatmentStatus.FOLLOWUP);
+		var treatments = treatmentRepository.findFollowupTreatmentsByStatus(TreatmentStatus.FOLLOWUP);
 
 		if (treatments.isEmpty()) {
 			logger.warn("No followup treatments found.");

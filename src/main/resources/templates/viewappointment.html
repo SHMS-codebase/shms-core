@@ -18,6 +18,8 @@
 <link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
 <link rel="stylesheet" th:href="@{/css/createstyles.css}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Make sure the path to formValidation.js is correct -->
+<script src="/path/to/formValidation.js"></script>
 <script>
 	$(document)
 			.ready(
@@ -282,18 +284,18 @@ input[type="date"], input[type="time"], select, textarea {
 						th:field="*{appointmentStatus}" disabled>
 						<option value="SCHEDULED"
 							th:selected="${appointment.appointmentStatus.name() == 'SCHEDULED'}">Scheduled</option>
-						<option value="CANCELLED"
-							th:selected="${appointment.appointmentStatus.name() == 'CANCELLED'}">Cancelled</option>
+						<!-- <option value="CANCELLED"
+							th:selected="${appointment.appointmentStatus.name() == 'CANCELLED'}">Cancelled</option> -->
 						<option value="COMPLETED"
 							th:selected="${appointment.appointmentStatus.name() == 'COMPLETED'}">Completed</option>
 						<option value="NOSHOW"
 							th:selected="${appointment.appointmentStatus.name() == 'NOSHOW'}">No
 							Show</option>
-						<option value="RESCHEDULED"
+						<!-- <option value="RESCHEDULED"
 							th:selected="${appointment.appointmentStatus.name() == 'RESCHEDULED'}">Rescheduled</option>
 						<option value="FOLLOWUP"
 							th:selected="${appointment.appointmentStatus.name() == 'FOLLOWUP'}">Follow
-							Up</option>
+							Up</option> -->
 					</select>
 				</div>
 				<div class="inline-field">

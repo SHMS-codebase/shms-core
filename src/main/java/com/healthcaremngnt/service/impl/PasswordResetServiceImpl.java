@@ -49,7 +49,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 	}
 
 	private PasswordResetToken validateToken(String token) throws InvalidTokenException, TokenExpiredException {
-		PasswordResetToken resetToken = tokenRepository.findByToken(token)
+		var resetToken = tokenRepository.findByToken(token)
 				.orElseThrow(() -> new InvalidTokenException("Invalid password reset token."));
 
 		if (resetToken.getExpirationTime().isBefore(LocalDateTime.now())) {
@@ -63,7 +63,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 	public void resetPassword(Long userID, String oldPassword, String newPassword) {
 		logger.info("Resetting password for User ID: {}", userID);
 
-		User user = userRepository.findById(userID)
+		var user = userRepository.findById(userID)
 				.orElseThrow(() -> new RuntimeException("User not found with ID: " + userID));
 
 		validateOldPassword(user, oldPassword);

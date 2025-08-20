@@ -44,7 +44,7 @@ public class PatientReportItemReader implements ItemReader<Patient> {
 
 			try {
 
-				List<Patient> patients = patientRepository.findPatientsByYear(Integer.parseInt(admissionYear));
+				var patients = patientRepository.findPatientsByYear(Integer.parseInt(admissionYear));
 				logger.debug("patients: {}", patients);
 				logger.debug("Read {} patients total", patients.size());
 

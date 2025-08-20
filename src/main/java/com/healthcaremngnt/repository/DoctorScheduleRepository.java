@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -49,9 +48,9 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
 			@Param("availableDate") LocalDate availableDate, @Param("startTime") LocalTime startTime,
 			@Param("endTime") LocalTime endTime);
 
-	@Modifying(clearAutomatically = true)
-	@Query("DELETE FROM DoctorSchedule ds WHERE ds.availableDate < CURRENT_DATE")
-	int deleteExpiredSchedules();
+//	@Modifying(clearAutomatically = true)
+//	@Query("UPDATE DoctorSchedule ds SET status = 'EXPIRED' WHERE ds.availableDate < CURRENT_DATE)
+//	int expireOutdatedSchedules();
 	
 	// Example using Pageable for pagination (if needed)
     /*

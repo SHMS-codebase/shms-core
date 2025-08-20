@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.model.UserPrincipal;
 import com.healthcaremngnt.repository.RoleRepository;
 import com.healthcaremngnt.repository.UserRepository;
@@ -30,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 		logger.info("Authenticating user: {}", userName);
 
-		User user = userRepository.findByUserName(userName).orElseThrow(() -> {
+		var user = userRepository.findByUserName(userName).orElseThrow(() -> {
 			logger.error("User not found: {}", userName);
 			return new UsernameNotFoundException("User not found: " + userName);
 		});

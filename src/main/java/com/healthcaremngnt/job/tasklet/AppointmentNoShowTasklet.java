@@ -48,9 +48,13 @@ public class AppointmentNoShowTasklet implements Tasklet {
 			if (currentHour == 21) { // 9 PM logic
 				logger.info("Executing 9 PM logic: Updating all remaining scheduled records for the day.");
 
-				updateQuery = "UPDATE Appointments a SET a.appointmentStatus = '" + AppointmentStatus.NOSHOW + "' "
-						+ "WHERE a.appointmentStatus = '" + AppointmentStatus.SCHEDULED + "' "
-						+ "AND a.appointmentDate = CURRENT_DATE";
+				// Using Text Blocks
+				updateQuery = """
+						UPDATE Appointments a
+						SET a.appointmentStatus = '%s'
+						WHERE a.appointmentStatus = '%s'
+						AND a.appointmentDate = CURRENT_DATE
+						""".formatted(AppointmentStatus.NOSHOW, AppointmentStatus.SCHEDULED);
 
 				updateCount = em.createQuery(updateQuery).executeUpdate();
 
@@ -60,9 +64,14 @@ public class AppointmentNoShowTasklet implements Tasklet {
 				// Calculate the time 2 hours ago
 				java.time.LocalTime twoHoursAgo = java.time.LocalTime.now().minusHours(2);
 
-				updateQuery = "UPDATE Appointment a SET a.appointmentStatus = '" + AppointmentStatus.NOSHOW + "' "
-						+ "WHERE a.appointmentStatus = '" + AppointmentStatus.SCHEDULED + "' "
-						+ "AND a.appointmentDate = CURRENT_DATE " + "AND a.appointmentTime < :twoHoursAgo";
+				// Using text blocks (Java 15+)
+				updateQuery = """
+						UPDATE Appointment a
+						SET a.appointmentStatus = '%s'
+						WHERE a.appointmentStatus = '%s'
+						AND a.appointmentDate = CURRENT_DATE
+						AND a.appointmentTime < :twoHoursAgo
+						""".formatted(AppointmentStatus.NOSHOW, AppointmentStatus.SCHEDULED);
 
 				updateCount = em.createQuery(updateQuery).setParameter("twoHoursAgo", twoHoursAgo).executeUpdate();
 			}

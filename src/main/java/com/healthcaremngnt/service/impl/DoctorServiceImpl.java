@@ -18,7 +18,6 @@ import com.healthcaremngnt.exceptions.InvalidInputException;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.DoctorSchedule;
 import com.healthcaremngnt.model.DoctorScheduleWrapper;
-import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.repository.DoctorRepository;
 import com.healthcaremngnt.repository.DoctorScheduleRepository;
 import com.healthcaremngnt.repository.UserRepository;
@@ -49,7 +48,7 @@ public class DoctorServiceImpl implements DoctorService {
 			throw new InvalidInputException("Doctor object cannot be null.");
 		}
 
-		Doctor savedDoctor = doctorRepository.save(doctor);
+		var savedDoctor = doctorRepository.save(doctor);
 		logger.info("Doctor registered successfully with ID: {}", savedDoctor.getDoctorID());
 
 		return savedDoctor;
@@ -59,7 +58,7 @@ public class DoctorServiceImpl implements DoctorService {
 	public Doctor getDoctorInfoCard(String userName) throws DoctorNotFoundException {
 		logger.info("Retrieving doctor info card for user: {}", userName);
 
-		User user = userRepository.findByUserName(userName)
+		var user = userRepository.findByUserName(userName)
 				.orElseThrow(() -> new DoctorNotFoundException("User not found with username: " + userName));
 
 		return doctorRepository.findByUser(user).orElseThrow(
@@ -70,10 +69,10 @@ public class DoctorServiceImpl implements DoctorService {
 	public List<DoctorSchedule> findDoctorSchedule(Long doctorID) throws DoctorNotFoundException {
 		logger.info("Finding schedule for Doctor ID: {}", doctorID);
 
-		Doctor doctor = doctorRepository.findById(doctorID)
+		var doctor = doctorRepository.findById(doctorID)
 				.orElseThrow(() -> new DoctorNotFoundException("Doctor not found with ID: " + doctorID));
 
-		List<DoctorSchedule> schedules = doctorScheduleRepository.findByDoctor(doctor);
+		var schedules = doctorScheduleRepository.findByDoctor(doctor);
 		logger.info("Found {} schedules for Doctor ID: {}", schedules.size(), doctorID);
 
 		return schedules;
@@ -114,7 +113,7 @@ public class DoctorServiceImpl implements DoctorService {
 			LocalTime endTime, String scheduleStatus) {
 		logger.info("Loading doctors and form values for Doctor ID: {}", doctorID);
 
-		List<Doctor> doctors = doctorID != null ? doctorRepository.findAll().stream()
+		var doctors = doctorID != null ? doctorRepository.findAll().stream()
 				.filter(doc -> doc.getDoctorID().equals(doctorID)).collect(Collectors.toList())
 				: doctorRepository.findAll();
 

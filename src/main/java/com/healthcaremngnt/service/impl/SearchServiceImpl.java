@@ -68,7 +68,7 @@ public class SearchServiceImpl implements SearchService {
 
 		if (roleName != null && !roleName.isBlank()) {
 			logger.debug("Performing role-based search.");
-			Role role = roleRepository.findByRoleNameIgnoreCase(roleName)
+			var role = roleRepository.findByRoleNameIgnoreCase(roleName)
 					.orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
 
 			searchResults = performRoleBasedSearch(role, name, emailID, contactNumber, specializationName);
