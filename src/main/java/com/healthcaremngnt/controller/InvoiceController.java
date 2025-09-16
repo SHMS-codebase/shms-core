@@ -291,7 +291,7 @@ public class InvoiceController {
 			// Switch Expression to determine the redirect path based on invoice status
 			return switch (status) {
 			case PAID -> "redirect:/invoices/viewinvoice?invoiceID=" + invoiceID + "&source=" + source;
-			case CANCELLED -> {
+			case CANCELED -> {
 				if (invoice.getTreatment() != null) {
 					redirectAttributes.addAttribute("treatmentID", invoice.getTreatment().getTreatmentID().toString());
 				}

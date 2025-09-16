@@ -284,8 +284,8 @@ input[type="date"], input[type="time"], select, textarea {
 						th:field="*{appointmentStatus}" disabled>
 						<option value="SCHEDULED"
 							th:selected="${appointment.appointmentStatus.name() == 'SCHEDULED'}">Scheduled</option>
-						<!-- <option value="CANCELLED"
-							th:selected="${appointment.appointmentStatus.name() == 'CANCELLED'}">Cancelled</option> -->
+						<!-- <option value="CANCELED"
+							th:selected="${appointment.appointmentStatus.name() == 'CANCELED'}">Canceled</option> -->
 						<option value="COMPLETED"
 							th:selected="${appointment.appointmentStatus.name() == 'COMPLETED'}">Completed</option>
 						<option value="NOSHOW"

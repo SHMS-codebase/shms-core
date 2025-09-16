@@ -355,7 +355,7 @@ form {
 				th:href="@{/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='PAID')}"
 				class="btn btn-success">Mark as Paid</a><a
 				th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).REVIEWED}"
-				th:href="@{/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='CANCELLED')}"
+				th:href="@{/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='CANCELED')}"
 				class="btn btn-secondary">Cancel Invoice</a>
 		</div>
 	</div>

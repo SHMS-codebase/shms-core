@@ -98,6 +98,9 @@ public class Appointment {
 	@Column(name = "cancellation_reason")
 	private String cancellationReason;
 
+	@Column(name = "calendar_event_id")
+	private String calendarEventId;
+
 	@PrePersist
 	protected void onCreate() {
 		createdDate = LocalDateTime.now();
@@ -118,7 +121,7 @@ public class Appointment {
 
 	private void validateBusinessRules() {
 		// Log warning if treatment exists for non-treatment statuses
-		if ((appointmentStatus == AppointmentStatus.NOSHOW || appointmentStatus == AppointmentStatus.CANCELLED)
+		if ((appointmentStatus == AppointmentStatus.NOSHOW || appointmentStatus == AppointmentStatus.CANCELED)
 				&& treatment != null) {
 			logger.warn("Treatment exists for appointment {} with status: {}", appointmentID, appointmentStatus);
 		}
@@ -134,7 +137,7 @@ public class Appointment {
 		this.deleted = true;
 		this.deletedDate = LocalDateTime.now();
 		this.cancellationReason = reason;
-		this.appointmentStatus = AppointmentStatus.CANCELLED;
+		this.appointmentStatus = AppointmentStatus.CANCELED;
 	}
 
 	/**
@@ -389,15 +392,31 @@ public class Appointment {
 		this.cancellationReason = cancellationReason;
 	}
 
+	/**
+	 * @return the calendarEventId
+	 */
+	public String getCalendarEventId() {
+		return calendarEventId;
+	}
+
+	/**
+	 * @param calendarEventId the calendarEventId to set
+	 */
+	public void setCalendarEventId(String calendarEventId) {
+		this.calendarEventId = calendarEventId;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [appointmentID=" + appointmentID + ", appointmentDate=" + appointmentDate
 				+ ", appointmentTime=" + appointmentTime + ", appointmentStatus=" + appointmentStatus
-				+ ", reasonToVisit=" + reasonToVisit + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate
-				+ ", priority=" + priority + ", needsReminder=" + needsReminder + ", isFollowup=" + isFollowup
-				+ ", deleted=" + deleted + ", doctorID=" + (doctor != null ? doctor.getDoctorID() : null)
+				+ ", reasonToVisit=" + reasonToVisit + ", doctorID=" + (doctor != null ? doctor.getDoctorID() : null)
 				+ ", patientID=" + (patient != null ? patient.getPatientID() : null) + ", treatmentID="
-				+ (treatment != null ? treatment.getTreatmentID() : null) + "]";
+				+ (treatment != null ? treatment.getTreatmentID() : null) + ", createdDate=" + createdDate
+				+ ", updatedDate=" + updatedDate + ", priority=" + priority + ", needsReminder=" + needsReminder
+				+ ", isFollowup=" + isFollowup + ", parentAppointment=" + parentAppointment + ", followUpAppointments="
+				+ followUpAppointments + ", deleted=" + deleted + ", deletedDate=" + deletedDate
+				+ ", cancellationReason=" + cancellationReason + ", calendarEventId=" + calendarEventId + "]";
 	}
 
 }

@@ -47,7 +47,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 	void updateAppointmentStatusAndTreatment(@Param("id") Long appointmentID,
 			@Param("status") AppointmentStatus appointmentStatus, @Param("treatment") Treatment treatment);
 
-	// Need to qrite the query for cancelled appointments
+	// Need to qrite the query for canceled appointments
 
 	List<Appointment> findByAppointmentStatus(AppointmentStatus appointmentStatus);
 
