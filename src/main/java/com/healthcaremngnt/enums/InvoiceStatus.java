@@ -2,6 +2,6 @@ package com.healthcaremngnt.enums;
 
 public enum InvoiceStatus {
 
-	DRAFT , REVIEWED, FINALIZED, PAID, UNPAID, CANCELLED, PENDING
+	DRAFT , REVIEWED, FINALIZED, PAID, UNPAID, CANCELED, PENDING
 	
 }

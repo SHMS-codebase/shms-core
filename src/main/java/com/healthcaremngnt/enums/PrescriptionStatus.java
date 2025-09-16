@@ -2,5 +2,5 @@ package com.healthcaremngnt.enums;
 
 public enum PrescriptionStatus {
 
-	ACTIVE, COMPLETED, CANCELLED, ONHOLD
+	ACTIVE, COMPLETED, CANCELED, ONHOLD
 }

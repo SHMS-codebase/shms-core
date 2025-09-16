@@ -1,12 +1,17 @@
 package com.healthcaremngnt.controller;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Controller;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.api.client.util.DateTime;
 import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
 import com.healthcaremngnt.exceptions.DoctorNotFoundException;
@@ -29,6 +35,7 @@ import com.healthcaremngnt.model.Patient;
 import com.healthcaremngnt.model.Treatment;
 import com.healthcaremngnt.model.UpcomingAppointment;
 import com.healthcaremngnt.service.AppointmentService;
+import com.healthcaremngnt.service.CalendarIntegrationService;
 import com.healthcaremngnt.service.DoctorScheduleService;
 import com.healthcaremngnt.service.DoctorService;
 import com.healthcaremngnt.service.PatientService;
@@ -45,6 +52,9 @@ public class AppointmentController {
 	private final DoctorScheduleService doctorScheduleService;
 	private final AppointmentService appointmentService;
 	private final TreatmentService treatmentService;
+
+	@Autowired
+	private CalendarIntegrationService calendarIntegrationService;
 
 	public AppointmentController(DoctorService doctorService, PatientService patientService,
 			DoctorScheduleService doctorScheduleService, AppointmentService appointmentService,
@@ -138,6 +148,28 @@ public class AppointmentController {
 
 			Appointment appointment = appointmentService.bookAppointment(appointmentRequest, treatmentID,
 					parentAppointmentID, followupFlag);
+
+			// Integrate with Google Calendar
+			try {
+				LocalDateTime start = LocalDateTime.of(appointment.getAppointmentDate(),
+						appointment.getAppointmentTime());
+				LocalDateTime end = start.plusMinutes(30); // default duration
+
+				ZonedDateTime zonedStart = start.atZone(ZoneId.of("Asia/Kolkata"));
+				ZonedDateTime zonedEnd = end.atZone(ZoneId.of("Asia/Kolkata"));
+
+				DateTime googleStart = new DateTime(zonedStart.toInstant().toEpochMilli());
+				DateTime googleEnd = new DateTime(zonedEnd.toInstant().toEpochMilli());
+
+				String eventId = calendarIntegrationService.createAppointmentEvent(googleStart, googleEnd,
+						"Appointment for " + appointment.getPatient().getPatientName());
+
+				appointment.setCalendarEventId(eventId);
+				logger.info("Google Calendar event created with ID: {}", eventId);
+
+			} catch (IOException calendarEx) {
+				logger.warn("Failed to create calendar event: {}", calendarEx.getMessage());
+			}
 
 			logger.debug("{}", MessageConstants.APMNT_BOOKING_SUCCESS);
 			model.addAttribute("message", MessageConstants.APMNT_BOOKING_SUCCESS);
@@ -272,7 +304,8 @@ public class AppointmentController {
 			LocalDate nextWeekDay = today.plusDays(7);
 
 			// Load the upcoming appointments from today till next week i.e., 7 days on load
-			List<UpcomingAppointment> upcomingAppointments = appointmentService.getUpcomingAppointmentBetween(nextWeekDay, today);
+			List<UpcomingAppointment> upcomingAppointments = appointmentService
+					.getUpcomingAppointmentBetween(nextWeekDay, today);
 			logger.debug("upcomingAppointments: {}", upcomingAppointments);
 			model.addAttribute("upcomingAppointments", upcomingAppointments);
 
@@ -296,7 +329,7 @@ public class AppointmentController {
 		logger.info("Loading all Appointments for cancellation and mark the ones not eligible too!!");
 
 		try {
-			
+
 			List<Appointment> upcomingAppointments = appointmentService.getUpcomingAppointments();
 			logger.debug("upcomingAppointments: {}", upcomingAppointments);
 			model.addAttribute("upcomingAppointments", upcomingAppointments);

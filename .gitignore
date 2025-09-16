@@ -44,12 +44,3 @@ target/
 build/
 out/
 reports/
-
-# Maven wrapper
-.mvn/
-mvnw*
-# Version loggers
-src/main/java/com/healthcaremngnt/DriverVersionLogger.java
-src/main/java/com/healthcaremngnt/SpringVersionLogger.java
-# Static assets
-src/main/resources/static/images/actuallogo.png
