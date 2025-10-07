@@ -141,7 +141,7 @@ button {
 				<tbody>
 					<tr th:each="schedule : ${doctorSchedules}">
 						<td><a
-							th:href="@{'/doctor/viewdoctorschedule'(doctorID=${doctorID}, scheduleID=${schedule.scheduleID}, source='admindashboard')}"
+							th:href="@{'/api/v1/doctor/viewdoctorschedule'(doctorID=${doctorID}, scheduleID=${schedule.scheduleID}, source='admindashboard')}"
 							th:text="${schedule.scheduleID}"></a></td>
 						<td th:text="${schedule.availableDate}"></td>
 						<td th:text="${schedule.startTime + ' - ' + schedule.endTime}"></td>
@@ -157,7 +157,7 @@ button {
 	<script>
 		function updateScheduleStatus(status, scheduleID) {
 			$.ajax({
-				url : '/doctor/updateschedulestatus',
+				url : '/api/v1/doctor/updateschedulestatus',
 				method : 'POST',
 				data : {
 					scheduleID : scheduleID,

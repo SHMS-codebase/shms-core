@@ -34,7 +34,7 @@ import com.healthcaremngnt.service.PrescriptionService;
 import com.healthcaremngnt.service.TreatmentService;
 
 @Controller
-@RequestMapping("/patient")
+@RequestMapping("/api/v1/patient")
 public class PatientController {
 
 	private static final Logger logger = LogManager.getLogger(PatientController.class);

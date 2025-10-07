@@ -72,7 +72,7 @@ select, input {
 					<p th:text="${errorMessage}"></p>
 				</div>
 				<!-- Common Registration Form -->
-				<form id="registrationForm" th:action="@{/users/register}"
+				<form id="registrationForm" th:action="@{/api/v1/users/register}"
 					th:method="POST" onsubmit="return register()">
 
 					<input type="hidden" th:value="${source}" name="source"> <input

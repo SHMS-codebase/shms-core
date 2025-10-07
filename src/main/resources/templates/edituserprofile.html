@@ -119,7 +119,7 @@ form {
 			<p th:text="${message}"></p>
 		</div>
 
-		<form th:action="@{/users/edituserprofile}" th:object="${userDetails}"
+		<form th:action="@{/api/v1/users/edituserprofile}" th:object="${userDetails}"
 			method="post">
 
 			<!-- Hidden fields -->
@@ -146,10 +146,14 @@ form {
 					th:field="*{doctor.doctorName}" /> <input type="text"
 					th:if="${userDetails.doctor == null}"
 					th:field="*{patient.patientName}" />
+			</div>			
+			<div class="form-group" th:if="${userDetails.doctor != null}">
+				<label class="required">License Number: </label> <input type="text"
+					th:field="*{doctor.licenseNumber}" />
 			</div>
 			<div class="form-group">
 				<label class="required">Password: </label> <a
-					th:href="@{/auth/change-password(userID=${userDetails.userID}, source=${source})}">Change
+					th:href="@{/api/v1/pwd/change-password(userID=${userDetails.userID}, source=${source})}">Change
 					Password</a>
 			</div>
 			<div class="form-group">

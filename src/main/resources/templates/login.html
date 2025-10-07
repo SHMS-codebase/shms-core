@@ -13,9 +13,9 @@
 <link
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
 	rel="stylesheet">
-<link rel="stylesheet" href="../css/homestyles.css">
-<link rel="stylesheet" href="../css/loginstyles.css">
-<link rel="stylesheet" href="../css/commoncustomstyles.css">
+<link rel="stylesheet" href="/css/homestyles.css">
+<link rel="stylesheet" href="/css/loginstyles.css">
+<link rel="stylesheet" href="/css/commoncustomstyles.css">
 <style>
 body {
 	font-family: 'Helvetica', sans-serif;
@@ -76,7 +76,7 @@ body {
 	<div class="fixed-header">
 		<header>
 			<div class="header-content d-flex align-items-center">
-				<img src="../images/logo.png" alt="Logo" class="logo"
+				<img src="/images/logo.png" alt="Logo" class="logo"
 					style="height: 100px; width: auto; margin-right: 20px;">
 				<h1>Smart HealthCare Management System</h1>
 			</div>
@@ -91,12 +91,12 @@ body {
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-						<li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
-						<li class="nav-item"><a class="nav-link" href="/services">Services</a></li>
-						<li class="nav-item"><a class="nav-link active" href="/login">Login</a></li>
-						<li class="nav-item"><a class="nav-link" href="/aboutus">About
+						<li class="nav-item"><a class="nav-link" href="/view/home">Home</a></li>
+						<li class="nav-item"><a class="nav-link" href="/view/services">Services</a></li>
+						<li class="nav-item"><a class="nav-link active" href="/api/v1/auth/login">Login</a></li>
+						<li class="nav-item"><a class="nav-link" href="/view/aboutus">About
 								Us</a></li>
-						<li class="nav-item"><a class="nav-link" href="/contactus">Contact
+						<li class="nav-item"><a class="nav-link" href="/view/contactus">Contact
 								Us</a></li>
 					</ul>
 				</div>
@@ -122,7 +122,7 @@ body {
 		</div>
 		<div class="login-container">
 			<h2>Login</h2>
-			<form th:action="@{/login}" method="POST">
+			<form th:action="@{/api/v1/auth/login}" method="POST">
 				<div class="form-group">
 					<label for="username">User Name:</label> <input type="text"
 						id="username" name="username" class="form-control" required>
@@ -132,7 +132,7 @@ body {
 						id="password" name="password" class="form-control" required>
 				</div>
 				<p class="centered-link">
-					<a href="/auth/forgot-password">Forgot Password</a>
+					<a href="/api/v1/pwd/forgot-password">Forgot Password</a>
 				</p>
 				<div th:if="${errorMessage}" class="alert alert-danger" role="alert">
 					<span th:text="${errorMessage}"></span>

@@ -77,7 +77,7 @@ public class Treatment {
 	protected void onCreate() {
 		createdDate = LocalDateTime.now();
 		updatedDate = LocalDateTime.now();
-		updateDoctorAndPatientIDs(); // Call this only on creation
+		updateDoctorAndPatientIDs(); // Ensure IDs are set on creation
 
 		validateBusinessRules();
 
@@ -90,7 +90,9 @@ public class Treatment {
 	@PreUpdate
 	protected void onUpdate() {
 		updatedDate = LocalDateTime.now();
-
+		if(doctorID == null || patientID == null) {
+			updateDoctorAndPatientIDs(); // Ensure IDs are set if they were missing
+		}
 		validateBusinessRules();
 	}
 
@@ -311,7 +313,7 @@ public class Treatment {
 		return "Treatment [treatmentID=" + treatmentID + ", diagnosis=" + diagnosis + ", treatmentDetails="
 				+ treatmentDetails + ", notes=" + notes + ", treatmentStatus=" + treatmentStatus + ", followUpNeeded="
 				+ followUpNeeded + ", invoiceGenerated=" + invoiceGenerated + ", treatmentDate=" + treatmentDate
-				+ ", appointment=" + appointment + ", doctorID=" + doctorID + ", patientID=" + patientID
+				+ ", appointmentID=" + appointment.getAppointmentID() + ", doctorID=" + doctorID + ", patientID=" + patientID
 				+ ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + "]";
 	}
 

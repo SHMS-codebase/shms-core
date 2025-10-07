@@ -26,7 +26,7 @@
 		<div class="main-container">
 			<div class="side-container">
 				<section class="info-card">
-					<h3>Patient Information Card</h3>
+					<h2>Patient Information Card</h2>
 					<div th:if="${patient != null}">
 						<div>
 							<strong>Name:</strong> <span th:text="${patient.patientName}"></span>
@@ -39,7 +39,8 @@
 							<strong>Date Of Birth:</strong> <span th:text="${patient.dob}"></span>
 						</div>
 						<div>
-							<a th:href="@{/users/edituserprofile(source='patientdashboard')}">Edit
+							<a
+								th:href="@{/api/v1/users/edituserprofile(source='patientdashboard')}">Edit
 								Profile</a>
 						</div>
 					</div>
@@ -49,7 +50,8 @@
 			<div class="content-container">
 				<!-- Tabs Section -->
 				<div class="tabs">
-					<button class="tablinks" onclick="openTab(event, 'Appointments')">Upcoming
+					<button class="tablinks active"
+						onclick="openTab(event, 'Appointments')">Upcoming
 						Appointments</button>
 					<button class="tablinks" onclick="openTab(event, 'DoctorProfiles')">View
 						Doctor Profiles</button>
@@ -61,7 +63,9 @@
 					<button class="tablinks" onclick="openTab(event, 'BillingInfo')">Billing
 						Info</button>
 					<!-- <button class="tablinks" onclick="openTab(event, 'HealthTips')">HealthTips</button> -->
-					<button class="tablinks" onclick="openTab(event, 'AnnouncementsNotifications')">Announcements &amp; Notifications</button>
+					<button class="tablinks"
+						onclick="openTab(event, 'AnnouncementsNotifications')">Announcements
+						&amp; Notifications</button>
 				</div>
 				<!-- Tab Content Section -->
 				<div id="Appointments" class="tabcontent">
@@ -96,26 +100,27 @@
 					<h3>Medical Summary</h3>
 					<ul>
 						<li><a
-							th:href="@{/patient/recentvisits(patientID=${patient.patientID}, source='patientdashboard')}">Recent
+							th:href="@{/api/v1/patient/recentvisits(patientID=${patient.patientID}, source='patientdashboard')}">Recent
 								Visits</a></li>
 						<li><a
-							th:href="@{/patient/treatmentdetails(patientID=${patient.patientID}, source='patientdashboard')}">Treatment
+							th:href="@{/api/v1/patient/treatmentdetails(patientID=${patient.patientID}, source='patientdashboard')}">Treatment
 								Details</a></li>
 						<li><a
-							th:href="@{/patient/prescriptiondetails(patientID=${patient.patientID}, source='patientdashboard')}">Prescription
+							th:href="@{/api/v1/patient/prescriptiondetails(patientID=${patient.patientID}, source='patientdashboard')}">Prescription
 								Details</a></li>
 						<li><a
-							th:href="@{/patient/viewmedicalhistory(patientID=${patient.patientID}, source='patientdashboard')}">Medical
+							th:href="@{/api/v1/patient/viewmedicalhistory(patientID=${patient.patientID}, source='patientdashboard')}">Medical
 								History</a></li>
 					</ul>
 				</div>
 				<div id="DoctorProfiles" class="tabcontent">
 					<h3>View Doctor Profiles</h3>
 					<ul>
-						<li><a th:href="@{/searchuser(source='patientdashboard')}">Search
+						<li><a
+							th:href="@{/api/v1/search/searchuser(source='patientdashboard')}">Search
 								Doctors</a></li>
 						<li><a
-							th:href="@{/patient/mydoctors(patientID=${patient.patientID}, source='patientdashboard')}">My
+							th:href="@{/api/v1/patient/mydoctors(patientID=${patient.patientID}, source='patientdashboard')}">My
 								Doctors</a></li>
 					</ul>
 				</div>
@@ -138,7 +143,7 @@
 							<tbody>
 								<tr th:each="prescription : ${activeprescriptions}">
 									<td><a
-										th:href="@{'/prescriptions/viewprescription'(prescriptionID=${prescription.prescriptionID}, source='patientdashboard')}"
+										th:href="@{'/api/v1/prescriptions/viewprescription'(prescriptionID=${prescription.prescriptionID}, source='patientdashboard')}"
 										th:text="${prescription.prescriptionID}"></a></td>
 									<td th:text="${prescription.patientName}"></td>
 									<td th:text="${prescription.diagnosis}"></td>
@@ -176,6 +181,16 @@
 		<!-- Include Footer Fragment -->
 		<div th:replace="~{fragments/footer :: footer}"></div>
 	</div>
-	<script src="../js/dashboard.js"></script>
+	<script src="/js/dashboard.js"></script>
+	<script>
+		// Open the default tab on page load
+		window.addEventListener('DOMContentLoaded', function() {
+			const defaultButton = document
+					.querySelector('[onclick*="Appointments"]');
+			if (defaultButton) {
+				defaultButton.click();
+			}
+		});
+	</script>
 </body>
 </html>

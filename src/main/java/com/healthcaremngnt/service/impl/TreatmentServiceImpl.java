@@ -70,7 +70,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 	public List<Treatment> getAllUnbilledTreatments() {
 		logger.info("Fetching all unbilled treatments with COMPLETED status.");
 
-		var treatments = treatmentRepository.findTreatmentsByStatus(TreatmentStatus.COMPLETED);
+		var treatments = treatmentRepository.findTreatmentsByStatus(TreatmentStatus.BILLED);
 
 		if (treatments.isEmpty()) {
 			logger.warn("No unbilled treatments found.");

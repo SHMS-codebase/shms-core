@@ -35,12 +35,13 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
 	List<DoctorSchedule> findByScheduleStatus(ScheduleStatus scheduleStatus);
 
 	@Query("SELECT DISTINCT ds.availableDate FROM DoctorSchedule ds JOIN ds.doctor d "
-			+ "WHERE d.doctorID = :doctorID AND ds.scheduleStatus = 'Approved' AND ds.availableCount > 0")
+			+ "WHERE d.doctorID = :doctorID AND ds.scheduleStatus = 'Approved' AND ds.availableCount > 0 AND expiredDate IS NULL ")
 	List<LocalDate> findAvailableDatesByDoctorID(@Param("doctorID") Long doctorID);
 
 	List<DoctorSchedule> findByDoctor_DoctorIDAndAvailableDate(Long doctorID, LocalDate availableDate); // Derived Query
-	
-	List<DoctorSchedule> findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThan(Long doctorID, LocalDate availableDate, int availableCount);
+
+	List<DoctorSchedule> findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThan(Long doctorID,
+			LocalDate availableDate, int availableCount);
 
 	@Query("SELECT ds FROM DoctorSchedule ds WHERE ds.doctor.doctorID = :doctorID AND ds.availableDate = :availableDate "
 			+ "AND ds.startTime = :startTime AND ds.endTime = :endTime")
@@ -51,11 +52,12 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
 //	@Modifying(clearAutomatically = true)
 //	@Query("UPDATE DoctorSchedule ds SET status = 'EXPIRED' WHERE ds.availableDate < CURRENT_DATE)
 //	int expireOutdatedSchedules();
-	
+
 	// Example using Pageable for pagination (if needed)
-    /*
-    @Query("SELECT ds FROM DoctorSchedule ds WHERE ...")
-    Page<DoctorSchedule> findSchedulesWithPagination(@Param("doctorId") Long doctorId, ..., Pageable pageable);
-    */
+	/*
+	 * @Query("SELECT ds FROM DoctorSchedule ds WHERE ...") Page<DoctorSchedule>
+	 * findSchedulesWithPagination(@Param("doctorId") Long doctorId, ..., Pageable
+	 * pageable);
+	 */
 
 }

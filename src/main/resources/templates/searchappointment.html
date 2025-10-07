@@ -133,7 +133,7 @@ form {
 				<p th:text="${errorMessage}"></p>
 			</div>
 
-			<form id="searchForm" th:action="@{/searchappointment}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchappointment}" method="POST">
 
 				<input type="hidden" name="source" th:value="${source}">
 
@@ -198,7 +198,7 @@ form {
 					<tbody id="resultsBody">
 						<tr th:each="appointment : ${appointments}">
 							<td><a
-								th:href="@{'/appointments/viewappointment'(appointmentID=${appointment.appointmentID}, source='admindashboard')}"
+								th:href="@{'/api/v1/appointments/viewappointment'(appointmentID=${appointment.appointmentID}, source='admindashboard')}"
 								th:text="${appointment.appointmentID}"></a></td>
 							<td th:text="${appointment.patient.patientName}"></td>
 							<td th:text="${appointment.doctor.doctorName}"></td>

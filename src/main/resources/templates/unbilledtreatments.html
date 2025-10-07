@@ -133,21 +133,23 @@ button {
 				<table>
 					<thead>
 						<tr>
+							<th>Appointment Date</th>
 							<th>Treatment ID</th>
-							<th>Diagnosis</th>
 							<th>Patient Name</th>
 							<th>Doctor Name</th>
-							<th>Appointment Date</th>
+							<th>Diagnosis</th>
+							<th>Treatment Status</th>
 							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="treatment : ${unbilledTreatments}">
+							<td th:text="${treatment.appointment.appointmentDate}"></td>
 							<td th:text="${treatment.treatmentID}"></td>
-							<td th:text="${treatment.diagnosis}"></td>
 							<td th:text="${treatment.appointment.patient.patientName}"></td>
 							<td th:text="${treatment.appointment.doctor.doctorName}"></td>
-							<td th:text="${treatment.appointment.appointmentDate}"></td>
+							<td th:text="${treatment.diagnosis}"></td>
+							<td th:text="${treatment.treatmentStatus}"></td>
 							<td>
 								<button th:data-treatment-id="${treatment.treatmentID}"
 									th:data-source="${source}" onclick="generateInvoice(this)">Generate
@@ -163,7 +165,7 @@ button {
 		function generateInvoice(button) {
 			const treatmentID = button.getAttribute('data-treatment-id');
 			const source = button.getAttribute('data-source');
-			window.location.href = `/invoices/generate-invoice?treatmentID=${treatmentID}&source=${source}`;
+			window.location.href = `/api/v1/invoices/generate-invoice?treatmentID=${treatmentID}&source=${source}`;
 		}
 	</script>
 

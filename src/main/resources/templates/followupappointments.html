@@ -172,7 +172,7 @@ button {
 			const patientID = button.getAttribute('data-patient-id');
 			const parentAppointmentID = button.getAttribute('data-appointment-id');
 			const source = button.getAttribute('data-source');
-			window.location.href = `/appointments/createappointment?treatmentID=${treatmentID}&doctorID=${doctorID}&patientID=${patientID}&parentAppointmentID=${parentAppointmentID}&source=${source}&isFollowup=true`;
+			window.location.href = `/api/v1/appointments/createappointment?treatmentID=${treatmentID}&doctorID=${doctorID}&patientID=${patientID}&parentAppointmentID=${parentAppointmentID}&source=${source}&isFollowup=true`;
 		}
 	</script>
 

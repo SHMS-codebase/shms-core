@@ -31,4 +31,6 @@ public interface DoctorService {
 
 	List<Doctor> getDoctorsWithSchedule();
 
+	String getDoctorNameByID(Long doctorID);
+
 }

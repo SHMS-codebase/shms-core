@@ -153,7 +153,7 @@ button[disabled]:active {
 		<div th:if="${message}" class="success-message">
 			<p th:text="${message}"></p>
 		</div>
-		<form id="viewForm" th:action="@{/users/updateuser}" th:method="POST">
+		<form id="viewForm" th:action="@{/api/v1/users/updateuser}" th:method="POST">
 
 			<input type="hidden" name="roleID" th:value="${userDetails.roleID}" />
 			<input type="hidden" name="userID" th:value="${userDetails.userID}" />
@@ -288,7 +288,7 @@ button[disabled]:active {
 
 				<div>
 					<a
-						th:href="@{/doctor/viewallschedules(doctorID=${userDetails.doctor.doctorID}, source='admindashboard')}">View
+						th:href="@{/api/v1/doctor/viewallschedules(doctorID=${userDetails.doctor.doctorID}, source='admindashboard')}">View
 						Doctor Schedule(s)</a>
 				</div>
 			</div>
@@ -343,7 +343,7 @@ button[disabled]:active {
 				</div>
 				<div>
 					<a
-						th:href="@{'/patient/viewmedicalhistory'(patientID=${userDetails.patient.patientID}, userID=${userDetails.userID}, source='admindashboard')}">
+						th:href="@{'/api/v1/patient/viewmedicalhistory'(patientID=${userDetails.patient.patientID}, userID=${userDetails.userID}, source='admindashboard')}">
 						View Medical History </a>
 				</div>
 

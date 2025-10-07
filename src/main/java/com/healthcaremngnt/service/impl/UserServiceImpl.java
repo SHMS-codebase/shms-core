@@ -1,9 +1,11 @@
 package com.healthcaremngnt.service.impl;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +32,15 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 	private final DoctorRepository doctorRepository;
 	private final PatientRepository patientRepository;
-	private final BCryptPasswordEncoder encoder;
+	private final PasswordEncoder passwordEncoder;
 
 	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
-			DoctorRepository doctorRepository, PatientRepository patientRepository) {
+			DoctorRepository doctorRepository, PatientRepository patientRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.doctorRepository = doctorRepository;
 		this.patientRepository = patientRepository;
-		this.encoder = new BCryptPasswordEncoder(12);
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -47,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
 		validateUserData(user);
 
-		user.setPassword(encoder.encode(user.getPassword()));
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		logger.debug("Encoded Generated Password: {}", user.getPassword());
 
 		return saveUser(user);
@@ -339,4 +341,11 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new RuntimeException("User not found with Patient ID: " + patientID));
 	}
 
+	@Override
+	public List<User> getAllUsers() {
+		
+		logger.info("Fetching all users");
+		return userRepository.findAll();
+	}
+	
 }

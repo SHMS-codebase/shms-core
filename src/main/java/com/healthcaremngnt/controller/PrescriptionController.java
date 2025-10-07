@@ -48,7 +48,7 @@ import com.healthcaremngnt.service.TreatmentService;
 import com.healthcaremngnt.util.DateFormatter;
 
 @Controller
-@RequestMapping("/prescriptions")
+@RequestMapping("/api/v1/prescriptions")
 public class PrescriptionController {
 
 	private static final Logger logger = LogManager.getLogger(PrescriptionController.class);
@@ -388,7 +388,7 @@ public class PrescriptionController {
 		model.addAttribute("source", source);
 		model.addAttribute("prescription", savedPrescription);
 
-//		return "redirect:/prescriptions/viewprescription?prescriptionID=" + prescriptionID + "&source=" + source;
+//		return "redirect:/api/v1/prescriptions/viewprescription?prescriptionID=" + prescriptionID + "&source=" + source;
 		return "viewprescription";
 	}
 

@@ -47,7 +47,8 @@
 								th:text="${doctor.experience + ' Years'}"></span>
 						</div>
 						<div>
-							<a th:href="@{/users/edituserprofile(source='doctordashboard')}">Edit
+							<a
+								th:href="@{/api/v1/users/edituserprofile(source='doctordashboard')}">Edit
 								Profile</a>
 						</div>
 					</div>
@@ -58,7 +59,8 @@
 				<div class="tabs">
 					<button class="tablinks" onclick="openTab(event, 'Schedule')">My
 						Schedule</button>
-					<button class="tablinks" onclick="openTab(event, 'Appointments')">Today's
+					<button class="tablinks active"
+						onclick="openTab(event, 'Appointments')">Today's
 						Appointments</button>
 					<button class="tablinks" onclick="openTab(event, 'PatientRecords')">Patient
 						Records</button>
@@ -73,10 +75,10 @@
 					<h2>My Schedule</h2>
 					<ul>
 						<li><a
-							th:href="@{/doctor/createschedule(doctorID=${doctor.doctorID}, source='doctordashboard')}">Create
+							th:href="@{/api/v1/doctor/createschedule(doctorID=${doctor.doctorID}, source='doctordashboard')}">Create
 								Schedules</a></li>
 						<li><a
-							th:href="@{/doctor/viewallschedules(doctorID=${doctor.doctorID}, source='doctordashboard')}">View/
+							th:href="@{/api/v1/doctor/viewallschedules(doctorID=${doctor.doctorID}, source='doctordashboard')}">View/
 								Update Schedules</a></li>
 					</ul>
 				</div>
@@ -84,58 +86,67 @@
 					<h2>Today's Appointments</h2>
 					<br>
 					<h3>New Appointments</h3>
-					<div th:if="${appointments != null and !appointments.isEmpty()}">
-						<table>
-							<thead>
-								<tr>
-									<th>Time</th>
-									<th>Patient Name</th>
-									<th>Reason for Visit</th>
-									<th>Schedule</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="appointment : ${appointments}">
-									<th:block th:if="${!appointment.isFollowup}">
+					<div th:with="newAppointments=${appointments.?[!isFollowup]}">
+						<div
+							th:if="${newAppointments != null and !newAppointments.isEmpty()}">
+							<table>
+								<thead>
+									<tr>
+										<th>Time</th>
+										<th>Patient Name</th>
+										<th>Reason for Visit</th>
+										<th>Schedule</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="appointment : ${newAppointments}">
 										<td th:text="${appointment.appointmentTime}"></td>
 										<td><a
-											th:href="@{'/treatments/createtreatment'(appointmentID=${appointment.appointmentID}, source='doctordashboard')}"
+											th:href="@{'/api/v1/treatments/createtreatment'(appointmentID=${appointment.appointmentID}, source='doctordashboard')}"
 											th:text="${appointment.patient.patientName}"></a></td>
 										<td th:text="${appointment.reasonToVisit}"></td>
 										<td th:text="${appointment.appointmentStatus}"></td>
-									</th:block>
-								</tr>
-							</tbody>
-						</table>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div
+							th:if="${newAppointments == null or newAppointments.isEmpty()}">
+							<p>No New Appointments for Today!</p>
+						</div>
 					</div>
+
 					<br>
+
 					<h3>Follow-up Appointments</h3>
-					<div th:if="${appointments != null and !appointments.isEmpty()}">
-						<table>
-							<thead>
-								<tr>
-									<th>Time</th>
-									<th>Patient Name</th>
-									<th>Reason for Visit</th>
-									<th>Schedule</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="appointment : ${appointments}">
-									<th:block th:if="${appointment.isFollowup}">
+					<div th:with="followupAppointments=${appointments.?[isFollowup]}">
+						<div
+							th:if="${followupAppointments != null and !followupAppointments.isEmpty()}">
+							<table>
+								<thead>
+									<tr>
+										<th>Time</th>
+										<th>Patient Name</th>
+										<th>Reason for Visit</th>
+										<th>Schedule</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="appointment : ${followupAppointments}">
 										<td th:text="${appointment.appointmentTime}"></td>
 										<td><a
-											th:href="@{'/treatments/createtreatment'(appointmentID=${appointment.appointmentID}, source='doctordashboard')}"
+											th:href="@{'/api/v1/treatments/createfollowuptreatment'(appointmentID=${appointment.appointmentID}, source='doctordashboard')}"
 											th:text="${appointment.patient.patientName}"></a></td>
 										<td th:text="${appointment.reasonToVisit}"></td>
 										<td th:text="${appointment.appointmentStatus}"></td>
-									</th:block>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div th:if="${appointments == null or appointments.isEmpty()}">
-						<p>No appointments for Today!</p>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div
+							th:if="${followupAppointments == null or followupAppointments.isEmpty()}">
+							<p>No Follow-up Appointments for Today!</p>
+						</div>
 					</div>
 				</div>
 
@@ -143,10 +154,10 @@
 					<h2>Patient Records</h2>
 					<ul>
 						<li><a
-							th:href="@{/searchuser(doctorID=${doctor.doctorID}, source='doctordashboard')}">Search/
+							th:href="@{/api/v1/search/searchuser(doctorID=${doctor.doctorID}, source='doctordashboard')}">Search/
 								Update Patients</a></li>
 						<li><a
-							th:href="@{/searchtreatments(doctorID=${doctor.doctorID}, source='doctordashboard')}">Search/
+							th:href="@{/api/v1/search/searchtreatments(doctorID=${doctor.doctorID}, source='doctordashboard')}">Search/
 								Update Treatment Details</a></li>
 					</ul>
 				</div>
@@ -170,7 +181,7 @@
 							<tbody>
 								<tr th:each="prescription : ${activeprescriptions}">
 									<td><a
-										th:href="@{'/prescriptions/viewprescription'(prescriptionID=${prescription.prescriptionID}, source='doctordashboard')}"
+										th:href="@{'/api/v1/prescriptions/viewprescription'(prescriptionID=${prescription.prescriptionID}, source='doctordashboard')}"
 										th:text="${prescription.prescriptionID}"></a></td>
 									<td th:text="${prescription.patientName}"></td>
 									<td th:text="${prescription.diagnosis}"></td>
@@ -200,6 +211,16 @@
 		<!-- Include Footer Fragment -->
 		<div th:replace="~{fragments/footer :: footer}"></div>
 	</div>
-	<script src="../js/dashboard.js"></script>
+	<script src="/js/dashboard.js"></script>
+	<script>
+		// Open the default tab on page load
+		window.addEventListener('DOMContentLoaded', function() {
+			const defaultButton = document
+					.querySelector('[onclick*="Appointments"]');
+			if (defaultButton) {
+				defaultButton.click();
+			}
+		});
+	</script>
 </body>
 </html>

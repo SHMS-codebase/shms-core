@@ -42,7 +42,7 @@ public class UserPrincipal implements UserDetails {
 //		roleMap.put(3, "PATIENT");
 //		String roleName = roleMap.getOrDefault(user.getRoleID(), "USER");
 
-		return Collections.singleton(new SimpleGrantedAuthority(roleName));
+		return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + roleName));
 	}
 
 	@Override

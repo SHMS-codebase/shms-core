@@ -92,6 +92,8 @@ public class MessageConstants {
 	public static final String USER_UPD_FAILURE = "An error occurred while updating user details.";
 	public static final String EDIT_USER_FETCH_SUCCESS = "Edit User Details fetched successfully!!!";
 	public static final String EDIT_USER_FETCH_ERROR = "Error occurred while loading edit user profile.";
+	public static final String USERS_LOAD_SUCCESS = "The Users have been loaded successfully!!!";
+	public static final String USERS_LOAD_FAILURE = "An error occurred while loading the users.";
 
 	public static final String TREATMENT_NOT_FOUND = "Treatment not found.";
 	public static final String PRESCRIPTION_CRTED_SUCCESS = "Prescription Details was created successfully!!!";

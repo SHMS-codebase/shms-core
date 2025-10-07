@@ -182,7 +182,7 @@ textarea.form-control {
 				<p th:text="${message}"></p>
 			</div>
 
-			<form th:action="@{/appointments/bookAppointment}" method="POST"
+			<form th:action="@{/api/v1/appointments/bookAppointment}" method="POST"
 				id="appointmentForm">
 				<!-- Hidden fields for URL parameters -->
 				<input type="hidden" th:value="${source}" name="source"> <input
@@ -398,7 +398,7 @@ textarea.form-control {
 
 								$
 										.ajax({
-											url : '/appointments/available-dates',
+											url : '/api/v1/appointments/available-dates',
 											method : 'GET',
 											data : {
 												doctorID : doctorID
@@ -451,7 +451,7 @@ textarea.form-control {
 												if (doctorID && date) {
 													$
 															.ajax({
-																url : '/appointments/available-time-slots',
+																url : '/api/v1/appointments/available-time-slots',
 																method : 'GET',
 																data : {
 																	doctorID : doctorID,

@@ -149,7 +149,7 @@ label {
 				<p th:text="${errorMessage}"></p>
 			</div>
 
-			<form id="searchForm" th:action="@{/searchinvoices}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchinvoices}" method="POST">
 
 				<input type="hidden" name="source" th:value="${source}">
 
@@ -212,7 +212,7 @@ label {
 					<tbody id="resultsBody">
 						<tr th:each="invoice : ${invoices}">
 							<td><a
-								th:href="@{'/invoices/viewinvoice'(invoiceID=${invoice.invoiceID}, source='admindashboard')}"
+								th:href="@{'/api/v1/invoices/viewinvoice'(invoiceID=${invoice.invoiceID}, source='admindashboard')}"
 								th:text="${invoice.invoiceID}"></a></td>
 							<td th:text="${invoice.invoiceDate}"></td>
 							<td th:text="${invoice.totalAmount}"></td>

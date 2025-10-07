@@ -35,7 +35,7 @@ import com.healthcaremngnt.service.TreatmentService;
 import com.healthcaremngnt.util.DateFormatter;
 
 @Controller
-@RequestMapping("/invoices")
+@RequestMapping("/api/v1/invoices")
 public class InvoiceController {
 
 	private static final Logger logger = LogManager.getLogger(InvoiceController.class);
@@ -89,16 +89,15 @@ public class InvoiceController {
 			return source;
 		}
 
-		Prescription prescription = prescriptionService.getPrescriptionDetailsByTreatment(treatmentID);
-
-		if (prescription != null) {
-			model.addAttribute("prescription", prescription);
-		} else {
-			// Either add an empty prescription or add a flag indicating no prescription
-			// exists
-			model.addAttribute("prescription", new Prescription());
+		Prescription prescription;
+		try {
+			prescription = prescriptionService.getPrescriptionDetailsByTreatment(treatmentID);
+		} catch (PrescriptionNotFoundException ex) {
+			logger.info("Prescription not found for treatment ID: {}", treatmentID);
+			prescription = new Prescription();
 			model.addAttribute("noPrescription", true);
 		}
+		model.addAttribute("prescription", prescription);
 
 		return "generateinvoice";
 	}
@@ -177,7 +176,8 @@ public class InvoiceController {
 
 			// Set success message and redirect to invoice details page
 			redirectAttributes.addFlashAttribute("message", MessageConstants.INVOICE_CREATED_SUCCESS);
-			return "redirect:/invoices/viewinvoice?invoiceID=" + savedInvoice.getInvoiceID() + "&source=" + source;
+			return "redirect:/api/v1/invoices/viewinvoice?invoiceID=" + savedInvoice.getInvoiceID() + "&source="
+					+ source;
 
 		} catch (Exception e) {
 			// Handle exceptions
@@ -197,7 +197,7 @@ public class InvoiceController {
 				model.addAttribute("prescription", prescription);
 			}
 
-			return "redirect:/invoices/generate-invoice?treatmentID=" + treatmentID;
+			return "redirect:/api/v1/invoices/generate-invoice?treatmentID=" + treatmentID;
 		}
 
 	}
@@ -209,13 +209,19 @@ public class InvoiceController {
 
 		try {
 
+			if (invoiceID == null) {
+				logger.error("Invoice ID is null. Cannot load invoice.");
+				model.addAttribute("errorMessage", "Invoice ID is missing. Please try again.");
+				return source;
+			}
+
 			Invoice invoice = invoiceService.getInvoiceDetails(invoiceID);
 
 			String year = String.valueOf(java.time.Year.now());
 			String invoiceNumber = "#INV-" + year + "-" + invoiceID;
 			String currentDate = LocalDateTime.now().toString().replace("T", " ");
 
-			logger.debug("invoice: {}", invoice);
+			logger.debug("Invoice: {}", invoice);
 			model.addAttribute("invoice", invoice);
 
 			String formattedInvoiceDate = DateFormatter.formatWithOrdinalSuffix(invoice.getInvoiceDate());
@@ -224,6 +230,7 @@ public class InvoiceController {
 			if (invoice.getTreatment() != null) {
 
 				Treatment treatment = invoice.getTreatment();
+				logger.debug("Treatment: {}", treatment);
 
 				LocalDate treatmentDate = treatment.getTreatmentDate();
 				LocalDateTime treatmentDateTime = treatmentDate.atStartOfDay();
@@ -290,13 +297,13 @@ public class InvoiceController {
 
 			// Switch Expression to determine the redirect path based on invoice status
 			return switch (status) {
-			case PAID -> "redirect:/invoices/viewinvoice?invoiceID=" + invoiceID + "&source=" + source;
+			case PAID -> "redirect:/api/v1/invoices/viewinvoice?invoiceID=" + invoiceID + "&source=" + source;
 			case CANCELED -> {
 				if (invoice.getTreatment() != null) {
 					redirectAttributes.addAttribute("treatmentID", invoice.getTreatment().getTreatmentID().toString());
 				}
 				redirectAttributes.addAttribute("source", source);
-				yield "redirect:/invoices/generate-invoice";
+				yield "redirect:/api/v1/invoices/generate-invoice";
 			}
 			default -> "viewinvoice";
 			};

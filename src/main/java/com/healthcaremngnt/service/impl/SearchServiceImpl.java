@@ -130,14 +130,14 @@ public class SearchServiceImpl implements SearchService {
 		logger.debug("performSearch()");
 
 		userRepository.searchAdminUsers(name, email).forEach(user -> searchResults
-				.add(new SearchResult(user.getUserID(), "Admin", user.getUserName(), user.getEmailID(), "", "")));
+				.add(new SearchResult(user.getUserID(), "ADMIN", user.getUserName(), user.getEmailID(), "", "")));
 
 		doctorRepository.searchDoctors(name, email, contactNumber, specialization).forEach(
-				doc -> searchResults.add(new SearchResult(doc.getUser().getUserID(), "Doctor", doc.getDoctorName(),
+				doc -> searchResults.add(new SearchResult(doc.getUser().getUserID(), "DOCTOR", doc.getDoctorName(),
 						doc.getUser().getEmailID(), doc.getContactNumber(), doc.getSpecialization())));
 
 		patientRepository.searchPatients(name, email, contactNumber)
-				.forEach(pat -> searchResults.add(new SearchResult(pat.getUser().getUserID(), "Patient",
+				.forEach(pat -> searchResults.add(new SearchResult(pat.getUser().getUserID(), "PATIENT",
 						pat.getPatientName(), pat.getUser().getEmailID(), pat.getContactNumber(), "")));
 	}
 

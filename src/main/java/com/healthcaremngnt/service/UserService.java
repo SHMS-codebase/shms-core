@@ -1,5 +1,7 @@
 package com.healthcaremngnt.service;
 
+import java.util.List;
+
 import com.healthcaremngnt.exceptions.EmailAlreadyExistsException;
 import com.healthcaremngnt.exceptions.UsernameAlreadyExistsException;
 import com.healthcaremngnt.model.User;
@@ -20,5 +22,7 @@ public interface UserService {
 	User findByUserName(String userName);
 
 	User getUserByPatientID(Long patientID);
+
+	List<User> getAllUsers();
 
 }

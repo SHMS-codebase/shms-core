@@ -1,12 +1,11 @@
 package com.healthcaremngnt.service;
 
-import com.healthcaremngnt.exceptions.InvalidTokenException;
-import com.healthcaremngnt.exceptions.TokenExpiredException;
+import com.healthcaremngnt.model.PasswordResetToken;
 
 public interface PasswordResetService {
 
-	void resetPassword(String token, String newpassword) throws InvalidTokenException, TokenExpiredException;
+	PasswordResetToken findByToken(String token);
 
-	void resetPassword(Long userID, String password, String newpassword);
+	PasswordResetToken getLatestTokenForUser(String emailID);
 
 }

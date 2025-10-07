@@ -1,5 +1,7 @@
 package com.healthcaremngnt.controller;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -20,6 +22,7 @@ import com.healthcaremngnt.model.RegistrationForm;
 import com.healthcaremngnt.model.Role;
 import com.healthcaremngnt.model.User;
 import com.healthcaremngnt.model.UserDetails;
+import com.healthcaremngnt.model.UserForm;
 import com.healthcaremngnt.service.DoctorService;
 import com.healthcaremngnt.service.EmailService;
 import com.healthcaremngnt.service.PatientService;
@@ -28,7 +31,7 @@ import com.healthcaremngnt.service.UserService;
 import com.healthcaremngnt.util.UserDetailsGenerator;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
 	private static final Logger logger = LogManager.getLogger(UserController.class);
@@ -334,6 +337,47 @@ public class UserController {
 			logger.debug("Doctor        ::: {}", userDetails.getDoctor());
 			logger.debug("Patient       ::: {}", userDetails.getPatient());
 		}
+	}
+
+	@GetMapping("/deleteuser")
+	public String deleteUser(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Loading Delete User Page!!!");
+
+		try {
+
+			// Load all users from the database
+			List<User> users = userService.getAllUsers();
+			model.addAttribute("users", users);
+			model.addAttribute("userForm", new UserForm());
+			logger.debug("{}", MessageConstants.USERS_LOAD_SUCCESS);
+
+		} catch (Exception e) {
+
+			logger.error("{}: {}", MessageConstants.USERS_LOAD_FAILURE, e);
+			model.addAttribute("errorMessage", MessageConstants.USERS_LOAD_FAILURE);
+
+		}
+
+		model.addAttribute("source", source);
+		return "deleteuser";
+	}
+
+	@PostMapping("/deleteuser")
+	public String deleteUserPost(@RequestParam(RequestParamConstants.USER_ID) Long userID,
+			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Delete User - POST");
+
+//		try {
+//			userService.deleteUserByID(userID);
+//			model.addAttribute("message", MessageConstants.USER_DEL_SUCCESS);
+//			logger.debug("{}", MessageConstants.USER_DEL_SUCCESS);
+//		} catch (Exception e) {
+//			logger.error("{}: {}", MessageConstants.USER_DEL_FAILURE, e);
+//			model.addAttribute("errorMessage", MessageConstants.USER_DEL_FAILURE);
+//		}
+
+		model.addAttribute("source", source);
+		return "admindashboard";
 	}
 
 }

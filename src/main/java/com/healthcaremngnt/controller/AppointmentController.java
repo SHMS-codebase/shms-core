@@ -42,7 +42,7 @@ import com.healthcaremngnt.service.PatientService;
 import com.healthcaremngnt.service.TreatmentService;
 
 @Controller
-@RequestMapping("/appointments")
+@RequestMapping("/api/v1/appointments")
 public class AppointmentController {
 
 	private static final Logger logger = LogManager.getLogger(AppointmentController.class);

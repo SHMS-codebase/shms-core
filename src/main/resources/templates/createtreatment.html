@@ -28,19 +28,21 @@
 							}
 						});
 
-						$('#createTreatmentButton').click(
-								function() {
-									$('#treatmentForm').attr('action',
-											'/treatments/savetreatment'); // Set form action
-									$('#treatmentForm').submit(); // Submit the form
-								});
+						$('#createTreatmentButton')
+								.click(
+										function() {
+											$('#treatmentForm')
+													.attr('action',
+															'/api/v1/treatments/savetreatment'); // Set form action
+											$('#treatmentForm').submit(); // Submit the form
+										});
 
 						$('#createTreatmentAndContinueButton')
 								.click(
 										function() {
 											$('#treatmentForm')
 													.attr('action',
-															'/treatments/savetreatment'); // Set form action
+															'/api/v1/treatments/savetreatment'); // Set form action
 											// Add hidden input to indicate continuation
 											$('#treatmentForm')
 													.append(
@@ -118,7 +120,7 @@ form {
 			<p th:text="${message}"></p>
 		</div>
 
-		<form th:action="@{/treatments/savetreatment}" method="POST"
+		<form th:action="@{/api/v1/treatments/savetreatment}" method="POST"
 			id="treatmentForm">
 
 			<!-- Hidden fields for appointmentID and source -->
@@ -159,12 +161,13 @@ form {
 					<option value="" disabled selected>Select Status</option>
 					<th:block
 						th:each="status : ${T(com.healthcaremngnt.enums.TreatmentStatus).values()}">
-						<option th:value="${status}" th:text="${status}"
-							th:selected="${treatmentForm.treatmentStatus == status}"></option>
+						<th:block th:if="${status.name() != 'BILLED'}">
+							<option th:value="${status}" th:text="${status}"
+								th:selected="${treatmentForm.treatmentStatus == status}"></option>
+						</th:block>
 					</th:block>
 				</select>
 			</div>
-
 			<div class="buttons-container">
 				<button type="button" class="btn btn-primary"
 					id="createTreatmentButton"

@@ -19,24 +19,37 @@ import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
 import com.healthcaremngnt.enums.AppointmentStatus;
 import com.healthcaremngnt.exceptions.AppointmentNotFoundException;
+import com.healthcaremngnt.exceptions.PrescriptionNotFoundException;
 import com.healthcaremngnt.model.Appointment;
+import com.healthcaremngnt.model.Prescription;
 import com.healthcaremngnt.model.Treatment;
 import com.healthcaremngnt.model.TreatmentForm;
 import com.healthcaremngnt.service.AppointmentService;
+import com.healthcaremngnt.service.DoctorService;
+import com.healthcaremngnt.service.PatientService;
+import com.healthcaremngnt.service.PrescriptionService;
 import com.healthcaremngnt.service.TreatmentService;
 
 @Controller
-@RequestMapping("/treatments")
+@RequestMapping("/api/v1/treatments")
 public class TreatmentController {
 
 	private static final Logger logger = LogManager.getLogger(TreatmentController.class);
 
 	private final TreatmentService treatmentService;
+	private final PrescriptionService prescriptionService;
 	private final AppointmentService appointmentService;
+	private final DoctorService doctorService;
+	private final PatientService patientService;
 
-	public TreatmentController(TreatmentService treatmentService, AppointmentService appointmentService) {
+	public TreatmentController(TreatmentService treatmentService, PrescriptionService prescriptionService,
+			AppointmentService appointmentService, DoctorService doctorService, PatientService patientService) {
+
 		this.treatmentService = treatmentService;
+		this.prescriptionService = prescriptionService;
 		this.appointmentService = appointmentService;
+		this.doctorService = doctorService;
+		this.patientService = patientService;
 	}
 
 	@GetMapping("/createtreatment")
@@ -100,7 +113,7 @@ public class TreatmentController {
 		try {
 			// Save treatment
 			Treatment savedTreatment = treatmentService.createTreatment(treatment);
-			
+
 			// When clicked on 'Create Treatment & Continue to Prescription' button
 			if (continueTreatment != null && continueTreatment) {
 				logger.info("Redirecting to Create Prescriptions!!!");
@@ -108,7 +121,7 @@ public class TreatmentController {
 					redirectAttributes.addFlashAttribute("appointmentID", appointmentID);
 					redirectAttributes.addFlashAttribute("savedTreatment", savedTreatment);
 					redirectAttributes.addFlashAttribute("source", source);
-					return "redirect:/prescriptions/createprescription"; // Redirect to createprescription page
+					return "redirect:/api/v1/prescriptions/createprescription"; // Redirect to createprescription page
 				} else {
 					logger.error("Missing required values for redirect: appointmentID={}, savedTreatment={}, source={}",
 							appointmentID, savedTreatment, source);
@@ -131,7 +144,7 @@ public class TreatmentController {
 				logger.debug("savedTreatment.getTreatmentDate(): {}", savedTreatment.getTreatmentDate());
 				logger.debug("savedTreatment.getTreatmentStatus(): {}", savedTreatment.getTreatmentStatus());
 				logger.debug("savedTreatment.getUpdatedDate(): {}", savedTreatment.getUpdatedDate());
-				
+
 				appointmentService.updateAppointmentStatusAndTreatment(appointmentID, AppointmentStatus.COMPLETED,
 						savedTreatment);
 
@@ -153,6 +166,105 @@ public class TreatmentController {
 
 		return "createtreatment";
 
+	}
+
+	@GetMapping("/createfollowuptreatment")
+	public String viewCrateFollowupTreatment(
+			@RequestParam(value = RequestParamConstants.APPOINTMENT_ID, required = false) Long appointmentID,
+			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source, Model model) {
+
+		logger.info("Loading Create Follow-up Treatment!!!");
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Request parameters - appointmentID: {}, source: {}",
+					appointmentID != null ? appointmentID : "null", source != null ? source : "null");
+		}
+
+		if (appointmentID == null) {
+			logger.warn("Appointment ID is null, cannot fetch previous treatment details");
+			addModelAttributes(model, appointmentID, source);
+			return "createfollowuptreatment";
+		}
+
+		try {
+			loadPreviousTreatmentDetails(appointmentID, model);
+		} catch (AppointmentNotFoundException e) {
+			logger.error("{}: {}", MessageConstants.APMNT_NOT_FOUND, e.getMessage());
+			model.addAttribute("errorMessage", MessageConstants.APMNT_NOT_FOUND);
+		}
+
+		addModelAttributes(model, appointmentID, source);
+		return "createfollowuptreatment";
+	}
+
+	private void loadPreviousTreatmentDetails(Long appointmentID, Model model) throws AppointmentNotFoundException {
+
+		Appointment appointment = appointmentService.getAppointmentDetails(appointmentID);
+		if (appointment == null || appointment.getParentAppointment() == null) {
+			logger.warn("Appointment or parent appointment not found for ID: {}", appointmentID);
+			return;
+		}
+
+		Appointment previousAppointment = appointmentService
+				.getAppointmentDetails(appointment.getParentAppointment().getAppointmentID());
+
+		if (previousAppointment == null || previousAppointment.getTreatment() == null) {
+			logger.warn("No previous appointment or treatment found for appointment ID: {}", appointmentID);
+			return;
+		}
+
+		Treatment previousTreatment = previousAppointment.getTreatment();
+		logger.debug("Previous Treatment Details: {}", previousTreatment);
+		model.addAttribute("previousTreatment", previousTreatment);
+
+		Long doctorID = previousTreatment.getDoctorID();
+		Long patientID = previousTreatment.getPatientID();
+
+		if (doctorID != null) {
+			String doctorName = doctorService.getDoctorNameByID(doctorID);
+			model.addAttribute("doctorName", doctorName);
+		} else {
+			logger.warn("Doctor ID is null in previous treatment for appointment ID: {}", appointmentID);
+		}
+
+		if (patientID != null) {
+			String patientName = patientService.getPatientNameByID(patientID);
+			model.addAttribute("patientName", patientName);
+		} else {
+			logger.warn("Patient ID is null in previous treatment for appointment ID: {}", appointmentID);
+		}
+
+		loadPreviousPrescription(previousTreatment, model);
+
+	}
+
+	private void loadPreviousPrescription(Treatment previousTreatment, Model model) {
+		if (previousTreatment == null || previousTreatment.getTreatmentID() == null) {
+			logger.warn("Previous treatment or treatment ID is null");
+			return;
+		}
+
+		try {
+			Prescription prescription = prescriptionService
+					.getPrescriptionDetailsByTreatment(previousTreatment.getTreatmentID());
+
+			if (prescription != null) {
+				logger.debug("Previous Prescription Details: {}", prescription);
+				model.addAttribute("previousPrescription", prescription);
+			} else {
+				logger.info("No previous prescription found for treatment ID: {}", previousTreatment.getTreatmentID());
+			}
+		} catch (PrescriptionNotFoundException e) {
+			logger.info("No prescription available for treatment ID: {}. Reason: {}",
+					previousTreatment.getTreatmentID(), e.getMessage());
+		}
+	}
+
+	private void addModelAttributes(Model model, Long appointmentID, String source) {
+		model.addAttribute("appointmentID", appointmentID);
+		model.addAttribute("source", source);
+		model.addAttribute("treatmentForm", new TreatmentForm());
+		model.addAttribute("isSaved", model.containsAttribute("isSaved") ? model.getAttribute("isSaved") : false);
 	}
 
 	@GetMapping("/viewtreatment")

@@ -65,7 +65,8 @@ public class DoctorSchedule {
 	private LocalDateTime expiredDate;
 
 	@Version
-	private Integer version;
+	@Column(nullable = false)
+	private Integer version = 0;
 
 	@PrePersist
 	protected void onCreate() {

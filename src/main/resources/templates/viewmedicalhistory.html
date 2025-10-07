@@ -259,7 +259,7 @@ form button {
 			<p th:text="${message}"></p>
 		</div>
 		<form id="viewForm" th:object="${medicalHistoryWrapper}"
-			th:action="@{/patient/updatemedicalhistory}" th:method="POST">
+			th:action="@{/api/v1/patient/updatemedicalhistory}" th:method="POST">
 
 			<input type="hidden" name="userID" th:value="${userID}" /> <input
 				type="hidden" name="patientID" th:value="${patientID}" /> <input
@@ -309,7 +309,7 @@ form button {
 		</form>
 
 		<!-- New Form for Adding Medical History -->
-		<form id="addForm" th:action="@{/patient/addmedicalhistory}"
+		<form id="addForm" th:action="@{/api/v1/patient/addmedicalhistory}"
 			th:method="POST">
 			<input type="hidden" name="userID" th:value="${userID}" /> <input
 				type="hidden" name="patientID" th:value="${patientID}" />

@@ -224,10 +224,13 @@ input[type="date"], input, select, textarea {
 		</div>
 
 		<form id="viewForm" th:object="${treatment}"
-			th:action="@{/treatments/updatetreatment}" method="POST">
+			th:action="@{/api/v1/treatments/updatetreatment}" method="POST">
 
 			<input type="hidden" th:name="source" th:value="${source}" />
-
+			<input type="hidden" th:field="*{appointment.appointmentID}" />
+			<input type="hidden" th:field="*{doctorID}" />
+			<input type="hidden" th:field="*{patientID}" />		
+			
 			<div id="treatmentFields">
 
 				<div class="form-group">

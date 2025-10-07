@@ -201,7 +201,7 @@ button:active {
 			<p th:text="${message}"></p>
 		</div>
 
-		<form id="reportForm" th:action="@{/reports/appointmentreport}"
+		<form id="reportForm" th:action="@{/api/v1/reports/appointmentreport}"
 			method="post">
 
 			<input type="hidden" name="source" th:value="${source}">

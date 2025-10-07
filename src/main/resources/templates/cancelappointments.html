@@ -186,7 +186,7 @@ button {
 					</h2>
 					<nav aria-label="breadcrumb">
 						<ol class="breadcrumb mb-0">
-							<li class="breadcrumb-item"><a href="/admindashboard">Dashboard</a></li>
+							<li class="breadcrumb-item"><a href="/api/v1/admindashboard">Dashboard</a></li>
 							<li class="breadcrumb-item active">Cancel Appointments</li>
 						</ol>
 					</nav>
@@ -485,7 +485,7 @@ button {
         	});
         	    
         	// Call controller method
-            fetch('/appointments/filter', {
+            fetch('/api/v1/appointments/filter', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

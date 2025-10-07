@@ -128,7 +128,7 @@ th {
 				<tbody>
 					<tr th:each="prescriptiondetail : ${prescriptiondetails}">
 						<td><a
-							th:href="@{'/prescriptions/viewprescription'(prescriptionID=${prescriptiondetail.prescriptionID}, source='patientdashboard')}"
+							th:href="@{'/api/v1/prescriptions/viewprescription'(prescriptionID=${prescriptiondetail.prescriptionID}, source='patientdashboard')}"
 							th:text="${prescriptiondetail.prescriptionID}"></a></td>
 						<td th:text="${prescriptiondetail.prescriptionDate}"></td>
 						<td th:text="${prescriptiondetail.prescriptionStatus}"></td>

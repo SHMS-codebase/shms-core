@@ -16,7 +16,7 @@ public interface TreatmentRepository extends JpaRepository<Treatment, Long> {
 
 	List<Treatment> findByDoctorID(Long doctorID);
 
-	@Query("SELECT t FROM Treatment t WHERE t.invoiceGenerated = false AND t.treatmentStatus = :status")
+	@Query("SELECT t FROM Treatment t WHERE t.invoiceGenerated = false AND t.treatmentStatus != :status")
 	List<Treatment> findTreatmentsByStatus(@Param("status") TreatmentStatus status);
 	
 	@Query("SELECT t FROM Treatment t WHERE t.followUpNeeded = true AND t.treatmentStatus = :status")

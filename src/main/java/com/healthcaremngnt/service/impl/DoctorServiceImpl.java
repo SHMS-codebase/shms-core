@@ -142,4 +142,12 @@ public class DoctorServiceImpl implements DoctorService {
 		return doctorRepository.findDoctorsByScheduleStatus(ScheduleStatus.APPROVED);
 	}
 
+	@Override
+	public String getDoctorNameByID(Long doctorID) {
+
+		logger.info("Retrieving name for Doctor ID: {}", doctorID);
+
+		return doctorRepository.findById(doctorID).map(Doctor::getDoctorName).orElse("Unknown Doctor");
+	}
+
 }

@@ -48,11 +48,11 @@
 			<h3 class="centered-text">User Management</h3>
 			<p>Manage User Profiles</p>
 			<ul>
-				<li><a th:href="@{/users/register(source='admindashboard')}">User
+				<li><a th:href="@{/api/v1/users/register(source='admindashboard')}">User
 						Registration</a></li>
-				<li><a th:href="@{/searchuser(source='admindashboard')}">Search/
+				<li><a th:href="@{/api/v1/search/searchuser(source='admindashboard')}">Search/
 						Update Users</a></li>
-				<li><a href="#">Delete User</a></li>
+				<li><a th:href="@{/api/v1/users/deleteuser(source='admindashboard')}">Delete User</a></li>
 			</ul>
 		</div>
 
@@ -62,12 +62,12 @@
 			<p>Manage Doctor Schedules</p>
 			<ul>
 				<li><a
-					th:href="@{/doctor/createschedule(source='admindashboard')}">Create
+					th:href="@{/api/v1/doctor/createschedule(source='admindashboard')}">Create
 						Schedules</a></li>
-				<li><a th:href="@{/searchschedule(source='admindashboard')}">Search/
+				<li><a th:href="@{/api/v1/search/searchschedule(source='admindashboard')}">Search/
 						Update Schedules</a></li>
 				<li><a
-					th:href="@{/doctor/approveschedule(source='admindashboard')}">Approve/ Reject
+					th:href="@{/api/v1/doctor/approveschedule(source='admindashboard')}">Approve/ Reject
 						Schedule</a></li>
 			</ul>
 		</div>
@@ -78,14 +78,14 @@
 			<!-- <p>Summary of scheduled, canceled, and no-show appointments</p> -->
 			<ul>
 				<li><a
-					th:href="@{/appointments/createappointment(source='admindashboard')}">Book
+					th:href="@{/api/v1/appointments/createappointment(source='admindashboard')}">Book
 						Appointment</a></li>
 				<li><a
-					th:href="@{/appointments/followupappointments(source='admindashboard')}">Follow-up 
+					th:href="@{/api/v1/appointments/followupappointments(source='admindashboard')}">Follow-up 
 						Appointments</a></li>	
 				<li><a
-					th:href="@{/appointments/cancelappointments(source='admindashboard')}">Cancel Appointments</a></li>	
-				<li><a th:href="@{/searchappointment(source='admindashboard')}">Search/
+					th:href="@{/api/v1/appointments/cancelappointments(source='admindashboard')}">Cancel Appointments</a></li>	
+				<li><a th:href="@{/api/v1/search/searchappointment(source='admindashboard')}">Search/
 						Update Appointments</a></li>
 			</ul>
 		</div>
@@ -96,17 +96,17 @@
 			<p>Manage all invoices, payments, and outstanding amounts</p>
 			<ul>
 				<li><a
-					th:href="@{/invoices/unbilledtreatments(source='admindashboard')}">Generate
+					th:href="@{/api/v1/invoices/unbilledtreatments(source='admindashboard')}">Generate
 						Invoices</a></li>
-				<li><a th:href="@{/searchinvoices(source='admindashboard')}">Search
+				<li><a th:href="@{/api/v1/search/searchinvoices(source='admindashboard')}">Search
 						Invoices</a></li>
 				<!-- Lists all invoices with filters for searching and categorization. -->
-				<li><a th:href="@{/invoices/viewtreatmentinvoices(source='admindashboard')}">View
+				<!-- <li><a th:href="@{/api/v1/invoices/viewtreatmentinvoices(source='admindashboard')}">View
 						Treatment Invoices</a></li>
-				<li><a th:href="@{/invoices/viewprescriptioninvoices(source='admindashboard')}">View
+				<li><a th:href="@{/api/v1/invoices/viewprescriptioninvoices(source='admindashboard')}">View
 						Prescription Invoices</a></li>
-				<li><a th:href="@{/billing/patientrecords(source='admindashboard')}">Patient Billing
-						Records</a></li>
+				<li><a th:href="@{/api/v1/billing/patientrecords(source='admindashboard')}">Patient Billing
+						Records</a></li> -->
 				<!-- View specific patients’ billing histories. -->
 			</ul>
 		</div>
@@ -118,13 +118,13 @@
 				finances</p>
 			<ul>
 				<li><a
-					th:href="@{/reports/appointmentreport(source='admindashboard')}">Appointments
+					th:href="@{/api/v1/reports/appointmentreport(source='admindashboard')}">Appointments
 						Report</a></li>
 				<li><a
-					th:href="@{/reports/patientreport(source='admindashboard')}">Patient
+					th:href="@{/api/v1/reports/patientreport(source='admindashboard')}">Patient
 						Report</a></li>
 				<li><a
-					th:href="@{/reports/billingreport(source='admindashboard')}">Billing
+					th:href="@{/api/v1/reports/billingreport(source='admindashboard')}">Billing
 						Reports</a></li>
 				<!-- Generate financial summaries and payment reports. -->
 			</ul>
@@ -135,7 +135,7 @@
 			<h3 class="centered-text">Messages &amp; Notifications</h3>
 			<p>System alerts and updates</p>
 			<ul>
-				<li><a th:href="@{/buttonplatter(source='admindashboard')}">Button Platter</a></li>
+				<!-- <li><a th:href="@{/api/v1/buttonplatter(source='admindashboard')}">Button Platter</a></li> -->
 				<li><a href="#">System Alerts</a>
 				<li><a href="/notifications">Notifications</a></li>
 			</ul>
@@ -152,6 +152,6 @@
 	<!-- Include Footer Fragment -->
 	<div th:replace="~{fragments/footer :: footer}"></div>
 
-	<script src="../js/dashboard.js"></script>
+	<script src="/js/dashboard.js"></script>
 </body>
 </html>

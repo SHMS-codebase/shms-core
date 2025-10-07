@@ -22,4 +22,6 @@ public interface PatientService {
 
 	Patient getPatientDetails(Long patientID) throws PatientNotFoundException;
 
+	String getPatientNameByID(Long patientID);
+
 }

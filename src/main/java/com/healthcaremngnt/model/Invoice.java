@@ -213,9 +213,9 @@ public class Invoice {
 	public String toString() {
 		return "Invoice [invoiceID=" + invoiceID + ", invoiceDate=" + invoiceDate + ", treatmentCost=" + treatmentCost
 				+ ", prescriptionCost=" + prescriptionCost + ", totalAmount=" + totalAmount + ", invoiceStatus="
-				+ invoiceStatus + ", treatmentID=" + treatment.getTreatmentID() + ", prescriptionID="
-				+ prescription.getPrescriptionID() + ", doctorID=" + treatment.getDoctorID() + ", patientID="
-				+ treatment.getPatientID() + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + "]";
+				+ invoiceStatus + ", treatment=" + treatment + ", prescription=" + prescription + ", doctorID="
+				+ treatment.getDoctorID() + ", patientID=" + treatment.getPatientID() + ", createdDate=" + createdDate
+				+ ", updatedDate=" + updatedDate + "]";
 	}
 
 }

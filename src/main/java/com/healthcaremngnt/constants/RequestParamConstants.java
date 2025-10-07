@@ -18,6 +18,7 @@ public class RequestParamConstants {
 	public static final String END_TIME = "endTime";
 	public static final String STATUS = "status";
 	public static final String AVAILABLE_COUNT = "availableCount";
+	public static final String VERSION = "version";
 
 	public static final String ERROR = "error";
 

@@ -105,17 +105,23 @@ public class PatientServiceImpl implements PatientService {
 
 	@Override
 	public List<Patient> getAllPatients() {
-	    logger.info("Fetching all patients from database.");
-	    
-	    return patientRepository.findAll();
+		logger.info("Fetching all patients from database.");
+
+		return patientRepository.findAll();
 	}
 
 	@Override
 	public Patient getPatientDetails(Long patientID) throws PatientNotFoundException {
-	    logger.info("Fetching patient details for ID: {}", patientID);
+		logger.info("Fetching patient details for ID: {}", patientID);
 
-	    return patientRepository.findById(patientID)
-	            .orElseThrow(() -> new PatientNotFoundException("Patient not found with ID: " + patientID));
+		return patientRepository.findById(patientID)
+				.orElseThrow(() -> new PatientNotFoundException("Patient not found with ID: " + patientID));
 	}
 
+	@Override
+	public String getPatientNameByID(Long patientID) {
+
+		logger.info("Fetching patient name for ID: {}", patientID);
+		return patientRepository.findById(patientID).map(Patient::getPatientName).orElse("Unknown Patient");
+	}
 }

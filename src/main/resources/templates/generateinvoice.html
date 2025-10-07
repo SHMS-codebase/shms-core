@@ -308,7 +308,7 @@ form {
 			</div>
 		</div>
 
-		<form th:action="@{/invoices/generate-invoice}" method="post"
+		<form th:action="@{/api/v1/invoices/generate-invoice}" method="post"
 			id="invoiceForm">
 			<input type="hidden" name="treatmentID"
 				th:value="${treatment.treatmentID}" /> <input type="hidden"

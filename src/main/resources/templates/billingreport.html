@@ -157,7 +157,7 @@ form {
 		<div th:if="${message}" class="success-message">
 			<p th:text="${message}"></p>
 		</div>
-		<form id="reportForm" th:action="@{/reports/billingreport}"
+		<form id="reportForm" th:action="@{/api/v1/reports/billingreport}"
 			method="post">
 
 			<input type="hidden" name="source" th:value="${source}">

@@ -222,7 +222,7 @@ button:hover {
 	<script>
 		function updateScheduleStatus(status, scheduleID) {
 			$.ajax({
-				url : '/doctor/updateschedulestatus',
+				url : '/api/v1/doctor/updateschedulestatus',
 				method : 'POST',
 				data : {
 					scheduleID : scheduleID,

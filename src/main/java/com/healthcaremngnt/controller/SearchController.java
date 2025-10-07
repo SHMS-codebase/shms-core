@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.healthcaremngnt.constants.MessageConstants;
@@ -35,6 +36,7 @@ import com.healthcaremngnt.service.SearchService;
 import com.healthcaremngnt.service.TreatmentService;
 
 @Controller
+@RequestMapping("/api/v1/search")
 public class SearchController {
 
 	private static final Logger logger = LogManager.getLogger(SearchController.class);

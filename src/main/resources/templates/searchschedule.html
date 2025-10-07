@@ -131,7 +131,7 @@ form {
 			<div th:if="${errorMessage}" class="error-message">
 				<p th:text="${errorMessage}"></p>
 			</div>
-			<form id="searchForm" th:action="@{/searchschedule}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchschedule}" method="POST">
 
 				<input type="hidden" th:value="${source}" name="source">
 
@@ -202,7 +202,7 @@ form {
 				<tbody id="resultsBody">
 					<tr th:each="schedule : ${schedules}">
 						<td><a
-							th:href="@{'/doctor/viewdoctorschedule'(scheduleID=${schedule.scheduleID}, source='admindashboard')}"
+							th:href="@{'/api/v1/doctor/viewdoctorschedule'(scheduleID=${schedule.scheduleID}, source='admindashboard')}"
 							th:text="${schedule.scheduleID}"></a></td>
 						<td th:text="${schedule.doctor.doctorName}"></td>
 						<td th:text="${schedule.availableDate}"></td>

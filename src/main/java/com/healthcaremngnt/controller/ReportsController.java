@@ -30,7 +30,7 @@ import com.healthcaremngnt.constants.MessageConstants;
 import com.healthcaremngnt.constants.RequestParamConstants;
 
 @Controller
-@RequestMapping("/reports")
+@RequestMapping("/api/v1/reports")
 public class ReportsController {
 
 	private static final Logger logger = LogManager.getLogger(ReportsController.class);
@@ -113,7 +113,7 @@ public class ReportsController {
 				logger.error("{}", MessageConstants.NO_APMNTS_REPORT_ERROR);
 				model.addAttribute("errorMessage", MessageConstants.NO_APMNTS_REPORT_ERROR);
 				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(
-						"<script>alert('No appointments found for the selected criteria.'); window.location.href = '/reports/appointmentreport?source=admindashboard';</script>");
+						"<script>alert('No appointments found for the selected criteria.'); window.location.href = '/api/v1/reports/appointmentreport?source=admindashboard';</script>");
 			}
 
 			String reportFilePath = getReportFilePath("appointmentReportJob", reportFormat, formattedNow);
@@ -197,7 +197,7 @@ public class ReportsController {
 				logger.error("{}", MessageConstants.NO_PATIENT_REPORT_ERROR);
 				model.addAttribute("errorMessage", MessageConstants.NO_PATIENT_REPORT_ERROR);
 				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(
-						"<script>alert('No patient records found for the selected year.'); window.location.href = '/reports/patientreport?source=admindashboard';</script>");
+						"<script>alert('No patient records found for the selected year.'); window.location.href = '/api/v1/reports/patientreport?source=admindashboard';</script>");
 			}
 
 			String reportFilePath = getReportFilePath("patientReportJob", reportFormat, formattedNow);
@@ -283,7 +283,7 @@ public class ReportsController {
 				logger.error("{}", MessageConstants.NO_BILLING_REPORT_ERROR);
 				model.addAttribute("errorMessage", MessageConstants.NO_BILLING_REPORT_ERROR);
 				return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(
-						"<script>alert('No Billing details found for the selected criteria.'); window.location.href = '/reports/billingreport?source=admindashboard';</script>");
+						"<script>alert('No Billing details found for the selected criteria.'); window.location.href = '/api/v1/reports/billingreport?source=admindashboard';</script>");
 			}
 
 			String reportFilePath = getReportFilePath("billingReportJob", reportFormat, formattedNow);

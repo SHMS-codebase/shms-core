@@ -40,7 +40,7 @@ import com.healthcaremngnt.service.DoctorService;
 import com.healthcaremngnt.service.PrescriptionService;
 
 @Controller
-@RequestMapping("/doctor")
+@RequestMapping("/api/v1/doctor")
 public class DoctorController {
 
 	private static final Logger logger = LogManager.getLogger(DoctorController.class);
@@ -93,6 +93,7 @@ public class DoctorController {
 
 		try {
 			DoctorScheduleWrapper doctorScheduleWrapper = doctorService.getDoctorScheduleWrapper(doctorID, scheduleID);
+			logger.debug("doctorScheduleWrapper: {}", doctorScheduleWrapper);
 			model.addAttribute("doctorScheduleWrapper", doctorScheduleWrapper);
 		} catch (NumberFormatException e) {
 			logger.error("{}: {}", MessageConstants.SCHEDULE_ID_INVALID, e);
@@ -204,8 +205,8 @@ public class DoctorController {
 
 		// Using Switch Expression to determine schedule status based on user role
 		scheduleStatus = switch (getUserRole(userDetails)) {
-		case "ADMIN" -> ScheduleStatus.APPROVED;
-		case "DOCTOR" -> ScheduleStatus.PENDING;
+		case "ROLE_ADMIN" -> ScheduleStatus.APPROVED;
+		case "ROLE_DOCTOR" -> ScheduleStatus.PENDING;
 		default -> scheduleStatus;
 		};
 
@@ -218,10 +219,10 @@ public class DoctorController {
 
 			doctorScheduleService.createDoctorSchedule(request);
 
-			if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("ADMIN"))) {
+			if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("ROLE_ADMIN"))) {
 				model.addAttribute("message", MessageConstants.SCHEDULE_CREATE_SUCCESS);
 			} else if (userDetails.getAuthorities().stream()
-					.anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("DOCTOR"))) {
+					.anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("ROLE_DOCTOR"))) {
 				model.addAttribute("message", MessageConstants.SCHEDULE_CREATE_PENDING);
 			}
 
@@ -249,8 +250,10 @@ public class DoctorController {
 	}
 
 	private String getUserRole(UserDetails userDetails) {
+		
+		logger.debug("Determining user role from authorities: {}", userDetails.getAuthorities());
 		return userDetails.getAuthorities().stream().map(auth -> auth.getAuthority().toUpperCase())
-				.filter(role -> Set.of("ADMIN", "DOCTOR").contains(role)).findFirst().orElse("UNKNOWN");
+				.filter(role -> Set.of("ROLE_ADMIN", "ROLE_DOCTOR").contains(role)).findFirst().orElse("UNKNOWN");
 	}
 
 	@GetMapping("/approveschedule")

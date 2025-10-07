@@ -253,7 +253,7 @@ input[disabled], select[disabled], textarea[disabled] {
 			</div>
 
 			<form id="viewForm" th:object="${prescription}"
-				th:action="@{/prescriptions/updateprescription}" method="POST">
+				th:action="@{/api/v1/prescriptions/updateprescription}" method="POST">
 				<input type="hidden" th:name="source" th:value="${source}" /> <input
 					type="hidden" id="originalPrescriptionDate"
 					th:value="*{prescriptionDate}" /><input type="hidden"

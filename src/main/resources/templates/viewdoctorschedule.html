@@ -198,16 +198,16 @@ input[type="date"], input[type="time"], input[type="number"], select {
 <body>
 
 	<!-- <div th:if="${source == 'viewuser'}">
-			<a th:href="@{'/users/viewuser'(userID=${userID})}"
+			<a th:href="@{'/api/v1/users/viewuser'(userID=${userID})}"
 				class="profile-link" title="Return to Doctor Profile">Return to
 				Doctor Profile</a>
 		</div>
 		<div th:if="${source == 'searchschedule'}">
-			<a th:href="@{/searchschedule}" class="profile-link"
+			<a th:href="@{/api/v1/search/searchschedule}" class="profile-link"
 				title="Return to Search Schedules">Return to Search Schedules</a>
 		</div>
 		<div th:if="${source == 'viewallschedules'}">
-			<a th:href="@{'/doctor/viewallschedules'(doctorID=${doctorID})}"
+			<a th:href="@{'/api/v1/doctor/viewallschedules'(doctorID=${doctorID})}"
 				class="profile-link" title="Return to All Schedules">Return to
 				All Schedules</a>
 		</div> -->
@@ -227,13 +227,14 @@ input[type="date"], input[type="time"], input[type="number"], select {
 		</div>
 
 		<form id="viewForm" th:object="${doctorScheduleWrapper}"
-			th:action="@{/doctor/updatedoctorschedule}" method="POST">
+			th:action="@{/api/v1/doctor/updatedoctorschedule}" method="POST">
 
 			<!-- Hidden fields for userID, doctorID, source -->
 			<input type="hidden" th:name="userID" th:value="${userID}" /> <input
 				type="hidden" th:name="doctorID" th:value="${doctorID}" /> <input
 				type="hidden" th:name="scheduleID" th:value="${scheduleID}" /> <input
-				type="hidden" th:name="source" th:value="${source}" />
+				type="hidden" th:name="source" th:value="${source}" /> <input
+				type="hidden" th:name="version" th:values="${version}" />
 
 			<!-- Doctor Fields -->
 

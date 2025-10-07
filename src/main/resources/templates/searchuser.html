@@ -140,7 +140,7 @@ form {
 				<p th:text="${errorMessage}"></p>
 			</div>
 
-			<form id="searchForm" th:action="@{/searchuser}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchuser}" method="POST">
 				<div class="form-row">
 					<div class="form-group"
 						th:if="${source != 'doctordashboard' and source != 'patientdashboard'}">
@@ -214,7 +214,7 @@ form {
 				<tbody id="resultsBody">
 					<tr th:each="result : ${searchResults}">
 						<td><a
-							th:href="@{'/users/viewuser'(userID=${result.userID}, source=${source})}"
+							th:href="@{'/api/v1/users/viewuser'(userID=${result.userID}, source=${source})}"
 							th:text="${result.userID}"></a></td>
 						<td th:text="${result.name}"></td>
 						<td th:text="${result.emailID}"></td>

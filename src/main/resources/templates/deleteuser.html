@@ -1,10 +1,211 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete User</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<style>
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.main-container {
+	flex: 1;
+	padding: 40px 20px;
+	max-width: 800px;
+	margin: 0 auto;
+	width: 100%;
+}
+
+.delete-card {
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 30px;
+}
+
+.delete-card h1 {
+	color: #333;
+	margin-bottom: 20px;
+	font-size: 28px;
+	border-bottom: 2px solid #e74c3c;
+	padding-bottom: 10px;
+}
+
+.alert {
+	padding: 15px;
+	margin-bottom: 20px;
+	border-radius: 4px;
+}
+
+.alert-success {
+	background-color: #d4edda;
+	border: 1px solid #c3e6cb;
+	color: #155724;
+}
+
+.alert-danger {
+	background-color: #f8d7da;
+	border: 1px solid #f5c6cb;
+	color: #721c24;
+}
+
+.form-group {
+	margin-bottom: 20px;
+}
+
+.form-group label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 8px;
+	color: #555;
+}
+
+.form-group select {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+}
+
+.form-group select:focus {
+	outline: none;
+	border-color: #007bff;
+	box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.button-container {
+	display: flex;
+	gap: 10px;
+	margin-top: 25px;
+}
+
+.delete-button {
+	background-color: #e74c3c;
+	color: white;
+	padding: 12px 30px;
+	border: none;
+	border-radius: 4px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+	background-color: #c0392b;
+}
+
+.cancel-button {
+	background-color: #6c757d;
+	color: white;
+	padding: 12px 30px;
+	border: none;
+	border-radius: 4px;
+	font-size: 16px;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-block;
+	transition: background-color 0.3s;
+}
+
+.cancel-button:hover {
+	background-color: #5a6268;
+}
+
+.warning-box {
+	background-color: #fff3cd;
+	border: 1px solid #ffeaa7;
+	border-left: 4px solid #f39c12;
+	padding: 15px;
+	margin-bottom: 20px;
+	border-radius: 4px;
+}
+
+.warning-box i {
+	color: #f39c12;
+	margin-right: 10px;
+}
+</style>
 </head>
 <body>
+	<div class="wrapper">
+		<!-- Include Header Fragment -->
+		<div th:replace="~{fragments/header :: header}"></div>
 
+		<div class="main-container">
+			<div class="delete-card">
+				<h1><i class="fas fa-user-minus"></i> Delete User</h1>
+
+				<!-- Display Success Message -->
+				<div th:if="${message}" class="alert alert-success">
+					<i class="fas fa-check-circle"></i>
+					<span th:text="${message}"></span>
+				</div>
+
+				<!-- Display Error Message -->
+				<div th:if="${error}" class="alert alert-danger">
+					<i class="fas fa-exclamation-circle"></i>
+					<span th:text="${error}"></span>
+				</div>
+
+				<!-- Warning Box -->
+				<div class="warning-box">
+					<i class="fas fa-exclamation-triangle"></i>
+					<strong>Warning:</strong> This action cannot be undone. Deleting a user will permanently remove all their data from the system.
+				</div>
+
+				<!-- User Selection Form -->
+				<form method="post" th:action="@{/users/deleteuser}" th:object="${userForm}">
+					<div class="form-group">
+						<label for="user"><i class="fas fa-user"></i> Select User to Delete:</label>
+						<select id="user" name="selectedUserID" th:field="*{selectedUserID}" required>
+							<option value="" disabled selected>-- Select a user --</option>
+							<option th:each="user : ${users}" 
+									th:value="${user.userID}" 
+									th:text="${user.userName + ' (' + user.emailID + ')'}">
+							</option>
+						</select>
+					</div>
+
+					<div class="button-container">
+						<button type="submit" class="delete-button">
+							<i class="fas fa-trash-alt"></i> Delete User
+						</button>
+						<a th:href="@{/api/v1/auth/dashboard/admin}" class="cancel-button">
+							<i class="fas fa-times"></i> Cancel
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Include Footer Fragment -->
+		<div th:replace="~{fragments/footer :: footer}"></div>
+	</div>
+
+	<script>
+		// Confirmation dialog before deletion
+		document.querySelector('form').addEventListener('submit', function(e) {
+			const selectElement = document.getElementById('user');
+			const selectedText = selectElement.options[selectElement.selectedIndex].text;
+			
+			if (!confirm('Are you sure you want to delete ' + selectedText + '? This action cannot be undone.')) {
+				e.preventDefault();
+			}
+		});
+	</script>
 </body>
 </html>
