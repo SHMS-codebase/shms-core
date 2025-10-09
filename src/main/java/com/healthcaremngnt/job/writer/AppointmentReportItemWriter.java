@@ -109,87 +109,116 @@ public class AppointmentReportItemWriter implements ItemWriter<Appointment> {
 		String pdfFilename = directory + "/appointment/appointment_report_" + formattedNow + ".pdf";
 
 		File file = new File(pdfFilename);
-		boolean appendMode = file.exists(); // Check if the file exists
+		boolean appendMode = file.exists();
 
 		try (PDDocument pdfDocument = appendMode ? PDDocument.load(file) : new PDDocument()) {
-			PDPage page;
-			PDPageContentStream contentStream;
+		    PDPage page;
+		    PDPageContentStream contentStream;
+		    float yPosition;
+		    float lineHeight = 15f;
+		    float margin = 25;
+		    float pageHeight = 700;
+		    float bottomMargin = 50;
 
-			if (appendMode) {
-				// Open existing PDF and get last page
-				page = pdfDocument.getPage(pdfDocument.getNumberOfPages() - 1);
-				contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND, true,
-						true);
-			} else {
-				// Create a new PDF and first page
-				page = new PDPage();
-				pdfDocument.addPage(page);
-				contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND, true,
-						true);
+		    if (appendMode) {
+		        page = pdfDocument.getPage(pdfDocument.getNumberOfPages() - 1);
+		        yPosition = findLastYPosition(page) - (lineHeight * 2);
+		        contentStream = new PDPageContentStream(pdfDocument, page, 
+		            PDPageContentStream.AppendMode.APPEND, true, true);
+		    } else {
+		        page = new PDPage();
+		        pdfDocument.addPage(page);
+		        yPosition = pageHeight;
+		        contentStream = new PDPageContentStream(pdfDocument, page);
+		        
+		        // Write header
+		        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Appointment Report generated on: " + today);
+		        contentStream.endText();
+		        
+		        yPosition -= (lineHeight * 3);
+		    }
 
-				// Write header only once
-				contentStream.beginText();
-				contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-				contentStream.newLineAtOffset(25, 700);
-				contentStream.showText("Appointment Report generated on: " + today);
-				contentStream.newLine();
-				contentStream.newLine();
-				contentStream.endText();
-			}
+		    contentStream.setFont(PDType1Font.HELVETICA, 12);
 
-			float yPosition = findLastYPosition(page); // Ensure new records start below previous content
-			contentStream.beginText();
-			contentStream.setFont(PDType1Font.HELVETICA, 12);
-			contentStream.newLineAtOffset(25, yPosition);
+		    // Process each appointment
+		    for (Appointment appointment : appointments) {
+		        // Check if we need a new page (need space for 10 lines)
+		        if (yPosition < bottomMargin + (10 * lineHeight)) {
+		            contentStream.close();
+		            
+		            page = new PDPage();
+		            pdfDocument.addPage(page);
+		            yPosition = pageHeight;
+		            contentStream = new PDPageContentStream(pdfDocument, page);
+		            contentStream.setFont(PDType1Font.HELVETICA, 12);
+		        }
 
-			// Process each appointment
-			for (Appointment appointment : appointments) {
-				if (yPosition < 50 + (7 * 14.5f)) { // Check if we need a new page
-					contentStream.endText();
-					contentStream.close();
+		        // Write each line separately with proper Y positioning
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Appointment ID: " + appointment.getAppointmentID());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
 
-					page = new PDPage();
-					pdfDocument.addPage(page);
-					contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND,
-							true, true);
-					yPosition = 700;
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Appointment Date: " + appointment.getAppointmentDate());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
 
-					contentStream.beginText();
-					contentStream.setFont(PDType1Font.HELVETICA, 12);
-					contentStream.newLineAtOffset(25, yPosition);
-				}
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Appointment Time: " + appointment.getAppointmentTime());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
 
-				// Write appointment details correctly
-				contentStream.newLine();
-				contentStream.showText("Appointment ID: " + appointment.getAppointmentID());
-				contentStream.newLine();
-				contentStream.showText("Appointment Date: " + appointment.getAppointmentDate());
-				contentStream.newLine();
-				contentStream.showText("Appointment Time: " + appointment.getAppointmentTime());
-				contentStream.newLine();
-				contentStream.showText("Patient: " + appointment.getPatient().getPatientName());
-				contentStream.newLine();
-				contentStream.showText("Doctor: " + appointment.getDoctor().getDoctorName());
-				contentStream.newLine();
-				contentStream.showText("Appointment Status: " + appointment.getAppointmentStatus());
-				contentStream.newLine();
-				contentStream.showText("Priority: " + appointment.getPriority());
-				contentStream.newLine();
-				contentStream.showText("Needs Reminder: " + appointment.getNeedsReminder());
-				contentStream.newLine();
-				contentStream.showText("--------------------------------------------"); // Separator
-				contentStream.newLine();
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Patient: " + appointment.getPatient().getPatientName());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
 
-				logger.debug("Processing appointment: " + appointment.getAppointmentID() + ", Patient: "
-						+ appointment.getPatient().getPatientName() + ", Doctor: "
-						+ appointment.getDoctor().getDoctorName());
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Doctor: " + appointment.getDoctor().getDoctorName());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
 
-				yPosition -= (9 * 14.5f); // Adjust downward after writing each appointment
-			}
-			contentStream.endText();
-			contentStream.close();
-			pdfDocument.save(pdfFilename);
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Appointment Status: " + appointment.getAppointmentStatus());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
 
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Priority: " + appointment.getPriority());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
+
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("Needs Reminder: " + appointment.getNeedsReminder());
+		        contentStream.endText();
+		        yPosition -= lineHeight;
+
+		        contentStream.beginText();
+		        contentStream.newLineAtOffset(margin, yPosition);
+		        contentStream.showText("--------------------------------------------");
+		        contentStream.endText();
+		        yPosition -= lineHeight;
+		        
+		        // Extra space between appointments
+		        yPosition -= lineHeight;
+
+		        logger.debug("Processing appointment: " + appointment.getAppointmentID());
+		    }
+
+		    contentStream.close();
+		    pdfDocument.save(pdfFilename);
 		}
 
 		logger.info("PDF report generated successfully: " + pdfFilename);

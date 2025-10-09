@@ -109,38 +109,6 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 		}
 		logger.info("Text report generated successfully: " + txtFilename);
 
-		// Generate PDF report --> working code but only one page will be generated!!!
-//		String pdfFilename = directory + "/patient/patient_report_" + formattedNow + ".pdf";
-//		try (PDDocument document = new PDDocument()) {
-//			PDPage page = new PDPage();
-//			document.addPage(page);
-//
-//			try (PDPageContentStream contentStream = new PDPageContentStream(document, document.getPage(0),
-//					PDPageContentStream.AppendMode.APPEND, true, true)) {
-//				contentStream.beginText();
-//				contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-//				contentStream.setLeading(14.5f);
-//				contentStream.newLineAtOffset(25, 700);
-//				contentStream.showText("Patient Report generated on::: " + today);
-//				contentStream.newLine();
-//				contentStream.newLine();
-//
-//				for (Patient patient : patients) {
-//					contentStream.setFont(PDType1Font.HELVETICA, 12);
-//					contentStream.showText("Patient ID: " + patient.getPatientName());
-//					contentStream.newLine();
-//					contentStream.showText("Patient Name: " + patient.getPatientName());
-//					contentStream.newLine();
-//					//
-//					contentStream.newLine();
-//					contentStream.newLine();
-//				}
-//				contentStream.endText();
-//			}
-//			document.save(pdfFilename);
-//		}
-//		logger.info("PDF report generated successfully: " + pdfFilename);
-
 		// Generate PDF report
 		String pdfFilename = directory + "/patient/patient_report_" + formattedNow + ".pdf";
 
@@ -150,87 +118,131 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 		try (PDDocument pdfDocument = appendMode ? PDDocument.load(file) : new PDDocument()) {
 			PDPage page;
 			PDPageContentStream contentStream;
+			float yPosition;
+			float lineHeight = 14.5f;
+			float margin = 25;
+			float bottomMargin = 50;
 
 			if (appendMode) {
 				// Open existing PDF and get last page
-				page = pdfDocument.getPage(pdfDocument.getNumberOfPages() - 1);
+				int lastPageIndex = pdfDocument.getNumberOfPages() - 1;
+				page = pdfDocument.getPage(lastPageIndex);
+
+				// Calculate remaining space on last page
+				// You need to track this or estimate based on content
+				// For now, start a new page to avoid overlap
+				page = new PDPage();
+				pdfDocument.addPage(page);
+				yPosition = 700;
 				contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND, true,
 						true);
 			} else {
 				// Create a new PDF and first page
 				page = new PDPage();
 				pdfDocument.addPage(page);
+				yPosition = 700;
 				contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND, true,
 						true);
 
 				// Write header only once
 				contentStream.beginText();
 				contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-				contentStream.newLineAtOffset(25, 700);
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Patient Report generated on: " + today);
-				contentStream.newLine();
-				contentStream.newLine();
 				contentStream.endText();
+
+				yPosition -= (2 * lineHeight); // Move down after header
 			}
 
-			float yPosition = findLastYPosition(page); // Ensure new records start below previous content
-			contentStream.beginText();
 			contentStream.setFont(PDType1Font.HELVETICA, 12);
-			contentStream.newLineAtOffset(25, yPosition);
 
 			// Process each patient
 			for (Patient patient : patients) {
-
 				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
 						: patient.getSalutation().name();
 
-				if (yPosition < 50 + (7 * 14.5f)) { // Check if we need a new page
-					contentStream.endText();
+				// Calculate space needed for one patient record (11 lines)
+				float spaceNeeded = 11 * lineHeight;
+
+				// Check if we need a new page
+				if (yPosition - spaceNeeded < bottomMargin) {
 					contentStream.close();
 
 					page = new PDPage();
 					pdfDocument.addPage(page);
+					yPosition = 700;
 					contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND,
 							true, true);
-					yPosition = 700;
-
-					contentStream.beginText();
 					contentStream.setFont(PDType1Font.HELVETICA, 12);
-					contentStream.newLineAtOffset(25, yPosition);
 				}
 
-				// Write patient details correctly
-				contentStream.newLine();
+				// Write patient details - each line in its own text block
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Patient ID: " + patient.getPatientID());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("User ID: " + patient.getUser().getUserID());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("User Name: " + patient.getUser().getUserName());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Patient Name: " + salutation + " " + patient.getPatientName());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Gender: " + patient.getGender());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Date of Birth: " + patient.getDob());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Address: " + patient.getAddress());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Contact Number: " + patient.getContactNumber());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Email ID: " + patient.getUser().getEmailID());
-				contentStream.newLine();
-				contentStream.showText("--------------------------------------------"); // Separator
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
+				contentStream.showText("--------------------------------------------");
+				contentStream.endText();
+				yPosition -= (2 * lineHeight); // Extra space after separator
 
 				logger.debug(
 						"Processing patient: " + patient.getPatientID() + ", Patient: " + patient.getPatientName());
-
-				yPosition -= (9 * 14.5f); // Adjust downward after writing each patient
 			}
-			contentStream.endText();
+
 			contentStream.close();
 			pdfDocument.save(pdfFilename);
-
 		}
 
 		logger.info("PDF report generated successfully: " + pdfFilename);
@@ -341,11 +353,6 @@ public class PatientReportItemWriter implements ItemWriter<Patient> {
 		}
 
 		logger.info("Excel report generated successfully: " + excelFilename);
-	}
-
-	private float findLastYPosition(PDPage page) {
-		// Logic to estimate last used Y position (you can fine-tune based on text size)
-		return page.getMediaBox().getHeight() - 50; // Approximate bottom margin for continuing text
 	}
 
 }

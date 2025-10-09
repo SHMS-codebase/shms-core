@@ -70,4 +70,6 @@ public class RequestParamConstants {
 
 	public static final String PARENT_APPOINTMENT_ID = "parentAppointmentID";
 
+	public static final String FLOW = "flow";
+
 }

@@ -2,6 +2,7 @@ package com.healthcaremngnt.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,7 @@ import com.healthcaremngnt.model.Invoice;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
+	@Query("SELECT i FROM Invoice i WHERE FUNCTION('DATE', i.createdDate) = :queryDate")
 	List<Invoice> findByInvoiceDate(LocalDate queryDate);
 
 	@Query("SELECT i FROM Invoice i WHERE FUNCTION('DATE', i.invoiceDate) BETWEEN :startDate AND :endDate")
@@ -26,5 +28,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 			+ "AND (:invoiceStatus IS NULL OR i.invoiceStatus = :invoiceStatus)")
 	List<Invoice> findInvoices(@Param("patientID") Long patientID, @Param("invoiceID") Long invoiceID,
 			@Param("invoiceDate") LocalDate invoiceDate, @Param("invoiceStatus") InvoiceStatus invoiceStatus);
+
+	Optional<Invoice> findByTreatment_TreatmentID(Long treatmentID);
 
 }

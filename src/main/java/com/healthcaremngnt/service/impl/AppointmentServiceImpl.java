@@ -335,4 +335,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 		// return appointments;
 	}
 
+	@Override
+	public boolean checkFollowupAppointmentExists(Appointment parentAppointment) {
+		
+		logger.info("Checking follow-up appointment existence for Parent Appointment : {}", parentAppointment);
+
+		return appointmentRepository.existsByParentAppointment(parentAppointment);
+	}
+
 }

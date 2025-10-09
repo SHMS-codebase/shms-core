@@ -25,7 +25,7 @@
 			$('#viewForm input, #viewForm select').prop('disabled', false);
 			$('#resetBtn').prop('disabled', false);
 			$('#saveChangesBtn').prop('disabled', false);
-			$('header h2').text('Update User Details');
+			$('.page-header h2').text('Update User Details');
 		});
 
 		$('#resetBtn').click(function() {
@@ -75,8 +75,9 @@ form {
 	margin-top: 30px;
 	margin-bottom: 15px;
 	/* Add max-height and scrolling */
-    max-height: calc(100vh - 180px); /* Adjust 180px to header+footer height */
-    overflow-y: auto;
+	max-height: calc(100vh - 180px);
+	/* Adjust 180px to header+footer height */
+	overflow-y: auto;
 }
 
 .error-message {
@@ -98,54 +99,80 @@ button {
 	color: #fff;
 	background-color: hsl(31, 82%, 64%);
 	padding: 5px 15px;
-    border: none;
-    border-radius: 24px;
-    cursor: pointer;
-    transition: all 0.3s ease; /* Smooth transition for hover/active effects */
-    margin-top: 15px;
+	border: none;
+	border-radius: 24px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	/* Smooth transition for hover/active effects */
+	margin-top: 15px;
 }
 
 /* Hover Effects */
 button:hover {
-    background-color: hsl(31, 82%, 54%); /* Slightly darker shade on hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add subtle shadow effect */
-    transform: scale(1.05); /* Slightly enlarge the button */
+	background-color: hsl(31, 82%, 54%);
+	/* Slightly darker shade on hover */
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+	/* Add subtle shadow effect */
+	transform: scale(1.05); /* Slightly enlarge the button */
 }
 
 /* Active States */
-button:active { 
-    background-color: hsl(31, 82%, 44%); /* Darker shade for active state */
-    transform: scale(0.98); /* Slightly shrink the button on press */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow intensity */
+button:active {
+	background-color: hsl(31, 82%, 44%); /* Darker shade for active state */
+	transform: scale(0.98); /* Slightly shrink the button on press */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow intensity */
 }
 
 button[disabled] {
-    background-color: #ccc !important;   /* Muted gray */
-    color: #888 !important;              /* Dimmed text */
-    cursor: not-allowed !important;      /* Not-allowed cursor */
-    opacity: 0.7;                        /* Slightly faded */
-    box-shadow: none !important;         /* Remove shadow */
-    transform: none !important;          /* Remove transform */
-    pointer-events: none;                /* Prevent all mouse events */
+	background-color: #ccc !important; /* Muted gray */
+	color: #888 !important; /* Dimmed text */
+	cursor: not-allowed !important; /* Not-allowed cursor */
+	opacity: 0.7; /* Slightly faded */
+	box-shadow: none !important; /* Remove shadow */
+	transform: none !important; /* Remove transform */
+	pointer-events: none; /* Prevent all mouse events */
 }
 
 /* Prevent hover/active effects on disabled buttons */
-button[disabled]:hover,
-button[disabled]:active {
-    background-color: #ccc !important;
-    color: #888 !important;
-    box-shadow: none !important;
-    transform: none !important;
+button[disabled]:hover, button[disabled]:active {
+	background-color: #ccc !important;
+	color: #888 !important;
+	box-shadow: none !important;
+	transform: none !important;
+}
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
 }
 </style>
 </head>
 <body>
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
-		<h4 class="centered-text">View User Details</h4>
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>View User Details</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item"><a
+								th:href="@{/api/v1/search/searchuser(source=${source})}">Search
+									Users</a></li>
+							<li class="breadcrumb-item active">User Details</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
@@ -153,7 +180,8 @@ button[disabled]:active {
 		<div th:if="${message}" class="success-message">
 			<p th:text="${message}"></p>
 		</div>
-		<form id="viewForm" th:action="@{/api/v1/users/updateuser}" th:method="POST">
+		<form id="viewForm" th:action="@{/api/v1/users/updateuser}"
+			th:method="POST">
 
 			<input type="hidden" name="roleID" th:value="${userDetails.roleID}" />
 			<input type="hidden" name="userID" th:value="${userDetails.userID}" />

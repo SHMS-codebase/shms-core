@@ -59,4 +59,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 		return updatedInvoice;
 	}
 
+	@Override
+	public Invoice getInvoiceByTreatment(Long treatmentID) {
+		logger.info("Fetching invoice for Treatment ID: {}", treatmentID);
+
+		return invoiceRepository.findByTreatment_TreatmentID(treatmentID)
+				.orElseThrow(() -> new RuntimeException("Invoice not found for Treatment ID: " + treatmentID));
+	}
+
 }

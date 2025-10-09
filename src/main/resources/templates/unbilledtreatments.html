@@ -16,7 +16,6 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
 <link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
-<link rel="stylesheet" th:href="@{/css/profilestyles.css}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
 body {
@@ -50,10 +49,9 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 500px;
-	margin-bottom: 300px;
 	display: flex;
 	flex-direction: column;
+	margin-top: 20px;
 }
 
 .error-message {
@@ -107,16 +105,37 @@ button {
 		width: 95%;
 	}
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
-		<h4 class="centered-text">Un-billed Treatments</h4>
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>Un-billed Treatments</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item active">Un-billed Treatments</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
@@ -165,7 +184,7 @@ button {
 		function generateInvoice(button) {
 			const treatmentID = button.getAttribute('data-treatment-id');
 			const source = button.getAttribute('data-source');
-			window.location.href = `/api/v1/invoices/generate-invoice?treatmentID=${treatmentID}&source=${source}`;
+			window.location.href = `/api/v1/invoices/generate-invoice?treatmentID=${treatmentID}&source=${source}&flow=unbilledtreatments`;
 		}
 	</script>
 

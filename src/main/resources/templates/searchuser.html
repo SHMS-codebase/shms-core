@@ -61,8 +61,11 @@ form {
 .container {
 	background-color: white;
 	border-radius: 8px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); width : 100%; max-width :
-	1250px; padding : 30px; margin-top : 0; /* Remove or set to 0 */
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 1250px;
+	padding: 30px;
+	margin-top: 0; /* Remove or set to 0 */
 	/* margin-top: 100px; */
 	margin-bottom: 50px;
 	display: flex;
@@ -121,6 +124,14 @@ form {
 		max-height: 200px;
 	}
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -132,15 +143,30 @@ form {
 	<div class="container searchuser-container">
 
 		<div class="search-section">
-			<h4 class="centered-text"
-				th:text="${source == 'doctordashboard' ? 'Search Patients' : (source == 'patientdashboard' ? 'Search Doctors' : 'Search User')}">Search
-				User</h4>
+			
+			<!-- Page Header -->
+			<div class="page-header">
+				<div class="d-flex justify-content-between align-items-center">
+					<div>
+						<h2 th:text="${source == 'doctordashboard' ? 'Search Patients' : (source == 'patientdashboard' ? 'Search Doctors' : 'Search Users')}">Search
+							User</h2>
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a
+									href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+								<li class="breadcrumb-item active">Search</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
 
 			<div th:if="${errorMessage}" class="error-message">
 				<p th:text="${errorMessage}"></p>
 			</div>
 
-			<form id="searchForm" th:action="@{/api/v1/search/searchuser}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchuser}"
+				method="POST">
 				<div class="form-row">
 					<div class="form-group"
 						th:if="${source != 'doctordashboard' and source != 'patientdashboard'}">
@@ -201,6 +227,7 @@ form {
 		</div>
 		<div id="searchResults"
 			th:if="${searchResults != null and #lists.isEmpty(searchResults) == false}">
+			<h3 class="centered-text">Search Results</h3>
 			<table>
 				<thead>
 					<tr>

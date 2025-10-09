@@ -35,4 +35,6 @@ public interface AppointmentService {
 
 	List<UpcomingAppointment> getUpcomingAppointmentBetween(LocalDate nextWeekDay, LocalDate today);
 
+	boolean checkFollowupAppointmentExists(Appointment parentAppointment);
+
 }

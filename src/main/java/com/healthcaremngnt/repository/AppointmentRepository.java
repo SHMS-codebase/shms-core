@@ -51,6 +51,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
 	List<Appointment> findByAppointmentStatus(AppointmentStatus appointmentStatus);
 
+	boolean existsByParentAppointment(Appointment parentAppointment);
+
 	// Example of a derived query (if needed):
 	// List<Appointment> findByPatient_PatientID(Long patientID);
 	// Find by patient ID using Spring Data JPA's derived query feature.

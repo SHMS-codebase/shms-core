@@ -65,7 +65,7 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 100px;
+	margin-top: 200px;
 	margin-bottom: 50px;
 	display: flex;
 	flex-direction: column;
@@ -115,6 +115,14 @@ form {
 		max-height: 200px;
 	}
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -122,16 +130,30 @@ form {
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
 		<div class="search-section">
-			<h4 class="centered-text">Search Doctor Schedule</h4>
+			<!-- Page Header -->
+			<div class="page-header">
+				<div class="d-flex justify-content-between align-items-center">
+					<div>
+						<h2>Search Doctor Schedule</h2>
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a
+									href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+								<li class="breadcrumb-item active">Search Doctor Schedule</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
 
 			<div th:if="${errorMessage}" class="error-message">
 				<p th:text="${errorMessage}"></p>
 			</div>
-			<form id="searchForm" th:action="@{/api/v1/search/searchschedule}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchschedule}"
+				method="POST">
 
 				<input type="hidden" th:value="${source}" name="source">
 
@@ -202,7 +224,7 @@ form {
 				<tbody id="resultsBody">
 					<tr th:each="schedule : ${schedules}">
 						<td><a
-							th:href="@{'/api/v1/doctor/viewdoctorschedule'(scheduleID=${schedule.scheduleID}, source='admindashboard')}"
+							th:href="@{'/api/v1/doctor/viewdoctorschedule'(scheduleID=${schedule.scheduleID}, source='admindashboard', flow='searchschedule')}"
 							th:text="${schedule.scheduleID}"></a></td>
 						<td th:text="${schedule.doctor.doctorName}"></td>
 						<td th:text="${schedule.availableDate}"></td>

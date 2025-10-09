@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -44,8 +45,8 @@ public class Invoice {
 	@Column(name = "invoice_status", nullable = false)
 	private InvoiceStatus invoiceStatus;
 
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "treatment_id", unique = true, nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "treatment_id", nullable = false)
 	private Treatment treatment;
 
 	@OneToOne(optional = true)

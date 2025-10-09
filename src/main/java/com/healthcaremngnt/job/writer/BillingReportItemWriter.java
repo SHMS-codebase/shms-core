@@ -119,83 +119,114 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 		try (PDDocument pdfDocument = appendMode ? PDDocument.load(file) : new PDDocument()) {
 			PDPage page;
 			PDPageContentStream contentStream;
+			float yPosition;
+			float lineHeight = 14.5f;
+			float margin = 25;
+			float bottomMargin = 50;
 
 			if (appendMode) {
-				// Open existing PDF and get last page
-				page = pdfDocument.getPage(pdfDocument.getNumberOfPages() - 1);
+				// Open existing PDF - start a new page to avoid overlap
+				page = new PDPage();
+				pdfDocument.addPage(page);
+				yPosition = 700;
 				contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND, true,
 						true);
 			} else {
 				// Create a new PDF and first page
 				page = new PDPage();
 				pdfDocument.addPage(page);
+				yPosition = 700;
 				contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND, true,
 						true);
 
 				// Write header only once
 				contentStream.beginText();
 				contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-				contentStream.newLineAtOffset(25, 700);
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Billing Report generated on: " + today);
-				contentStream.newLine();
-				contentStream.newLine();
 				contentStream.endText();
+
+				yPosition -= (2 * lineHeight); // Move down after header
 			}
 
-			float yPosition = findLastYPosition(page); // Ensure new records start below previous content
-			contentStream.beginText();
 			contentStream.setFont(PDType1Font.HELVETICA, 12);
-			contentStream.newLineAtOffset(25, yPosition);
 
 			// Process each invoice
 			for (Invoice invoice : invoices) {
-				if (yPosition < 50 + (7 * 14.5f)) { // Check if we need a new page
-					contentStream.endText();
-					contentStream.close();
-
-					page = new PDPage();
-					pdfDocument.addPage(page);
-					contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND,
-							true, true);
-					yPosition = 700;
-
-					contentStream.beginText();
-					contentStream.setFont(PDType1Font.HELVETICA, 12);
-					contentStream.newLineAtOffset(25, yPosition);
-				}
-
-				// Write invoice details correctly
-				contentStream.newLine();
-				contentStream.showText("Invoice ID: " + invoice.getInvoiceID());
-				contentStream.newLine();
-				contentStream.showText("Invoice Date: " + invoice.getInvoiceDate());
-				contentStream.newLine();
 				Patient patient = invoice.getTreatment().getAppointment().getPatient();
 				String salutation = (patient.getSalutation() == Salutation.CUSTOM) ? patient.getCustomSalutation()
 						: patient.getSalutation().name();
 
+				// Calculate space needed for one invoice record (9 lines)
+				float spaceNeeded = 9 * lineHeight;
+
+				// Check if we need a new page
+				if (yPosition - spaceNeeded < bottomMargin) {
+					contentStream.close();
+
+					page = new PDPage();
+					pdfDocument.addPage(page);
+					yPosition = 700;
+					contentStream = new PDPageContentStream(pdfDocument, page, PDPageContentStream.AppendMode.APPEND,
+							true, true);
+					contentStream.setFont(PDType1Font.HELVETICA, 12);
+				}
+
+				// Write invoice details - each line in its own text block
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
+				contentStream.showText("Invoice ID: " + invoice.getInvoiceID());
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
+				contentStream.showText("Invoice Date: " + invoice.getInvoiceDate());
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Patient: " + salutation + " " + patient.getPatientName());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Treatment Cost: " + invoice.getTreatmentCost());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Prescription Cost: " + invoice.getPrescriptionCost());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Total Cost: " + invoice.getTotalAmount());
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
 				contentStream.showText("Invoice Status: " + invoice.getInvoiceStatus());
-				contentStream.newLine();
-				contentStream.showText("--------------------------------------------"); // Separator
-				contentStream.newLine();
+				contentStream.endText();
+				yPosition -= lineHeight;
+
+				contentStream.beginText();
+				contentStream.newLineAtOffset(margin, yPosition);
+				contentStream.showText("--------------------------------------------");
+				contentStream.endText();
+				yPosition -= (2 * lineHeight); // Extra space after separator
 
 				logger.debug("Processing invoice: " + invoice.getInvoiceID() + ", Patient: "
 						+ invoice.getTreatment().getAppointment().getPatient().getPatientName());
-
-				yPosition -= (9 * 14.5f); // Adjust downward after writing each invoice
 			}
-			contentStream.endText();
+
 			contentStream.close();
 			pdfDocument.save(pdfFilename);
-
 		}
 
 		logger.info("PDF report generated successfully: " + pdfFilename);
@@ -312,11 +343,6 @@ public class BillingReportItemWriter implements ItemWriter<Invoice> {
 		}
 
 		logger.info("Excel report generated successfully: " + excelFilename);
-	}
-
-	private float findLastYPosition(PDPage page) {
-		// Logic to estimate last used Y position (you can fine-tune based on text size)
-		return page.getMediaBox().getHeight() - 50; // Approximate bottom margin for continuing text
 	}
 
 }

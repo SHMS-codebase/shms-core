@@ -107,6 +107,14 @@ button {
 		width: 95%;
 	}
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
@@ -116,7 +124,21 @@ button {
 
 	<div class="container">
 
-		<h4 class="centered-text">Follow-up Appointments</h4>
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>Follow-up Appointments</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item active">Follow-up Appointments</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
@@ -124,10 +146,10 @@ button {
 		<div th:if="${message}" class="success-message">
 			<p th:text="${message}"></p>
 		</div>
-		<div th:if="${#lists.isEmpty(followupAppointments)}">
+		<div th:if="${#lists.isEmpty(followupTreatments)}">
 			<p>No Pending Follow-up Appointments</p>
 		</div>
-		<div th:unless="${#lists.isEmpty(followupAppointments)}">
+		<div th:unless="${#lists.isEmpty(followupTreatments)}">
 			<div class="table-container">
 				<!-- Added container with fixed height for vertical scrolling -->
 				<table>
@@ -143,7 +165,7 @@ button {
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="treatment : ${followupAppointments}">
+						<tr th:each="treatment : ${followupTreatments}">
 							<td th:text="${treatment.treatmentID}"></td>
 							<td th:text="${treatment.diagnosis}"></td>
 							<td th:text="${treatment.appointment.patient.patientName}"></td>
@@ -170,7 +192,8 @@ button {
 			const treatmentID = button.getAttribute('data-treatment-id');
 			const doctorID = button.getAttribute('data-doctor-id');
 			const patientID = button.getAttribute('data-patient-id');
-			const parentAppointmentID = button.getAttribute('data-appointment-id');
+			const parentAppointmentID = button
+					.getAttribute('data-appointment-id');
 			const source = button.getAttribute('data-source');
 			window.location.href = `/api/v1/appointments/createappointment?treatmentID=${treatmentID}&doctorID=${doctorID}&patientID=${patientID}&parentAppointmentID=${parentAppointmentID}&source=${source}&isFollowup=true`;
 		}

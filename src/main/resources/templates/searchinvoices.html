@@ -51,7 +51,7 @@ body {
 
 form {
 	margin-top: 10px;
-	max-width: 1000px;
+	max-width: 1200px;
 	width: 100%;
 }
 
@@ -66,8 +66,8 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 700px;
-	margin-bottom: 550px;
+	margin-top: 150px;
+	margin-bottom: 50px;
 	display: flex;
 	flex-direction: column;
 }
@@ -132,6 +132,14 @@ label {
 	display: block; /* Ensure the label stays above the field */
 	margin-bottom: 5px;
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -139,17 +147,32 @@ label {
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
 		<div class="search-section">
-			<h4 class="centered-text">Search Invoices</h4>
 
+			<!-- Page Header -->
+			<div class="page-header">
+				<div class="d-flex justify-content-between align-items-center">
+					<div>
+						<h2>Search Invoices</h2>
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a
+									href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+								<li class="breadcrumb-item active">Search Invoices</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
+			
 			<div th:if="${errorMessage}" class="error-message">
 				<p th:text="${errorMessage}"></p>
 			</div>
 
-			<form id="searchForm" th:action="@{/api/v1/search/searchinvoices}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchinvoices}"
+				method="POST">
 
 				<input type="hidden" name="source" th:value="${source}">
 
@@ -199,7 +222,7 @@ label {
 			th:if="${invoices != null and #lists.isEmpty(invoices) == false}">
 			<h3>Search Results</h3>
 			<!-- <span th:text="${resultsCount}">Results</span> -->
-    			<div class="table-container">
+			<div class="table-container">
 				<table>
 					<thead>
 						<tr>
@@ -212,7 +235,7 @@ label {
 					<tbody id="resultsBody">
 						<tr th:each="invoice : ${invoices}">
 							<td><a
-								th:href="@{'/api/v1/invoices/viewinvoice'(invoiceID=${invoice.invoiceID}, source='admindashboard')}"
+								th:href="@{'/api/v1/invoices/viewinvoice'(invoiceID=${invoice.invoiceID}, source='admindashboard', flow='searchinvoices')} "
 								th:text="${invoice.invoiceID}"></a></td>
 							<td th:text="${invoice.invoiceDate}"></td>
 							<td th:text="${invoice.totalAmount}"></td>

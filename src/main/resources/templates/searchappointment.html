@@ -105,16 +105,24 @@ form {
 }
 
 /* Responsive adjustments */
-@media (max-height: 800px) {
+@media ( max-height : 800px) {
 	.table-container {
 		max-height: 300px;
 	}
 }
 
-@media (max-height: 600px) {
+@media ( max-height : 600px) {
 	.table-container {
 		max-height: 200px;
 	}
+}
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
 }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -123,24 +131,39 @@ form {
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
 		<div class="search-section">
-			<h4 class="centered-text">Search Appointments</h4>
+
+			<!-- Page Header -->
+			<div class="page-header">
+				<div class="d-flex justify-content-between align-items-center">
+					<div>
+						<h2>Search Appointments</h2>
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a
+									href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+								<li class="breadcrumb-item active">Search Appointments</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
 
 			<div th:if="${errorMessage}" class="error-message">
 				<p th:text="${errorMessage}"></p>
 			</div>
 
-			<form id="searchForm" th:action="@{/api/v1/search/searchappointment}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchappointment}"
+				method="POST">
 
 				<input type="hidden" name="source" th:value="${source}">
 
 				<div class="form-row">
 					<div class="form-group">
-						<label for="patientID">Patient Name:</label> <select id="patientID"
-							name="patientID">
+						<label for="patientID">Patient Name:</label> <select
+							id="patientID" name="patientID">
 							<option value="" disabled selected>Select Patient</option>
 							<th:block th:each="patient : ${patients}">
 								<option th:value="${patient.patientID}"

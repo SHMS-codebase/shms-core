@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Alerts</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background: #f5f7fa;
+	color: #333;
+	line-height: 1.6;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+	color: #2c3e50;
+	margin-bottom: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.header-icon {
+	width: 32px;
+	height: 32px;
+	background: #e74c3c;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: bold;
+}
+
+.filter-bar {
+	background: white;
+	padding: 15px 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	display: flex;
+	gap: 15px;
+	flex-wrap: wrap;
+	align-items: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-btn {
+	padding: 8px 16px;
+	border: 1px solid #ddd;
+	background: white;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+.filter-btn:hover, .filter-btn.active {
+	background: #3498db;
+	color: white;
+	border-color: #3498db;
+}
+
+.alerts-container {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.alert-card {
+	background: white;
+	border-radius: 8px;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-left: 4px solid #e74c3c;
+	transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.alert-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.alert-card.critical {
+	border-left-color: #e74c3c;
+	background: #fff5f5;
+}
+
+.alert-card.warning {
+	border-left-color: #f39c12;
+	background: #fffbf5;
+}
+
+.alert-card.info {
+	border-left-color: #3498db;
+	background: #f5f9ff;
+}
+
+.alert-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	margin-bottom: 12px;
+}
+
+.alert-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 1;
+}
+
+.severity-badge {
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.severity-badge.critical {
+	background: #e74c3c;
+	color: white;
+}
+
+.severity-badge.warning {
+	background: #f39c12;
+	color: white;
+}
+
+.severity-badge.info {
+	background: #3498db;
+	color: white;
+}
+
+.alert-title h3 {
+	color: #2c3e50;
+	font-size: 18px;
+}
+
+.alert-meta {
+	display: flex;
+	gap: 20px;
+	font-size: 13px;
+	color: #7f8c8d;
+	margin-bottom: 12px;
+}
+
+.alert-meta span {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.alert-description {
+	color: #555;
+	margin-bottom: 15px;
+	line-height: 1.6;
+}
+
+.alert-actions {
+	display: flex;
+	gap: 10px;
+	padding-top: 15px;
+	border-top: 1px solid #eee;
+}
+
+.btn {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 14px;
+	transition: all 0.3s;
+}
+
+.btn-primary {
+	background: #3498db;
+	color: white;
+}
+
+.btn-primary:hover {
+	background: #2980b9;
+}
+
+.btn-secondary {
+	background: #ecf0f1;
+	color: #2c3e50;
+}
+
+.btn-secondary:hover {
+	background: #d5dbdb;
+}
+
+.status-resolved {
+	opacity: 0.6;
+}
+
+.status-resolved .alert-title h3::after {
+	content: " ✓";
+	color: #27ae60;
+}
+
+.empty-state {
+	background: white;
+	border-radius: 8px;
+	padding: 60px 20px;
+	text-align: center;
+	color: #95a5a6;
+}
+
+.empty-state svg {
+	width: 80px;
+	height: 80px;
+	margin-bottom: 20px;
+	opacity: 0.5;
+}
+
+@media ( max-width : 768px) {
+	.filter-bar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.alert-meta {
+		flex-direction: column;
+		gap: 5px;
+	}
+	.alert-actions {
+		flex-direction: column;
+	}
+}
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
+	<div class="container">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>
+						<span class="header-icon">⚠</span> <span class="header-text">System
+							Alerts</span> <small class="header-subtext">[Critical
+							system-level notifications requiring immediate attention]</small>
+					</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item active">System Alerts</li>
+						</ol>
+					</nav>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="filter-bar">
+			<button class="filter-btn active" onclick="filterAlerts('all')">All
+				Alerts</button>
+			<button class="filter-btn" onclick="filterAlerts('critical')">Critical</button>
+			<button class="filter-btn" onclick="filterAlerts('warning')">Warnings</button>
+			<button class="filter-btn" onclick="filterAlerts('info')">Info</button>
+			<button class="filter-btn" onclick="filterAlerts('unresolved')">Unresolved</button>
+			<button class="filter-btn" onclick="filterAlerts('resolved')">Resolved</button>
+		</div>
+
+		<div class="alerts-container" id="alertsContainer">
+			<!-- Critical Alert -->
+			<div class="alert-card critical" data-severity="critical"
+				data-status="unresolved">
+				<div class="alert-header">
+					<div class="alert-title">
+						<span class="severity-badge critical">Critical</span>
+						<h3>System Backup Failure Detected</h3>
+					</div>
+				</div>
+				<div class="alert-meta">
+					<span>🕒 2 hours ago</span> <span>📍 Backup Server -
+						Production</span> <span>👤 System Administrator</span>
+				</div>
+				<div class="alert-description">
+					<p>Automated backup process failed for production database at
+						03:00 AM. Last successful backup was 24 hours ago. Immediate
+						action required to ensure data integrity and compliance with
+						backup retention policies.</p>
+					<p>
+						<strong>Impact:</strong> Risk of data loss if system failure
+						occurs before backup is restored.
+					</p>
+				</div>
+				<div class="alert-actions">
+					<button class="btn btn-primary"
+						onclick="alert('Viewing backup logs...')">View Logs</button>
+					<button class="btn btn-primary"
+						onclick="alert('Initiating manual backup...')">Manual
+						Backup</button>
+					<button class="btn btn-secondary" onclick="acknowledgeAlert(this)">Acknowledge</button>
+				</div>
+			</div>
+
+			<!-- Critical Security Alert -->
+			<div class="alert-card critical" data-severity="critical"
+				data-status="unresolved">
+				<div class="alert-header">
+					<div class="alert-title">
+						<span class="severity-badge critical">Critical</span>
+						<h3>Multiple Failed Login Attempts Detected</h3>
+					</div>
+				</div>
+				<div class="alert-meta">
+					<span>🕒 3 hours ago</span> <span>📍 Authentication Service</span>
+					<span>👤 Security System</span>
+				</div>
+				<div class="alert-description">
+					<p>15 failed login attempts detected from IP address
+						192.168.100.45 for administrator accounts. Potential brute force
+						attack in progress. Account has been temporarily locked.</p>
+					<p>
+						<strong>Action Taken:</strong> IP address blocked for 24 hours.
+						Security team notified.
+					</p>
+				</div>
+				<div class="alert-actions">
+					<button class="btn btn-primary"
+						onclick="alert('Opening security dashboard...')">Security
+						Dashboard</button>
+					<button class="btn btn-primary"
+						onclick="alert('Viewing access logs...')">View Logs</button>
+					<button class="btn btn-secondary" onclick="acknowledgeAlert(this)">Acknowledge</button>
+				</div>
+			</div>
+
+			<!-- Warning Alert -->
+			<div class="alert-card warning" data-severity="warning"
+				data-status="unresolved">
+				<div class="alert-header">
+					<div class="alert-title">
+						<span class="severity-badge warning">Warning</span>
+						<h3>SSL Certificate Expiring Soon</h3>
+					</div>
+				</div>
+				<div class="alert-meta">
+					<span>🕒 1 day ago</span> <span>📍 Web Server - HTTPS</span> <span>👤
+						System Monitor</span>
+				</div>
+				<div class="alert-description">
+					<p>SSL certificate for domain shms.company.com will expire in
+						14 days (October 23, 2025). Renew certificate to prevent service
+						disruption and browser security warnings.</p>
+					<p>
+						<strong>Reminder:</strong> Certificate renewal typically takes
+						24-48 hours for full propagation.
+					</p>
+				</div>
+				<div class="alert-actions">
+					<button class="btn btn-primary"
+						onclick="alert('Opening certificate manager...')">Renew
+						Certificate</button>
+					<button class="btn btn-secondary" onclick="acknowledgeAlert(this)">Acknowledge</button>
+				</div>
+			</div>
+
+			<!-- Warning - Compliance -->
+			<div class="alert-card warning" data-severity="warning"
+				data-status="unresolved">
+				<div class="alert-header">
+					<div class="alert-title">
+						<span class="severity-badge warning">Warning</span>
+						<h3>Compliance Audit Due in 30 Days</h3>
+					</div>
+				</div>
+				<div class="alert-meta">
+					<span>🕒 2 days ago</span> <span>📍 Compliance Module</span> <span>👤
+						Compliance Officer</span>
+				</div>
+				<div class="alert-description">
+					<p>Annual OSHA compliance audit scheduled for November 8, 2025.
+						Ensure all safety documentation, incident reports, and training
+						records are up-to-date and accessible.</p>
+					<p>
+						<strong>Checklist:</strong> 12 of 18 requirements completed.
+						Review pending items in compliance dashboard.
+					</p>
+				</div>
+				<div class="alert-actions">
+					<button class="btn btn-primary"
+						onclick="alert('Opening compliance checklist...')">View
+						Checklist</button>
+					<button class="btn btn-secondary" onclick="acknowledgeAlert(this)">Acknowledge</button>
+				</div>
+			</div>
+
+			<!-- Info Alert -->
+			<div class="alert-card info" data-severity="info"
+				data-status="unresolved">
+				<div class="alert-header">
+					<div class="alert-title">
+						<span class="severity-badge info">Info</span>
+						<h3>Scheduled System Maintenance</h3>
+					</div>
+				</div>
+				<div class="alert-meta">
+					<span>🕒 5 hours ago</span> <span>📍 All Services</span> <span>👤
+						IT Operations</span>
+				</div>
+				<div class="alert-description">
+					<p>Planned system maintenance scheduled for October 12, 2025
+						from 2:00 AM to 4:00 AM EST. SHMS will be temporarily unavailable
+						during this window. Database optimization and security patches
+						will be applied.</p>
+					<p>
+						<strong>Expected Downtime:</strong> 2 hours. All users will be
+						notified 24 hours in advance.
+					</p>
+				</div>
+				<div class="alert-actions">
+					<button class="btn btn-primary"
+						onclick="alert('Viewing maintenance details...')">View
+						Details</button>
+					<button class="btn btn-secondary" onclick="acknowledgeAlert(this)">Acknowledge</button>
+				</div>
+			</div>
+
+			<!-- Info - Integration -->
+			<div class="alert-card info" data-severity="info"
+				data-status="unresolved">
+				<div class="alert-header">
+					<div class="alert-title">
+						<span class="severity-badge info">Info</span>
+						<h3>New System Update Available</h3>
+					</div>
+				</div>
+				<div class="alert-meta">
+					<span>🕒 1 day ago</span> <span>📍 System Core</span> <span>👤
+						Development Team</span>
+				</div>
+				<div class="alert-description">
+					<p>SHMS version 3.2.1 is now available. This update includes
+						enhanced reporting capabilities, improved mobile responsiveness,
+						and bug fixes. Review release notes before upgrading.</p>
+					<p>
+						<strong>New Features:</strong> Real-time dashboard widgets,
+						advanced incident analytics, bulk document upload.
+					</p>
+				</div>
+				<div class="alert-actions">
+					<button class="btn btn-primary"
+						onclick="alert('Opening release notes...')">Release Notes</button>
+					<button class="btn btn-primary"
+						onclick="alert('Scheduling update...')">Schedule Update</button>
+					<button class="btn btn-secondary" onclick="acknowledgeAlert(this)">Acknowledge</button>
+				</div>
+			</div>
+
+			<!-- Resolved Alert Example -->
+			<div class="alert-card warning status-resolved"
+				data-severity="warning" data-status="resolved">
+				<div class="alert-header">
+					<div class="alert-title">
+						<span class="severity-badge warning">Warning</span>
+						<h3>Database Performance Degradation</h3>
+					</div>
+				</div>
+				<div class="alert-meta">
+					<span>🕒 3 days ago</span> <span>📍 Database Server</span> <span>👤
+						System Monitor</span> <span style="color: #27ae60; font-weight: 600;">✓
+						Resolved</span>
+				</div>
+				<div class="alert-description">
+					<p>Database query response time exceeded acceptable thresholds.
+						Investigation revealed high load from unoptimized queries. Issue
+						resolved by implementing query optimization and adding database
+						indexes.</p>
+					<p>
+						<strong>Resolution:</strong> Query performance improved by 85%.
+						Monitoring continues.
+					</p>
+				</div>
+				<div class="alert-actions">
+					<button class="btn btn-secondary"
+						onclick="alert('Viewing resolution details...')">View
+						Resolution</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Include Footer Fragment -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
+	
+	<script>
+        function filterAlerts(filter) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const alerts = document.querySelectorAll('.alert-card');
+            alerts.forEach(alert => {
+                const severity = alert.getAttribute('data-severity');
+                const status = alert.getAttribute('data-status');
+                
+                let show = false;
+                if (filter === 'all') {
+                    show = true;
+                } else if (filter === 'critical' || filter === 'warning' || filter === 'info') {
+                    show = severity === filter;
+                } else if (filter === 'unresolved') {
+                    show = status === 'unresolved';
+                } else if (filter === 'resolved') {
+                    show = status === 'resolved';
+                }
+                
+                alert.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        function acknowledgeAlert(button) {
+            const card = button.closest('.alert-card');
+            card.classList.add('status-resolved');
+            card.setAttribute('data-status', 'resolved');
+            
+            const meta = card.querySelector('.alert-meta');
+            const resolvedBadge = document.createElement('span');
+            resolvedBadge.style.color = '#27ae60';
+            resolvedBadge.style.fontWeight = '600';
+            resolvedBadge.textContent = '✓ Acknowledged';
+            meta.appendChild(resolvedBadge);
+            
+            button.textContent = 'Acknowledged';
+            button.disabled = true;
+            button.style.opacity = '0.5';
+            button.style.cursor = 'not-allowed';
+        }
+    </script>
+</body>
+</html>

@@ -53,6 +53,7 @@ form {
 	max-width: 450px;
 	padding: 30px;
 	margin-top: 150px;
+	margin-bottom: 50px;
 }
 
 .centered-text {
@@ -149,39 +150,60 @@ button:active {
 .form-row select, .form-row input {
 	width: 60%;
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 <script>
 	$(document).ready(
 			function() {
-				$('#reportType').change(
-						function() {
-							var reportType = $(this).val();
-							if (reportType === 'daily') {
-								$('#datePickerLabel').text('Select Date:');
-								$('#datePicker').attr('type', 'date');
-							} else if (reportType === 'weekly') {
-								$('#datePickerLabel').text('Select Week:');
-								$('#datePicker').attr('type', 'week');
-							} else if (reportType === 'monthly') {
-								$('#datePickerLabel').text('Select Month:');
-								$('#datePicker').attr('type', 'month');
-							} else if (reportType === 'yearly') {
-								$('#datePickerLabel').text('Select Year:');
-								$('#datePicker').attr('type', 'number').attr(
-										'min', '2020').attr('max',
-										moment().year());
-							}
-						});
+				$('#reportType').change(function() {
+					$('.form-row[id$="Input"]').hide(); // Hide all date inputs
+					var reportType = $(this).val();
+					if (reportType === 'daily') {
+						$('#dailyInput').show();
+					} else if (reportType === 'weekly') {
+						$('#weeklyInput').show();
+					} else if (reportType === 'monthly') {
+						$('#monthlyInput').show();
+					} else if (reportType === 'yearly') {
+						$('#yearlyInput').show();
+					}
+				});
 
-				$('#generateReportBtn').click(
-						function() {
-							if ($('#reportType').val() === ""
-									|| $('#datePicker').val() === "") {
-								alert("Please select a report type and date.");
-								return;
-							}
-							$('#reportForm').submit();
-						});
+				$('#generateReportBtn').click(function () {
+				    var reportType = $('#reportType').val();
+				    var selectedDate;
+
+				    if (reportType === 'daily') {
+				        selectedDate = $('#dailyDate').val();
+				    } else if (reportType === 'weekly') {
+				        selectedDate = $('#weeklyDate').val();
+				    } else if (reportType === 'monthly') {
+				        selectedDate = $('#monthlyDate').val();
+				    } else if (reportType === 'yearly') {
+				        selectedDate = $('#yearlyDate').val();
+				    }
+
+				    if (!reportType || !selectedDate) {
+				        alert("Please select a report type and corresponding date.");
+				        return;
+				    }
+
+				    // Create a hidden input to pass selectedDate
+				    $('<input>').attr({
+				        type: 'hidden',
+				        name: 'datePicker',
+				        value: selectedDate
+				    }).appendTo('#reportForm');
+
+				    $('#reportForm').submit();
+				});
 			});
 </script>
 </head>
@@ -189,10 +211,23 @@ button:active {
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
-		<h4 class="centered-text">Appointment Reports</h4>
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>Appointment Reports</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item active">Appointment Reports</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
@@ -216,9 +251,24 @@ button:active {
 					<option value="yearly">Yearly</option>
 				</select>
 			</div>
-			<div class="form-row">
-				<label id="datePickerLabel" for="datePicker">Select Date:</label> <input
-					type="date" id="datePicker" name="datePicker" required>
+			<div class="form-row" id="dailyInput" style="display: none;">
+				<label for="dailyDate">Select Date:</label> <input type="date"
+					id="dailyDate" name="dailyDate">
+			</div>
+
+			<div class="form-row" id="weeklyInput" style="display: none;">
+				<label for="weeklyDate">Select Week:</label> <input type="week"
+					id="weeklyDate" name="weeklyDate">
+			</div>
+
+			<div class="form-row" id="monthlyInput" style="display: none;">
+				<label for="monthlyDate">Select Month:</label> <input type="month"
+					id="monthlyDate" name="monthlyDate">
+			</div>
+
+			<div class="form-row" id="yearlyInput" style="display: none;">
+				<label for="yearlyDate">Select Year:</label> <input type="number"
+					id="yearlyDate" name="yearlyDate" min="2020" max="2099">
 			</div>
 			<div class="form-row">
 				<label for="reportFormat">Select Report Format:</label> <select

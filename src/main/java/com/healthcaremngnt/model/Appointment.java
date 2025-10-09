@@ -3,7 +3,6 @@ package com.healthcaremngnt.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +21,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -80,12 +78,12 @@ public class Appointment {
 	private Boolean isFollowup = false;
 
 	// Enhanced follow-up support
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_appointment_id")
 	private Appointment parentAppointment;
 
-	@OneToMany(mappedBy = "parentAppointment", fetch = FetchType.LAZY)
-	private List<Appointment> followUpAppointments;
+	@OneToOne(mappedBy = "parentAppointment", fetch = FetchType.LAZY)
+	private Appointment followUpAppointment;
 
 	// Soft delete support
 	@Column(name = "is_deleted", nullable = false)
@@ -337,17 +335,17 @@ public class Appointment {
 	}
 
 	/**
-	 * @return the followUpAppointments
+	 * @return the followUpAppointment
 	 */
-	public List<Appointment> getFollowUpAppointments() {
-		return followUpAppointments;
+	public Appointment getFollowUpAppointment() {
+		return followUpAppointment;
 	}
 
 	/**
-	 * @param followUpAppointments the followUpAppointments to set
+	 * @param followUpAppointment the followUpAppointment to set
 	 */
-	public void setFollowUpAppointments(List<Appointment> followUpAppointments) {
-		this.followUpAppointments = followUpAppointments;
+	public void setFollowUpAppointment(Appointment followUpAppointment) {
+		this.followUpAppointment = followUpAppointment;
 	}
 
 	/**
@@ -414,8 +412,8 @@ public class Appointment {
 				+ ", patientID=" + (patient != null ? patient.getPatientID() : null) + ", treatmentID="
 				+ (treatment != null ? treatment.getTreatmentID() : null) + ", createdDate=" + createdDate
 				+ ", updatedDate=" + updatedDate + ", priority=" + priority + ", needsReminder=" + needsReminder
-				+ ", isFollowup=" + isFollowup + ", parentAppointment=" + parentAppointment + ", followUpAppointments="
-				+ followUpAppointments + ", deleted=" + deleted + ", deletedDate=" + deletedDate
+				+ ", isFollowup=" + isFollowup + ", parentAppointment=" + parentAppointment + ", followUpAppointment="
+				+ followUpAppointment + ", deleted=" + deleted + ", deletedDate=" + deletedDate
 				+ ", cancellationReason=" + cancellationReason + ", calendarEventId=" + calendarEventId + "]";
 	}
 

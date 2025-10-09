@@ -15,15 +15,22 @@
 	rel="stylesheet">
 <link rel="stylesheet" th:href="@{/css/dashboardstyles.css}">
 <link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<style>
+.tabcontent {
+	margin-top: 100px;
+	max-width: 1300px;
+	margin-left: 100px;
+}
+</style>
 </head>
 <body>
 
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header :: header}"></div>
 
-
 	<!-- Tab Navigation -->
 	<div class="tabs">
+		<button class="tablinks active" onclick="openTab(event, 'Dashboard')">Dashboard</button>
 		<button class="tablinks" onclick="openTab(event, 'UserManagement')">User
 			Management</button>
 		<button class="tablinks"
@@ -40,6 +47,20 @@
 			&amp; Notifications</button>
 	</div>
 
+	<!-- Dashboard Tab Content (Default) -->
+	<div id="Dashboard" class="tabcontent" style="display: block;">
+		<div style="text-align: center; padding: 50px;">
+			<h1>Welcome, [[${session.userName}]]! </h1>
+			
+			<p style="font-size: 18px; color: #666; margin-top: 20px;">
+				Welcome to the Smart HealthCare Management System</p>
+
+			<div style="margin-top: 40px;">
+				<p style="color: #999;">Select a tab above to get started</p>
+			</div>
+		</div>
+	</div>
+
 	<!-- Tab Content -->
 	<div class="tab-content-container">
 
@@ -48,11 +69,15 @@
 			<h3 class="centered-text">User Management</h3>
 			<p>Manage User Profiles</p>
 			<ul>
-				<li><a th:href="@{/api/v1/users/register(source='admindashboard')}">User
+				<li><a
+					th:href="@{/api/v1/users/register(source='admindashboard')}">User
 						Registration</a></li>
-				<li><a th:href="@{/api/v1/search/searchuser(source='admindashboard')}">Search/
+				<li><a
+					th:href="@{/api/v1/search/searchuser(source='admindashboard')}">Search/
 						Update Users</a></li>
-				<li><a th:href="@{/api/v1/users/deleteuser(source='admindashboard')}">Delete User</a></li>
+				<li><a
+					th:href="@{/api/v1/users/deleteuser(source='admindashboard')}">Delete
+						Users</a></li>
 			</ul>
 		</div>
 
@@ -64,11 +89,12 @@
 				<li><a
 					th:href="@{/api/v1/doctor/createschedule(source='admindashboard')}">Create
 						Schedules</a></li>
-				<li><a th:href="@{/api/v1/search/searchschedule(source='admindashboard')}">Search/
+				<li><a
+					th:href="@{/api/v1/search/searchschedule(source='admindashboard')}">Search/
 						Update Schedules</a></li>
 				<li><a
-					th:href="@{/api/v1/doctor/approveschedule(source='admindashboard')}">Approve/ Reject
-						Schedule</a></li>
+					th:href="@{/api/v1/doctor/approveschedule(source='admindashboard')}">Approve/
+						Reject Schedules</a></li>
 			</ul>
 		</div>
 
@@ -81,11 +107,13 @@
 					th:href="@{/api/v1/appointments/createappointment(source='admindashboard')}">Book
 						Appointment</a></li>
 				<li><a
-					th:href="@{/api/v1/appointments/followupappointments(source='admindashboard')}">Follow-up 
-						Appointments</a></li>	
+					th:href="@{/api/v1/appointments/followupappointments(source='admindashboard')}">Follow-up
+						Appointments</a></li>
 				<li><a
-					th:href="@{/api/v1/appointments/cancelappointments(source='admindashboard')}">Cancel Appointments</a></li>	
-				<li><a th:href="@{/api/v1/search/searchappointment(source='admindashboard')}">Search/
+					th:href="@{/api/v1/appointments/cancelappointments(source='admindashboard')}">Cancel
+						Appointments</a></li>
+				<li><a
+					th:href="@{/api/v1/search/searchappointment(source='admindashboard')}">Search/
 						Update Appointments</a></li>
 			</ul>
 		</div>
@@ -98,7 +126,8 @@
 				<li><a
 					th:href="@{/api/v1/invoices/unbilledtreatments(source='admindashboard')}">Generate
 						Invoices</a></li>
-				<li><a th:href="@{/api/v1/search/searchinvoices(source='admindashboard')}">Search
+				<li><a
+					th:href="@{/api/v1/search/searchinvoices(source='admindashboard')}">Search
 						Invoices</a></li>
 				<!-- Lists all invoices with filters for searching and categorization. -->
 				<!-- <li><a th:href="@{/api/v1/invoices/viewtreatmentinvoices(source='admindashboard')}">View
@@ -136,8 +165,8 @@
 			<p>System alerts and updates</p>
 			<ul>
 				<!-- <li><a th:href="@{/api/v1/buttonplatter(source='admindashboard')}">Button Platter</a></li> -->
-				<li><a href="#">System Alerts</a>
-				<li><a href="/notifications">Notifications</a></li>
+				<li><a th:href="@{/api/v1/notifications/systemalerts(source='admindashboard')}">System Alerts</a>
+				<li><a th:href="@{/api/v1/notifications/adminnotifications(source='admindashboard')}">Notifications</a></li>
 			</ul>
 		</div>
 

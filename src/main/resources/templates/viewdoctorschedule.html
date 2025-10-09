@@ -43,7 +43,7 @@
 															});
 											$('#saveChangesBtn').prop(
 													'disabled', false);
-											$('header h2').text(
+											$('.page-header h2').text(
 													'Update Doctor Schedule');
 										});
 
@@ -193,31 +193,43 @@ input[type="date"], input[type="time"], input[type="number"], select {
 .inline-field input, .inline-field select {
 	flex: 2;
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
 
-	<!-- <div th:if="${source == 'viewuser'}">
-			<a th:href="@{'/api/v1/users/viewuser'(userID=${userID})}"
-				class="profile-link" title="Return to Doctor Profile">Return to
-				Doctor Profile</a>
-		</div>
-		<div th:if="${source == 'searchschedule'}">
-			<a th:href="@{/api/v1/search/searchschedule}" class="profile-link"
-				title="Return to Search Schedules">Return to Search Schedules</a>
-		</div>
-		<div th:if="${source == 'viewallschedules'}">
-			<a th:href="@{'/api/v1/doctor/viewallschedules'(doctorID=${doctorID})}"
-				class="profile-link" title="Return to All Schedules">Return to
-				All Schedules</a>
-		</div> -->
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
-		<h4 class="centered-text">View Doctor Schedule</h4>
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>View Doctor Schedule</h2>
+					<nav aria-label="breadcrumb">
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li th:each="crumb, stat : ${breadcrumbTrail}"
+									th:class="${stat.last} ? 'breadcrumb-item active' : 'breadcrumb-item'">
+									<a th:if="${crumb.url}" th:href="${crumb.url}"
+									th:text="${crumb.label}"></a> <span
+									th:if="${crumb.url == null}" th:text="${crumb.label}"></span>
+								</li>
+							</ol>
+						</nav>
+					</nav>
+				</div>
+			</div>
+		</div>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>

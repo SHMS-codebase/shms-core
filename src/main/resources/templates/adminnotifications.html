@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background: #f5f7fa;
+	color: #333;
+	line-height: 1.6;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.header-left h1 {
+	color: #2c3e50;
+	margin-bottom: 5px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.header-icon {
+	width: 32px;
+	height: 32px;
+	background: #3498db;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 18px;
+}
+
+.header-actions {
+	display: flex;
+	gap: 10px;
+}
+
+.btn {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 14px;
+	transition: all 0.3s;
+}
+
+.btn-primary {
+	background: #3498db;
+	color: white;
+}
+
+.btn-primary:hover {
+	background: #2980b9;
+}
+
+.btn-secondary {
+	background: #ecf0f1;
+	color: #2c3e50;
+}
+
+.btn-secondary:hover {
+	background: #d5dbdb;
+}
+
+.filter-bar {
+	background: white;
+	padding: 15px 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	display: flex;
+	gap: 15px;
+	flex-wrap: wrap;
+	align-items: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-btn {
+	padding: 8px 16px;
+	border: 1px solid #ddd;
+	background: white;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: all 0.3s;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.filter-btn:hover, .filter-btn.active {
+	background: #3498db;
+	color: white;
+	border-color: #3498db;
+}
+
+.badge-count {
+	background: #e74c3c;
+	color: white;
+	border-radius: 12px;
+	padding: 2px 8px;
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.notifications-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.notification-item {
+	background: white;
+	padding: 16px 20px;
+	border-bottom: 1px solid #ecf0f1;
+	display: flex;
+	gap: 15px;
+	transition: all 0.2s;
+	cursor: pointer;
+}
+
+.notification-item:first-child {
+	border-radius: 8px 8px 0 0;
+}
+
+.notification-item:last-child {
+	border-radius: 0 0 8px 8px;
+	border-bottom: none;
+}
+
+.notification-item:hover {
+	background: #f8f9fa;
+}
+
+.notification-item.unread {
+	background: #f0f8ff;
+	border-left: 3px solid #3498db;
+}
+
+.notification-icon {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	font-size: 18px;
+}
+
+.icon-task {
+	background: #e3f2fd;
+	color: #2196f3;
+}
+
+.icon-incident {
+	background: #ffebee;
+	color: #f44336;
+}
+
+.icon-training {
+	background: #f3e5f5;
+	color: #9c27b0;
+}
+
+.icon-document {
+	background: #fff3e0;
+	color: #ff9800;
+}
+
+.icon-team {
+	background: #e8f5e9;
+	color: #4caf50;
+}
+
+.icon-achievement {
+	background: #fff9c4;
+	color: #fbc02d;
+}
+
+.notification-content {
+	flex: 1;
+}
+
+.notification-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	margin-bottom: 5px;
+}
+
+.notification-title {
+	font-weight: 600;
+	color: #2c3e50;
+	margin-bottom: 5px;
+}
+
+.notification-time {
+	font-size: 12px;
+	color: #95a5a6;
+	white-space: nowrap;
+}
+
+.notification-description {
+	color: #666;
+	font-size: 14px;
+	margin-bottom: 8px;
+}
+
+.notification-meta {
+	display: flex;
+	gap: 15px;
+	font-size: 12px;
+	color: #7f8c8d;
+}
+
+.notification-actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+.btn-small {
+	padding: 5px 12px;
+	font-size: 13px;
+	border-radius: 4px;
+}
+
+.notification-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 12px;
+	font-size: 11px;
+	font-weight: 600;
+	margin-left: 8px;
+}
+
+.badge-urgent {
+	background: #fee;
+	color: #e74c3c;
+}
+
+.badge-new {
+	background: #e3f2fd;
+	color: #2196f3;
+}
+
+.unread-indicator {
+	width: 8px;
+	height: 8px;
+	background: #3498db;
+	border-radius: 50%;
+	margin-top: 5px;
+}
+
+.empty-state {
+	background: white;
+	border-radius: 8px;
+	padding: 60px 20px;
+	text-align: center;
+	color: #95a5a6;
+}
+
+.section-header {
+	color: #7f8c8d;
+	font-size: 12px;
+	text-transform: uppercase;
+	font-weight: 600;
+	padding: 15px 20px 10px;
+	background: #f8f9fa;
+}
+
+@media ( max-width : 768px) {
+	.header {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 15px;
+	}
+	.header-actions {
+		flex-direction: column;
+	}
+	.filter-bar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.notification-item {
+		flex-direction: column;
+	}
+	.notification-meta {
+		flex-direction: column;
+		gap: 5px;
+	}
+}
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
+	<div class="container">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>
+						<span class="header-icon">🔔</span> Notifications [Stay updated
+						with your safety and health activities]
+					</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item active">System Alerts</li>
+						</ol>
+					</nav>
+				</div>
+				<div class="header-actions">
+					<button class="btn btn-secondary" onclick="markAllRead()">Mark
+						All as Read</button>
+					<button class="btn btn-primary"
+						onclick="alert('Opening notification settings...')">Settings</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="filter-bar">
+			<button class="filter-btn active"
+				onclick="filterNotifications('all')">
+				All <span class="badge-count">12</span>
+			</button>
+			<button class="filter-btn" onclick="filterNotifications('unread')">
+				Unread <span class="badge-count">5</span>
+			</button>
+			<button class="filter-btn" onclick="filterNotifications('tasks')">
+				Tasks <span class="badge-count">3</span>
+			</button>
+			<button class="filter-btn" onclick="filterNotifications('incidents')">
+				Incidents <span class="badge-count">2</span>
+			</button>
+			<button class="filter-btn" onclick="filterNotifications('training')">
+				Training <span class="badge-count">2</span>
+			</button>
+			<button class="filter-btn" onclick="filterNotifications('documents')">
+				Documents <span class="badge-count">3</span>
+			</button>
+			<button class="filter-btn" onclick="filterNotifications('team')">
+				Team <span class="badge-count">2</span>
+			</button>
+		</div>
+
+		<div class="notifications-container">
+			<div class="section-header">Today</div>
+
+			<!-- Unread Task Notification -->
+			<div class="notification-item unread" data-category="tasks"
+				data-read="false" onclick="toggleRead(this)">
+				<div class="unread-indicator"></div>
+				<div class="notification-icon icon-task">📋</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">
+								Incident Investigation Pending Your Approval <span
+									class="notification-badge badge-urgent">Urgent</span>
+							</div>
+						</div>
+						<div class="notification-time">2 hours ago</div>
+					</div>
+					<div class="notification-description">Investigation report
+						for incident #INC-2025-047 (Slip and Fall - Building A) has been
+						submitted by John Smith and requires your review and approval.</div>
+					<div class="notification-meta">
+						<span>📁 Incident: INC-2025-047</span> <span>👤 Assigned
+							by: John Smith</span> <span>⏰ Due: Today, 5:00 PM</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-primary btn-small"
+							onclick="event.stopPropagation(); alert('Opening investigation report...')">Review
+							Now</button>
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Dismissed')">Dismiss</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Unread Incident Notification -->
+			<div class="notification-item unread" data-category="incidents"
+				data-read="false" onclick="toggleRead(this)">
+				<div class="unread-indicator"></div>
+				<div class="notification-icon icon-incident">⚠️</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">
+								New Safety Incident Reported <span
+									class="notification-badge badge-new">New</span>
+							</div>
+						</div>
+						<div class="notification-time">4 hours ago</div>
+					</div>
+					<div class="notification-description">A near-miss incident
+						has been reported in the Manufacturing Floor - Zone C. Chemical
+						spill narrowly avoided. Immediate assessment required.</div>
+					<div class="notification-meta">
+						<span>📍 Location: Manufacturing Floor - Zone C</span> <span>👤
+							Reported by: Sarah Johnson</span> <span>🔴 Severity: High</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-primary btn-small"
+							onclick="event.stopPropagation(); alert('Opening incident details...')">View
+							Incident</button>
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Assigning investigator...')">Assign</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Training Reminder -->
+			<div class="notification-item unread" data-category="training"
+				data-read="false" onclick="toggleRead(this)">
+				<div class="unread-indicator"></div>
+				<div class="notification-icon icon-training">🎓</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Fire Safety Certification
+								Expiring Soon</div>
+						</div>
+						<div class="notification-time">5 hours ago</div>
+					</div>
+					<div class="notification-description">Your Fire Safety
+						certification expires in 15 days (October 24, 2025). Complete the
+						renewal course to maintain compliance.</div>
+					<div class="notification-meta">
+						<span>📚 Course: Fire Safety Level 2</span> <span>⏰
+							Expires: Oct 24, 2025</span> <span>⏱️ Duration: 2 hours</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-primary btn-small"
+							onclick="event.stopPropagation(); alert('Enrolling in course...')">Enroll
+							Now</button>
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Reminder set')">Remind
+							Later</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Document Approval -->
+			<div class="notification-item unread" data-category="documents"
+				data-read="false" onclick="toggleRead(this)">
+				<div class="unread-indicator"></div>
+				<div class="notification-icon icon-document">📄</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">New Safety Policy Requires
+								Acknowledgment</div>
+						</div>
+						<div class="notification-time">6 hours ago</div>
+					</div>
+					<div class="notification-description">Updated "Personal
+						Protective Equipment (PPE) Policy 2025" has been published and
+						requires your acknowledgment by October 15, 2025.</div>
+					<div class="notification-meta">
+						<span>📋 Document: PPE Policy v3.1</span> <span>👤
+							Published by: Safety Director</span> <span>⏰ Acknowledge by: Oct
+							15, 2025</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-primary btn-small"
+							onclick="event.stopPropagation(); alert('Opening document...')">Read
+							& Acknowledge</button>
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Saved for later')">Save
+							for Later</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Team Mention -->
+			<div class="notification-item unread" data-category="team"
+				data-read="false" onclick="toggleRead(this)">
+				<div class="unread-indicator"></div>
+				<div class="notification-icon icon-team">💬</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Michael Chen mentioned you
+								in a comment</div>
+						</div>
+						<div class="notification-time">8 hours ago</div>
+					</div>
+					<div class="notification-description">"@You - Can you review
+						the corrective actions for the ladder inspection findings? Your
+						input on the training requirements would be valuable."</div>
+					<div class="notification-meta">
+						<span>📁 Inspection: Monthly Ladder Audit</span> <span>👤
+							Michael Chen</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-primary btn-small"
+							onclick="event.stopPropagation(); alert('Opening discussion...')">Reply</button>
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Marked as read')">Mark
+							Read</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="section-header">Yesterday</div>
+
+			<!-- Task Completion -->
+			<div class="notification-item" data-category="tasks" data-read="true"
+				onclick="toggleRead(this)">
+				<div class="notification-icon icon-task">✅</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Safety Inspection Completed</div>
+						</div>
+						<div class="notification-time">Yesterday, 3:45 PM</div>
+					</div>
+					<div class="notification-description">Quarterly safety
+						inspection for Building B has been completed by your team. Report
+						is now available for review.</div>
+					<div class="notification-meta">
+						<span>📋 Inspection: Q4-2025-Building-B</span> <span>👤
+							Completed by: Safety Team</span> <span>✅ Status: Approved</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Opening report...')">View
+							Report</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Incident Update -->
+			<div class="notification-item" data-category="incidents"
+				data-read="true" onclick="toggleRead(this)">
+				<div class="notification-icon icon-incident">🔄</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Incident Status Updated to
+								Closed</div>
+						</div>
+						<div class="notification-time">Yesterday, 11:20 AM</div>
+					</div>
+					<div class="notification-description">Incident #INC-2025-042
+						(Forklift near-miss) has been marked as closed after
+						implementation of all corrective actions.</div>
+					<div class="notification-meta">
+						<span>📁 Incident: INC-2025-042</span> <span>👤 Closed by:
+							David Rodriguez</span> <span>📊 Corrective Actions: 4/4 Completed</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Opening incident...')">View
+							Details</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Training Completion -->
+			<div class="notification-item" data-category="training"
+				data-read="true" onclick="toggleRead(this)">
+				<div class="notification-icon icon-training">🏆</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Training Course Completed
+								Successfully</div>
+						</div>
+						<div class="notification-time">Yesterday, 9:15 AM</div>
+					</div>
+					<div class="notification-description">Congratulations! You
+						have successfully completed "Hazardous Material Handling" training
+						with a score of 95%. Your certificate is now available.</div>
+					<div class="notification-meta">
+						<span>📚 Course: Hazardous Material Handling</span> <span>⭐
+							Score: 95%</span> <span>📜 Certificate ID: CERT-2025-1847</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-primary btn-small"
+							onclick="event.stopPropagation(); alert('Downloading certificate...')">Download
+							Certificate</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Document Update -->
+			<div class="notification-item" data-category="documents"
+				data-read="true" onclick="toggleRead(this)">
+				<div class="notification-icon icon-document">📝</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Emergency Response Plan
+								Updated</div>
+						</div>
+						<div class="notification-time">Yesterday, 8:00 AM</div>
+					</div>
+					<div class="notification-description">The Emergency Response
+						Plan has been revised to include new evacuation procedures for
+						Building D. Review the changes in section 4.2.</div>
+					<div class="notification-meta">
+						<span>📋 Document: Emergency Response Plan v2.3</span> <span>👤
+							Updated by: Emergency Coordinator</span> <span>📍 Sections: 4.2,
+							5.1</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Opening document...')">View
+							Changes</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="section-header">This Week</div>
+
+			<!-- Team Activity -->
+			<div class="notification-item" data-category="team" data-read="true"
+				onclick="toggleRead(this)">
+				<div class="notification-icon icon-team">👥</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">You were added to Safety
+								Committee Team</div>
+						</div>
+						<div class="notification-time">3 days ago</div>
+					</div>
+					<div class="notification-description">You have been added as
+						a member of the "Q4 Safety Committee" team. You now have access to
+						shared documents and can participate in team discussions.</div>
+					<div class="notification-meta">
+						<span>👥 Team: Q4 Safety Committee</span> <span>👤 Added
+							by: Safety Director</span> <span>📊 Members: 12</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Opening team workspace...')">View
+							Team</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Achievement -->
+			<div class="notification-item" data-category="tasks" data-read="true"
+				onclick="toggleRead(this)">
+				<div class="notification-icon icon-achievement">🏅</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Safety Milestone Achieved!</div>
+						</div>
+						<div class="notification-time">4 days ago</div>
+					</div>
+					<div class="notification-description">Your department has
+						achieved 180 days without a recordable incident! This milestone
+						demonstrates outstanding commitment to workplace safety.</div>
+					<div class="notification-meta">
+						<span>🏢 Department: Manufacturing</span> <span>📊 Days
+							Without Incident: 180</span> <span>👥 Team Achievement</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Viewing safety metrics...')">View
+							Metrics</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Document Review -->
+			<div class="notification-item" data-category="documents"
+				data-read="true" onclick="toggleRead(this)">
+				<div class="notification-icon icon-document">👁️</div>
+				<div class="notification-content">
+					<div class="notification-header">
+						<div>
+							<div class="notification-title">Document Review Request</div>
+						</div>
+						<div class="notification-time">5 days ago</div>
+					</div>
+					<div class="notification-description">Your feedback is
+						requested on the draft "Contractor Safety Guidelines". Please
+						review and provide comments by October 12, 2025.</div>
+					<div class="notification-meta">
+						<span>📋 Document: Contractor Safety Guidelines (Draft)</span> <span>👤
+							Requested by: Compliance Manager</span> <span>⏰ Review by: Oct
+							12, 2025</span>
+					</div>
+					<div class="notification-actions">
+						<button class="btn btn-secondary btn-small"
+							onclick="event.stopPropagation(); alert('Opening document...')">Review
+							Document</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Include Footer Fragment -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
+
+	<script>
+        function filterNotifications(category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.filter-btn').classList.add('active');
+
+            const notifications = document.querySelectorAll('.notification-item');
+            const sections = document.querySelectorAll('.section-header');
+            
+            notifications.forEach(notification => {
+                const notificationCategory = notification.getAttribute('data-category');
+                const isRead = notification.getAttribute('data-read') === 'true';
+                
+                let show = false;
+                if (category === 'all') {
+                    show = true;
+                } else if (category === 'unread') {
+                    show = !isRead;
+                } else {
+                    show = notificationCategory === category;
+                }
+                
+                notification.style.display = show ? 'flex' : 'none';
+            });
+
+            // Show/hide section headers based on visible items
+            sections.forEach(section => {
+                let nextElement = section.nextElementSibling;
+                let hasVisibleItems = false;
+                
+                while (nextElement && !nextElement.classList.contains('section-header')) {
+                    if (nextElement.style.display !== 'none') {
+                        hasVisibleItems = true;
+                        break;
+                    }
+                    nextElement = nextElement.nextElementSibling;
+                }
+                
+                section.style.display = hasVisibleItems ? 'block' : 'none';
+            });
+        }
+
+        function toggleRead(element) {
+            const isUnread = element.classList.contains('unread');
+            
+            if (isUnread) {
+                element.classList.remove('unread');
+                element.setAttribute('data-read', 'true');
+                const indicator = element.querySelector('.unread-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+                updateBadgeCounts();
+            }
+        }
+
+        function markAllRead() {
+            const unreadNotifications = document.querySelectorAll('.notification-item.unread');
+            unreadNotifications.forEach(notification => {
+                notification.classList.remove('unread');
+                notification.setAttribute('data-read', 'true');
+                const indicator = notification.querySelector('.unread-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+            });
+            updateBadgeCounts();
+            alert('All notifications marked as read');
+        }
+
+        function updateBadgeCounts() {
+            const allCount = document.querySelectorAll('.notification-item').length;
+            const unreadCount = document.querySelectorAll('.notification-item.unread').length;
+            const tasksCount = document.querySelectorAll('.notification-item[data-category="tasks"]').length;
+            const incidentsCount = document.querySelectorAll('.notification-item[data-category="incidents"]').length;
+            const trainingCount = document.querySelectorAll('.notification-item[data-category="training"]').length;
+            const documentsCount = document.querySelectorAll('.notification-item[data-category="documents"]').length;
+            const teamCount = document.querySelectorAll('.notification-item[data-category="team"]').length;
+
+            const badges = document.querySelectorAll('.badge-count');
+            if (badges[0]) badges[0].textContent = allCount;
+            if (badges[1]) badges[1].textContent = unreadCount;
+            if (badges[2]) badges[2].textContent = tasksCount;
+            if (badges[3]) badges[3].textContent = incidentsCount;
+            if (badges[4]) badges[4].textContent = trainingCount;
+            if (badges[5]) badges[5].textContent = documentsCount;
+            if (badges[6]) badges[6].textContent = teamCount;
+        }
+    </script>
+</body>
+</html>

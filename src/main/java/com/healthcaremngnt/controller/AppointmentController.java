@@ -141,6 +141,7 @@ public class AppointmentController {
 		Optional.ofNullable(isFollowup).ifPresent(id -> logger.debug("isFollowup : {}", id));
 
 		model.addAttribute("source", source);
+		model.addAttribute("isFollowup", isFollowup);
 
 		try {
 
@@ -256,21 +257,19 @@ public class AppointmentController {
 			Appointment updatedAppointment = appointmentService.updateAppointmentDetails(appointment);
 			logger.debug("updatedAppointment: {}", updatedAppointment);
 
+			model.addAttribute("appointment", updatedAppointment);
+			model.addAttribute("appointmentID", updatedAppointment.getAppointmentID());
+			model.addAttribute("message", MessageConstants.APMNT_UPDATE_SUCCESS);
+			model.addAttribute("source", source);
+
+			return "viewappointment";
+
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.APMNT_UPDATE_FAILURE, e);
 			model.addAttribute("errorMessage", MessageConstants.APMNT_UPDATE_FAILURE);
 			model.addAttribute("appointment", appointment);
 			return "viewappointment";
 		}
-
-		logger.debug("{}", MessageConstants.APMNT_UPDATE_SUCCESS);
-
-		model.addAttribute("appointment", appointment);
-		model.addAttribute("appointmentID", appointmentID);
-		model.addAttribute("message", MessageConstants.APMNT_UPDATE_SUCCESS);
-		model.addAttribute("source", source);
-
-		return "viewappointment";
 	}
 
 	@GetMapping("/followupappointments")
@@ -279,9 +278,13 @@ public class AppointmentController {
 		logger.info("Loading all Follow-Up Appointments for booking Follow-Up Appointment!!");
 
 		try {
-			List<Treatment> followupAppointments = treatmentService.getFollowUpTreatments();
-			logger.debug("followupAppointments: {}", followupAppointments);
-			model.addAttribute("followupAppointments", followupAppointments);
+			List<Treatment> followupTreatments = treatmentService.getFollowUpTreatments();
+
+			followupTreatments.removeIf(treatment -> treatment.getAppointment() == null
+					|| appointmentService.checkFollowupAppointmentExists(treatment.getAppointment()));
+
+			logger.debug("followupTreatments: {}", followupTreatments);
+			model.addAttribute("followupTreatments", followupTreatments);
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.FOLLOWUP_APMNT_LOAD_ERROR, e);
 			model.addAttribute("errorMessage", MessageConstants.FOLLOWUP_APMNT_LOAD_ERROR);
@@ -289,7 +292,6 @@ public class AppointmentController {
 		}
 
 		model.addAttribute("source", source);
-
 		return "followupappointments";
 	}
 

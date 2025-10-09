@@ -10,4 +10,6 @@ public interface InvoiceService {
 
 	Invoice updateInvoiceStatus(Invoice invoice);
 
+	Invoice getInvoiceByTreatment(Long treatmentID);
+
 }

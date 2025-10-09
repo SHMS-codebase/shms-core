@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,14 +77,19 @@ public class InvoiceController {
 
 	@GetMapping("/generate-invoice")
 	public String viewGenerateInvoice(@RequestParam(RequestParamConstants.TREATMENT_ID) Long treatmentID,
-			@RequestParam(RequestParamConstants.SOURCE) String source, Model model)
+			@RequestParam(RequestParamConstants.SOURCE) String source,
+			@RequestParam(value = RequestParamConstants.FLOW, required = false) String flow, Model model)
 			throws PrescriptionNotFoundException, DataPersistenceException {
 		logger.info("Loading the Generate Invoice Page!!");
 
 		Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
+
+		model.addAttribute("source", source);
+
+		Optional.ofNullable(flow).ifPresent(f -> model.addAttribute("flow", f));
+
 		if (treatment != null) {
 			model.addAttribute("treatment", treatment);
-			model.addAttribute("source", source);
 		} else {
 			model.addAttribute("errorMessage", MessageConstants.TREATMENT_NOT_FOUND);
 			return source;
@@ -99,17 +105,32 @@ public class InvoiceController {
 		}
 		model.addAttribute("prescription", prescription);
 
+		// Update the invoice record status to 'CANCELED' if the invoice is being
+		// generated again
+		// ie, when the admin traverses back from View Invoice (finalized invoice) page
+		// back to Review Invoice page.
+
+		if (treatment.getInvoiceGenerated() != null && treatment.getInvoiceGenerated()) {
+			Invoice existingInvoice = invoiceService.getInvoiceByTreatment(treatmentID);
+			if (existingInvoice != null && existingInvoice.getInvoiceStatus() != InvoiceStatus.CANCELED) {
+				existingInvoice.setInvoiceStatus(InvoiceStatus.CANCELED);
+				invoiceService.updateInvoiceStatus(existingInvoice);
+				logger.info("Updated existing invoice ID: {} status to CANCELED", existingInvoice.getInvoiceID());
+			}
+		}
+
 		return "generateinvoice";
 	}
 
 	@PostMapping("/generate-invoice")
 	public String generateInvoice(@RequestParam(RequestParamConstants.TREATMENT_ID) Long treatmentID,
 			@RequestParam(value = RequestParamConstants.PRESCRIPTION_ID, required = false) Long prescriptionID,
-			@RequestParam(RequestParamConstants.TREATMENT_COST) BigDecimal treatmentCost,
+			@RequestParam(value = RequestParamConstants.TREATMENT_COST, required = false) BigDecimal treatmentCost,
 			@RequestParam(value = RequestParamConstants.PRESCRIPTION_COST, required = false) BigDecimal prescriptionCost,
-			@RequestParam(RequestParamConstants.TOTAL_AMOUNT) BigDecimal totalAmount,
+			@RequestParam(value = RequestParamConstants.TOTAL_AMOUNT, required = false) BigDecimal totalAmount,
 			@RequestParam(RequestParamConstants.INVOICE_STATUS) InvoiceStatus invoiceStatus,
 			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source,
+			@RequestParam(value = RequestParamConstants.FLOW, required = false) String flow,
 			RedirectAttributes redirectAttributes, Model model)
 			throws PrescriptionNotFoundException, DataPersistenceException {
 
@@ -117,11 +138,14 @@ public class InvoiceController {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug(
-					"Request parameters - treatmentID: {},  prescriptionID: {}, treatmentCost: {}, prescriptionCost: {}, totalAmount: {}, invoiceStatus: {}, source: {}",
-					treatmentID, prescriptionID, treatmentCost, prescriptionCost, totalAmount, invoiceStatus, source);
+					"Request parameters - treatmentID: {},  prescriptionID: {}, treatmentCost: {}, prescriptionCost: {}, totalAmount: {}, invoiceStatus: {}, source: {}, flow: {}",
+					treatmentID, prescriptionID, treatmentCost, prescriptionCost, totalAmount, invoiceStatus, source,
+					flow);
 		}
 
 		model.addAttribute("source", source);
+
+		Optional.ofNullable(flow).ifPresent(f -> model.addAttribute("flow", f));
 
 		try {
 
@@ -177,7 +201,7 @@ public class InvoiceController {
 			// Set success message and redirect to invoice details page
 			redirectAttributes.addFlashAttribute("message", MessageConstants.INVOICE_CREATED_SUCCESS);
 			return "redirect:/api/v1/invoices/viewinvoice?invoiceID=" + savedInvoice.getInvoiceID() + "&source="
-					+ source;
+					+ source + "&flow=" + flow;
 
 		} catch (Exception e) {
 			// Handle exceptions
@@ -204,7 +228,8 @@ public class InvoiceController {
 
 	@GetMapping("/viewinvoice")
 	public String viewInvoice(@RequestParam(RequestParamConstants.INVOICE_ID) Long invoiceID,
-			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+			@RequestParam(RequestParamConstants.SOURCE) String source,
+			@RequestParam(value = RequestParamConstants.FLOW, required = false) String flow, Model model) {
 		logger.info("Loading the View Invoice Page!!");
 
 		try {
@@ -263,6 +288,7 @@ public class InvoiceController {
 		}
 
 		model.addAttribute("source", source);
+		model.addAttribute("flow", flow);
 
 		return "viewinvoice";
 	}

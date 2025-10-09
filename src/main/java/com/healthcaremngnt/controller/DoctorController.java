@@ -2,6 +2,7 @@ package com.healthcaremngnt.controller;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +31,7 @@ import com.healthcaremngnt.exceptions.InvalidInputException;
 import com.healthcaremngnt.exceptions.OverlappingScheduleException;
 import com.healthcaremngnt.model.ActivePrescription;
 import com.healthcaremngnt.model.Appointment;
+import com.healthcaremngnt.model.BreadcrumbItem;
 import com.healthcaremngnt.model.Doctor;
 import com.healthcaremngnt.model.DoctorSchedule;
 import com.healthcaremngnt.model.DoctorScheduleRequest;
@@ -84,12 +86,14 @@ public class DoctorController {
 			@RequestParam(value = RequestParamConstants.DOCTOR_ID, required = false) Long doctorID,
 			@RequestParam(value = RequestParamConstants.USER_ID, required = false) Long userID,
 			@RequestParam(value = RequestParamConstants.SCHEDULE_ID, required = false) Long scheduleID,
-			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+			@RequestParam(RequestParamConstants.SOURCE) String source,
+			@RequestParam(value = RequestParamConstants.FLOW, required = false) String flow, Model model) {
 		logger.info("Loading Doctor Schedule");
 
 		Optional.ofNullable(doctorID).ifPresent(id -> logger.debug("Doctor ID: {}", id));
 		Optional.ofNullable(userID).ifPresent(id -> logger.debug("User ID: {}", id));
 		Optional.ofNullable(scheduleID).ifPresent(id -> logger.debug("Schedule ID: {}", id));
+		Optional.ofNullable(source).ifPresent(id -> logger.debug("Source: {}", id));
 
 		try {
 			DoctorScheduleWrapper doctorScheduleWrapper = doctorService.getDoctorScheduleWrapper(doctorID, scheduleID);
@@ -102,6 +106,22 @@ public class DoctorController {
 			logger.error("{}: {}", MessageConstants.SCHEDULE_LOAD_ERROR, e);
 			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_LOAD_ERROR);
 		}
+
+		List<BreadcrumbItem> breadcrumbTrail = new ArrayList<>();
+		breadcrumbTrail.add(new BreadcrumbItem("Dashboard", "/api/v1/auth/dashboard/admin"));
+
+		if (flow.equalsIgnoreCase("searchschedule")) {
+			breadcrumbTrail.add(new BreadcrumbItem("Search Schedules", "/api/v1/search/searchschedule"));
+		} else if (!flow.equalsIgnoreCase("searchschedule")) {
+
+			// Need to check the flow before this page is called
+			
+			breadcrumbTrail.add(new BreadcrumbItem("All Schedules", "/api/v1/doctor/viewallschedules?doctorID=" + doctorID));
+		}
+
+		breadcrumbTrail.add(new BreadcrumbItem("View/Update Schedule", null));
+
+		model.addAttribute("breadcrumbTrail", breadcrumbTrail);
 
 		model.addAttribute("doctorID", doctorID);
 		model.addAttribute("userID", userID);
@@ -219,7 +239,8 @@ public class DoctorController {
 
 			doctorScheduleService.createDoctorSchedule(request);
 
-			if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("ROLE_ADMIN"))) {
+			if (userDetails.getAuthorities().stream()
+					.anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("ROLE_ADMIN"))) {
 				model.addAttribute("message", MessageConstants.SCHEDULE_CREATE_SUCCESS);
 			} else if (userDetails.getAuthorities().stream()
 					.anyMatch(auth -> auth.getAuthority().equalsIgnoreCase("ROLE_DOCTOR"))) {
@@ -250,7 +271,7 @@ public class DoctorController {
 	}
 
 	private String getUserRole(UserDetails userDetails) {
-		
+
 		logger.debug("Determining user role from authorities: {}", userDetails.getAuthorities());
 		return userDetails.getAuthorities().stream().map(auth -> auth.getAuthority().toUpperCase())
 				.filter(role -> Set.of("ROLE_ADMIN", "ROLE_DOCTOR").contains(role)).findFirst().orElse("UNKNOWN");

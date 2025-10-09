@@ -138,6 +138,14 @@
 	color: #f39c12;
 	margin-right: 10px;
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
@@ -147,35 +155,48 @@
 
 		<div class="main-container">
 			<div class="delete-card">
-				<h1><i class="fas fa-user-minus"></i> Delete User</h1>
-
+				<!-- Page Header -->
+				<div class="page-header">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<h2><i class="fas fa-user-minus"></i> Delete Users</h2>
+							<nav aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item"><a
+										href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+									<li class="breadcrumb-item active">Delete Users</li>
+								</ol>
+							</nav>
+						</div>
+					</div>
+				</div>
 				<!-- Display Success Message -->
 				<div th:if="${message}" class="alert alert-success">
-					<i class="fas fa-check-circle"></i>
-					<span th:text="${message}"></span>
+					<i class="fas fa-check-circle"></i> <span th:text="${message}"></span>
 				</div>
 
 				<!-- Display Error Message -->
 				<div th:if="${error}" class="alert alert-danger">
-					<i class="fas fa-exclamation-circle"></i>
-					<span th:text="${error}"></span>
+					<i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
 				</div>
 
 				<!-- Warning Box -->
 				<div class="warning-box">
-					<i class="fas fa-exclamation-triangle"></i>
-					<strong>Warning:</strong> This action cannot be undone. Deleting a user will permanently remove all their data from the system.
+					<i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong>
+					This action cannot be undone. Deleting a user will permanently
+					remove all their data from the system.
 				</div>
 
 				<!-- User Selection Form -->
-				<form method="post" th:action="@{/users/deleteuser}" th:object="${userForm}">
+				<form method="post" th:action="@{/users/deleteuser}"
+					th:object="${userForm}">
 					<div class="form-group">
-						<label for="user"><i class="fas fa-user"></i> Select User to Delete:</label>
-						<select id="user" name="selectedUserID" th:field="*{selectedUserID}" required>
+						<label for="user"><i class="fas fa-user"></i> Select User
+							to Delete:</label> <select id="user" name="selectedUserID"
+							th:field="*{selectedUserID}" required>
 							<option value="" disabled selected>-- Select a user --</option>
-							<option th:each="user : ${users}" 
-									th:value="${user.userID}" 
-									th:text="${user.userName + ' (' + user.emailID + ')'}">
+							<option th:each="user : ${users}" th:value="${user.userID}"
+								th:text="${user.userName + ' (' + user.emailID + ')'}">
 							</option>
 						</select>
 					</div>
@@ -198,14 +219,21 @@
 
 	<script>
 		// Confirmation dialog before deletion
-		document.querySelector('form').addEventListener('submit', function(e) {
-			const selectElement = document.getElementById('user');
-			const selectedText = selectElement.options[selectElement.selectedIndex].text;
-			
-			if (!confirm('Are you sure you want to delete ' + selectedText + '? This action cannot be undone.')) {
-				e.preventDefault();
-			}
-		});
+		document
+				.querySelector('form')
+				.addEventListener(
+						'submit',
+						function(e) {
+							const selectElement = document
+									.getElementById('user');
+							const selectedText = selectElement.options[selectElement.selectedIndex].text;
+
+							if (!confirm('Are you sure you want to delete '
+									+ selectedText
+									+ '? This action cannot be undone.')) {
+								e.preventDefault();
+							}
+						});
 	</script>
 </body>
 </html>
