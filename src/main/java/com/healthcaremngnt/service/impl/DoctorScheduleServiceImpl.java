@@ -133,7 +133,7 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
 		LocalTime startTime = LocalTime.parse(request.getStartTime());
 		LocalTime endTime = LocalTime.parse(request.getEndTime());
 
-		var overlapFound = doctorScheduleRepository.findByDoctor_DoctorIDAndAvailableDate(doctorID, availableDate)
+		var overlapFound = doctorScheduleRepository.findByDoctor_DoctorIDAndAvailableDateAndScheduleStatus(doctorID, availableDate, ScheduleStatus.APPROVED)
 				.stream().anyMatch(schedule -> schedule.getStartTime().isBefore(endTime)
 						&& schedule.getEndTime().isAfter(startTime));
 
@@ -216,8 +216,8 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
 		logger.info("Fetching available time slots for Doctor ID: {} on Date: {}", doctorID, availableDate);
 
 		return doctorScheduleRepository
-				.findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThan(doctorID, availableDate,
-						SmartHealthCareConstants.MINIMUM_SLOT)
+				.findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThanAndScheduleStatus(doctorID, availableDate,
+						SmartHealthCareConstants.MINIMUM_SLOT, ScheduleStatus.APPROVED)
 				.stream()
 				.map(schedule -> String.format("%s - %s",
 						schedule.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),

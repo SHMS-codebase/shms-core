@@ -198,8 +198,8 @@ public class AppointmentController {
 			return "createappointment";
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.APMNT_BOOKING_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.APMNT_BOOKING_ERROR);
+			logger.error("{}: {}", MessageConstants.APMNT_BOOKING_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			populateDoctorsAndPatients(model);
 			return "createappointment";
 		}
@@ -231,11 +231,11 @@ public class AppointmentController {
 			logger.debug("appointment: {}", appointment);
 			model.addAttribute("appointment", appointment);
 		} catch (NumberFormatException e) {
-			logger.error("{}: {}", MessageConstants.APMNT_INVALID_IDFORMAT, appointmentID, e);
-			model.addAttribute("errorMessage", MessageConstants.APMNT_INVALID_IDFORMAT);
+			logger.error("{}: {}", MessageConstants.APMNT_INVALID_IDFORMAT, appointmentID, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.APMNT_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.APMNT_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.APMNT_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		}
 
 		model.addAttribute("appointmentID", appointmentID);
@@ -265,8 +265,8 @@ public class AppointmentController {
 			return "viewappointment";
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.APMNT_UPDATE_FAILURE, e);
-			model.addAttribute("errorMessage", MessageConstants.APMNT_UPDATE_FAILURE);
+			logger.error("{}: {}", MessageConstants.APMNT_UPDATE_FAILURE, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			model.addAttribute("appointment", appointment);
 			return "viewappointment";
 		}
@@ -286,8 +286,8 @@ public class AppointmentController {
 			logger.debug("followupTreatments: {}", followupTreatments);
 			model.addAttribute("followupTreatments", followupTreatments);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.FOLLOWUP_APMNT_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.FOLLOWUP_APMNT_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.FOLLOWUP_APMNT_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 
@@ -315,8 +315,8 @@ public class AppointmentController {
 			model.addAttribute("doctors", doctors);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.CANCEL_APMNT_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.CANCEL_APMNT_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.CANCEL_APMNT_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 
@@ -340,8 +340,8 @@ public class AppointmentController {
 			model.addAttribute("doctors", doctors);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.CANCEL_APMNT_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.CANCEL_APMNT_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.CANCEL_APMNT_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 

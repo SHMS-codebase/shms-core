@@ -59,7 +59,7 @@
 	width: 100%;
 	max-width: 650px;
 	padding: 30px;
-	margin-top: 300px;
+	margin-top: 350px;
 	margin-bottom: 40px;
 }
 
@@ -156,15 +156,17 @@ form {
 					<h2>Create Doctor Schedule</h2>
 					<nav aria-label="breadcrumb">
 						<ol class="breadcrumb mb-0">
-							<li class="breadcrumb-item"><a
+							<li class="breadcrumb-item" th:if="${doctorID == null}"><a
 								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item" th:unless="${doctorID == null}"><a
+								href="/api/v1/auth/dashboard/doctor">Doctor Dashboard</a></li>
 							<li class="breadcrumb-item active">Create Doctor Schedule</li>
 						</ol>
 					</nav>
 				</div>
 			</div>
 		</div>
-		
+
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
 		</div>
@@ -235,5 +237,24 @@ form {
 	</div>
 	<!-- Include Footer Fragment -->
 	<div th:replace="~{fragments/footer :: footer}"></div>
+
+	<script>
+		document.getElementById("startTime").addEventListener(
+				"change",
+				function() {
+					const selectedTime = this.value;
+					const now = new Date();
+					const currentTime = now.getHours().toString().padStart(2,
+							'0')
+							+ ":"
+							+ now.getMinutes().toString().padStart(2, '0');
+
+					if (selectedTime < currentTime) {
+						alert("Please select a time that is not in the past.");
+						this.value = ""; // Clear the invalid input
+					}
+				});
+	</script>
+
 </body>
 </html>

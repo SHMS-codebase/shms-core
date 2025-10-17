@@ -51,8 +51,8 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 550px;
-	margin-bottom: 300px;
+	margin-top: 300px;
+	margin-bottom: auto;
 	display: flex;
 	flex-direction: column;
 }
@@ -551,5 +551,7 @@ button {
             // In real implementation, you would submit form or make AJAX call here
         }
     </script>
+    <!-- Include Footer Fragment -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

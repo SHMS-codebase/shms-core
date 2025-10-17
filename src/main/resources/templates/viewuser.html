@@ -72,12 +72,12 @@ form {
 	width: 100%;
 	max-width: 600px;
 	padding: 30px;
-	margin-top: 30px;
+	margin-top: 400px;
 	margin-bottom: 15px;
 	/* Add max-height and scrolling */
-	max-height: calc(100vh - 180px);
+	/* max-height: calc(100vh - 180px); */
 	/* Adjust 180px to header+footer height */
-	overflow-y: auto;
+	/* overflow-y: auto; */
 }
 
 .error-message {
@@ -162,11 +162,25 @@ button[disabled]:hover, button[disabled]:active {
 					<h2>View User Details</h2>
 					<nav aria-label="breadcrumb">
 						<ol class="breadcrumb mb-0">
-							<li class="breadcrumb-item"><a
+							<li class="breadcrumb-item" th:if="${source == 'admindashboard'}"><a
 								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
-							<li class="breadcrumb-item"><a
-								th:href="@{/api/v1/search/searchuser(source=${source})}">Search
+							<li class="breadcrumb-item"
+								th:if="${source == 'doctordashboard'}"><a
+								href="/api/v1/auth/dashboard/doctor">Doctor Dashboard</a></li>
+							<li class="breadcrumb-item"
+								th:if="${source == 'patientdashboard'}"><a
+								href="/api/v1/auth/dashboard/patient">Patient Dashboard</a></li>
+							<li class="breadcrumb-item" th:if="${source == 'admindashboard'}"><a
+								th:href="@{/api/v1/search/searchuser(source='admindashboard')}">Search
 									Users</a></li>
+							<li class="breadcrumb-item"
+								th:if="${source == 'doctordashboard'}"><a
+								th:href="@{/api/v1/search/searchuser(source='doctordashboard')}">Search
+									Patients</a></li>
+							<li class="breadcrumb-item"
+								th:if="${source == 'patientdashboard'}"><a
+								th:href="@{/api/v1/search/searchuser(source='patientdashboard')}">Search
+									Doctors</a></li>
 							<li class="breadcrumb-item active">User Details</li>
 						</ol>
 					</nav>
@@ -314,11 +328,11 @@ button[disabled]:hover, button[disabled]:active {
 						th:value="${userDetails.doctor.experience}" disabled>
 				</div>
 
-				<div>
+				<!-- <div>
 					<a
 						th:href="@{/api/v1/doctor/viewallschedules(doctorID=${userDetails.doctor.doctorID}, source='admindashboard')}">View
 						Doctor Schedule(s)</a>
-				</div>
+				</div> -->
 			</div>
 
 			<!-- Patient Fields -->
@@ -371,13 +385,16 @@ button[disabled]:hover, button[disabled]:active {
 				</div>
 				<div>
 					<a
-						th:href="@{'/api/v1/patient/viewmedicalhistory'(patientID=${userDetails.patient.patientID}, userID=${userDetails.userID}, source='admindashboard')}">
+						th:href="@{'/api/v1/patient/viewmedicalhistory'(patientID=${userDetails.patient.patientID}, userID=${userDetails.userID}, source=${source})}">
 						View Medical History </a>
 				</div>
 
 			</div>
 
-			<div class="buttons-container">
+			<!-- Only show buttons if not in the restricted scenarios -->
+			<div class="buttons-container"
+				th:if="${!(source == 'patientdashboard' && userDetails.roleID == 2) && 
+						!(source == 'doctordashboard' && userDetails.roleID == 3)}">
 				<button type="button" id="editBtn">Edit</button>
 				<button type="reset" id="resetBtn" disabled>Reset</button>
 				<button type="submit" id="saveChangesBtn" disabled>Save</button>

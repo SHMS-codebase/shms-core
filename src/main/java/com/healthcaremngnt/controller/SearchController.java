@@ -242,8 +242,12 @@ public class SearchController {
 	}
 
 	@GetMapping("/searchinvoices")
-	public String viewSearchInvoices(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+	public String viewSearchInvoices(@RequestParam(RequestParamConstants.SOURCE) String source,
+			@RequestParam(value = RequestParamConstants.PATIENT_ID, required = false) Long patientID, Model model) {
 		logger.info("View Search Invoices!!!");
+
+		if (patientID != null)
+			model.addAttribute("patientID", patientID);
 
 		List<Patient> patients = patientService.getAllPatients();
 		model.addAttribute("patients", patients);
@@ -280,6 +284,9 @@ public class SearchController {
 			logger.error("{}: {}", MessageConstants.SEARCH_ERROR, e);
 			model.addAttribute("message", MessageConstants.SEARCH_ERROR);
 		}
+
+		if (patientID != null)
+			model.addAttribute("patientID", patientID);
 
 		List<Patient> patients = patientService.getAllPatients();
 		model.addAttribute("patients", patients);
@@ -325,7 +332,7 @@ public class SearchController {
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 
 		logger.info(
-				"Searching Appointments with criteria - Patient ID: {}, Treatment ID: {}, Treatment Date: {}, Status: {}, source: {}",
+				"Searching Treatments with criteria - Patient ID: {}, Treatment ID: {}, Treatment Date: {}, Status: {}, source: {}",
 				patientID, treatmentID, treatmentDateStr, treatmentStatus, source);
 
 		LocalDate treatmentDate = parseDate(treatmentDateStr);

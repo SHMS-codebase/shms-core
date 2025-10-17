@@ -161,7 +161,7 @@ form {
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 	width: 100%;
 	max-width: 600px;
-	margin-top: 12px;
+	margin-top: 400px;
 	margin-bottom: 12px
 }
 
@@ -242,16 +242,54 @@ form button {
 	font-size: 16px; /* Match the other buttons */
 	min-width: 110px;
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
-		<h4 class="centered-text">View Patient Medical History</h4>
-
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>View Patient Medical History</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item" th:if="${source == 'admindashboard'}"><a
+								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+							<li class="breadcrumb-item"
+								th:if="${source == 'doctordashboard'}"><a
+								href="/api/v1/auth/dashboard/doctor">Doctor Dashboard</a></li>
+							<li class="breadcrumb-item"
+								th:if="${source == 'patientdashboard'}"><a
+								href="/api/v1/auth/dashboard/patient">PatientDashboard</a></li>
+							<li class="breadcrumb-item" th:if="${source == 'admindashboard'}"><a
+								th:href="@{/api/v1/search/searchuser(source='admindashboard')}">Search
+									Users</a></li>
+							<li class="breadcrumb-item"
+								th:if="${source == 'doctordashboard'}"><a
+								th:href="@{/api/v1/search/searchuser(source='doctordashboard')}">Search
+									Patients</a></li>
+							<li class="breadcrumb-item" th:if="${patientID == null}"><a
+								th:href="@{/api/v1/users/viewuser(userID=${userID}, source=${source})}">User
+									Details</a></li>
+							<li class="breadcrumb-item active">View Patient Medical
+								History</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
 		</div>
@@ -313,6 +351,7 @@ form button {
 			th:method="POST">
 			<input type="hidden" name="userID" th:value="${userID}" /> <input
 				type="hidden" name="patientID" th:value="${patientID}" />
+				<input type="hidden" th:name="source" th:value="${source}" />
 			<div class="form-group">
 				<label for="newMedicalHistory">Medical History:</label>
 				<textarea id="newMedicalHistory" name="newMedicalHistory" rows="4"

@@ -85,12 +85,12 @@ public class PasswordManagementController {
 				emailService.sendPasswordResetEmail(user.getEmailID(), user);
 				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_MSG);
 			} else {
-				logger.error("{}: {}", MessageConstants.USER_NOT_FOUND, email);
+				logger.error("{} for Email ID: {}", MessageConstants.USER_NOT_FOUND, email);
 				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_GENERIC_MSG);
 			}
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.PWD_LINK_ERROR, e);
-			redirectAttributes.addFlashAttribute("errorMessage", MessageConstants.PWD_LINK_ERROR);
+			logger.error("{}: {}", MessageConstants.PWD_LINK_ERROR, e.getMessage());
+			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 		}
 
 		return "redirect:/api/v1/pwd/forgot-password";
@@ -127,12 +127,12 @@ public class PasswordManagementController {
 				emailService.sendPasswordResetEmail(user.getEmailID(), user);
 				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_MSG);
 			} else {
-				logger.error("{}: {}", MessageConstants.USER_NOT_FOUND, username);
+				logger.error("{} for User Name: {}", MessageConstants.USER_NOT_FOUND, username);
 				redirectAttributes.addFlashAttribute("message", MessageConstants.PWD_LINK_GENERIC_MSG);
 			}
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.PWD_LINK_ERROR, e);
-			redirectAttributes.addFlashAttribute("errorMessage", MessageConstants.PWD_LINK_ERROR);
+			logger.error("{}: {}", MessageConstants.PWD_LINK_ERROR, e.getMessage());
+			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 		}
 
 		return "redirect:/api/v1/pwd/forgot-password";
@@ -193,8 +193,8 @@ public class PasswordManagementController {
 				model.addAttribute("message", MessageConstants.PASSWORD_RESET_SUCCESS);
 				return "resetpasswordsuccess";
 			} catch (Exception e) {
-				logger.error("{}: {}", MessageConstants.PASSWORD_RESET_FAILURE, e);
-				model.addAttribute("errorMessage", MessageConstants.PASSWORD_RESET_FAILURE);
+				logger.error("{}: {}", MessageConstants.PASSWORD_RESET_FAILURE, e.getMessage());
+				model.addAttribute("errorMessage", e.getMessage());
 				return "resetpassword";
 			}
 		} else {
@@ -240,8 +240,8 @@ public class PasswordManagementController {
 			logger.debug("{}", MessageConstants.PASSWORD_RESET_SUCCESS);
 			model.addAttribute("message", MessageConstants.PASSWORD_RESET_SUCCESS);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.PASSWORD_RESET_FAILURE, e);
-			model.addAttribute("errorMessage", MessageConstants.PASSWORD_RESET_FAILURE);
+			logger.error("{}: {}", MessageConstants.PASSWORD_RESET_FAILURE, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		}
 
 		model.addAttribute("userID", userID);

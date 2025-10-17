@@ -50,8 +50,8 @@
 	<!-- Dashboard Tab Content (Default) -->
 	<div id="Dashboard" class="tabcontent" style="display: block;">
 		<div style="text-align: center; padding: 50px;">
-			<h1>Welcome, [[${session.userName}]]! </h1>
-			
+			<h1>Welcome, [[${session.userName}]]!</h1>
+
 			<p style="font-size: 18px; color: #666; margin-top: 20px;">
 				Welcome to the Smart HealthCare Management System</p>
 
@@ -101,7 +101,7 @@
 		<!-- Appointments Overview -->
 		<div id="AppointmentsOverview" class="tabcontent">
 			<h3 class="centered-text">Appointments Overview</h3>
-			<!-- <p>Summary of scheduled, canceled, and no-show appointments</p> -->
+			<p>Appointment Scheduling and Management</p>
 			<ul>
 				<li><a
 					th:href="@{/api/v1/appointments/createappointment(source='admindashboard')}">Book
@@ -165,16 +165,13 @@
 			<p>System alerts and updates</p>
 			<ul>
 				<!-- <li><a th:href="@{/api/v1/buttonplatter(source='admindashboard')}">Button Platter</a></li> -->
-				<li><a th:href="@{/api/v1/notifications/systemalerts(source='admindashboard')}">System Alerts</a>
-				<li><a th:href="@{/api/v1/notifications/adminnotifications(source='admindashboard')}">Notifications</a></li>
+				<li><a
+					th:href="@{/api/v1/notifications/systemalerts(source='admindashboard')}">System
+						Alerts</a>
+				<li><a
+					th:href="@{/api/v1/notifications/adminnotifications(source='admindashboard')}">Notifications</a></li>
 			</ul>
 		</div>
-
-		<!-- System Analytics -->
-		<!-- <section class="system-analytics">
-			<h2>System Analytics</h2>
-			<p>KPIs, usage statistics, performance reports</p>
-		</section> -->
 
 	</div>
 

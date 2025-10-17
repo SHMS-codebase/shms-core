@@ -65,8 +65,8 @@ public class InvoiceController {
 			List<Treatment> unbilledTreatments = treatmentService.getAllUnbilledTreatments();
 			model.addAttribute("unbilledTreatments", unbilledTreatments);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.UNBILLED_TREATMENTS_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.UNBILLED_TREATMENTS_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.UNBILLED_TREATMENTS_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 
@@ -205,8 +205,8 @@ public class InvoiceController {
 
 		} catch (Exception e) {
 			// Handle exceptions
-			logger.error("{}: {}", MessageConstants.INVOICE_CREATED_FAILURE, e.getLocalizedMessage());
-			redirectAttributes.addFlashAttribute("errorMessage", MessageConstants.INVOICE_CREATED_FAILURE);
+			logger.error("{}: {}", MessageConstants.INVOICE_CREATED_FAILURE, e.getMessage());
+			redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 
 			// Repopulate the form data in case of error
 			Treatment treatment = treatmentService.getTreatmentDetails(treatmentID);
@@ -229,7 +229,9 @@ public class InvoiceController {
 	@GetMapping("/viewinvoice")
 	public String viewInvoice(@RequestParam(RequestParamConstants.INVOICE_ID) Long invoiceID,
 			@RequestParam(RequestParamConstants.SOURCE) String source,
-			@RequestParam(value = RequestParamConstants.FLOW, required = false) String flow, Model model) {
+			@RequestParam(value = RequestParamConstants.FLOW, required = false) String flow, 
+			@RequestParam(value = RequestParamConstants.PATIENT_ID, required = false) String patientID, 
+			Model model) {
 		logger.info("Loading the View Invoice Page!!");
 
 		try {
@@ -269,6 +271,9 @@ public class InvoiceController {
 				Patient patient = patientService.getPatientDetails(treatment.getPatientID());
 				logger.debug("patient: {}", patient);
 				model.addAttribute("patient", patient);
+				
+				if(patientID != null)
+					model.addAttribute("patientID", patientID);
 
 				User user = patient.getUser();
 				logger.debug("user: {}", user);
@@ -282,8 +287,8 @@ public class InvoiceController {
 			model.addAttribute("formattedTreatmentDate", formattedTreatmentDate);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.INVOICE_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.INVOICE_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.INVOICE_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 

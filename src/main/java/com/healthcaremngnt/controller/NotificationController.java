@@ -33,10 +33,34 @@ public class NotificationController {
 
 	@GetMapping("/adminnotifications")
 	public String viewAdminNotifications(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
-		logger.info("Viewing admin notifications");
+		logger.info("Viewing Administrator notifications");
 
 		model.addAttribute("source", source);
 		return "adminnotifications";
 	}
+	
+	@GetMapping("/doctornotifications")
+	public String viewDoctorNotifications(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Viewing Doctor notifications");
 
+		model.addAttribute("source", source);
+		return "doctornotifications";
+	}
+	
+	@GetMapping("/patientnotifications")
+	public String viewPatientNotifications(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Viewing Patient notifications");
+
+		model.addAttribute("source", source);
+		return "patientnotifications";
+	}
+
+	@GetMapping("/announcements")
+	public String viewAnnouncements(@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
+		logger.info("Viewing Announcements");
+
+		model.addAttribute("source", source);
+		return "announcements";
+	}
+	
 }

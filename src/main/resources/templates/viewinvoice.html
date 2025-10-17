@@ -217,9 +217,11 @@ form {
 					<h2>View Invoice</h2>
 					<nav aria-label="breadcrumb">
 						<ol class="breadcrumb mb-0">
-							<li class="breadcrumb-item"><a
+							<li class="breadcrumb-item" th:if="${source == 'admindashboard'}"><a
 								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
-
+							<li class="breadcrumb-item"
+								th:if="${source == 'patientdashboard'}"><a
+								href="/api/v1/auth/dashboard/patient">Patient Dashboard</a></li>
 							<!-- Conditional breadcrumb based on flow -->
 							<th:block th:if="${flow == 'unbilledtreatments'}">
 								<li class="breadcrumb-item"><a
@@ -231,8 +233,13 @@ form {
 							</th:block>
 
 							<th:block th:if="${flow == 'searchinvoices'}">
-								<li class="breadcrumb-item"><a
+								<li class="breadcrumb-item"
+									th:if="${source == 'admindashboard'}"><a
 									href="/api/v1/search/searchinvoices?source=admindashboard">Search
+										Invoices</a></li>
+								<li class="breadcrumb-item"
+									th:if="${source == 'patientdashboard'}"><a
+									th:href="@{'/api/v1/search/searchinvoices'(patientID=${patientID}, source='patientdashboard')}">Search
 										Invoices</a></li>
 							</th:block>
 
@@ -382,13 +389,15 @@ form {
 		<div class="d-flex justify-content-between">
 			<button class="btn btn-info me-2" onclick="window.print();">Print
 				Invoice</button>
-			<a
-				th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).FINALIZED}"
-				th:href="@{/api/v1/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='PAID')}"
-				class="btn btn-success">Mark as Paid</a><a
-				th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).REVIEWED}"
-				th:href="@{/api/v1/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='CANCELED')}"
-				class="btn btn-secondary">Cancel Invoice</a>
+			<div th:if="${source == 'admindashboard'}">
+				<a
+					th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).FINALIZED}"
+					th:href="@{/api/v1/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='PAID')}"
+					class="btn btn-success">Mark as Paid</a> <a
+					th:if="${invoice.invoiceStatus == T(com.healthcaremngnt.enums.InvoiceStatus).REVIEWED}"
+					th:href="@{/api/v1/invoices/update-invoice(invoiceID=${invoice.invoiceID}, source='admindashboard', invoiceStatus='CANCELED')}"
+					class="btn btn-secondary">Cancel Invoice</a>
+			</div>
 		</div>
 	</div>
 

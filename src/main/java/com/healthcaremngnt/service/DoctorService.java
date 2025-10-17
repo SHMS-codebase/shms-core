@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 
 import com.healthcaremngnt.exceptions.DoctorNotFoundException;
@@ -18,7 +20,9 @@ public interface DoctorService {
 
 	Doctor getDoctorInfoCard(String userName) throws DoctorNotFoundException;
 
-	List<DoctorSchedule> findDoctorSchedule(Long doctorID) throws DoctorNotFoundException;
+	Page<DoctorSchedule> findDoctorSchedule(Long doctorID, Pageable pageable) throws DoctorNotFoundException;
+
+	public List<DoctorSchedule> findDoctorSchedule(Long doctorID) throws DoctorNotFoundException;
 
 	List<Doctor> getAllDoctors();
 
@@ -27,7 +31,7 @@ public interface DoctorService {
 	DoctorScheduleWrapper getDoctorScheduleWrapper(Long doctorID, Long scheduleID) throws DoctorNotFoundException;
 
 	void loadDoctorsAndFormValues(Model model, Long doctorId, LocalDate availableDate, LocalTime startTime,
-			LocalTime endTime, String scheduleStatus); 
+			LocalTime endTime, String scheduleStatus);
 
 	List<Doctor> getDoctorsWithSchedule();
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Follow-up Appointments</title>
+<title>Recent Payments</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -50,8 +50,8 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 300px;
-	margin-bottom: 300px;
+	margin-top: 200px;
+	margin-bottom: 20px;
 	display: flex;
 	flex-direction: column;
 }
@@ -93,15 +93,6 @@ th {
 	z-index: 1; /* Ensure headers appear above content */
 }
 
-button {
-	padding: 6px 12px;
-	cursor: pointer;
-	background-color: #4CAF50;
-	color: white;
-	border: none;
-	border-radius: 4px;
-}
-
 @media screen and (max-width: 768px) {
 	.container {
 		width: 95%;
@@ -127,12 +118,12 @@ button {
 		<div class="page-header">
 			<div class="d-flex justify-content-between align-items-center">
 				<div>
-					<h2>Follow-up Appointments</h2>
+					<h2>My Recent Payments</h2>
 					<nav aria-label="breadcrumb">
 						<ol class="breadcrumb mb-0">
 							<li class="breadcrumb-item"><a
-								href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
-							<li class="breadcrumb-item active">Follow-up Appointments</li>
+								href="/api/v1/auth/dashboard/patient">Patient Dashboard</a></li>
+							<li class="breadcrumb-item active">Recent Payments</li>
 						</ol>
 					</nav>
 				</div>
@@ -142,62 +133,67 @@ button {
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
 		</div>
-		<div th:if="${message}" class="success-message">
-			<p th:text="${message}"></p>
-		</div>
-		<div th:if="${#lists.isEmpty(followupTreatments)}">
-			<p>No Pending Follow-up Appointments</p>
-		</div>
-		<div th:unless="${#lists.isEmpty(followupTreatments)}">
-			<div class="table-container">
-				<!-- Added container with fixed height for vertical scrolling -->
-				<table>
-					<thead>
-						<tr>
-							<th>Treatment ID</th>
-							<th>Diagnosis</th>
-							<th>Patient Name</th>
-							<th>Doctor Name</th>
-							<th>Appointment Date</th>
-							<th>Additional Notes</th>
-							<th>Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="treatment : ${followupTreatments}">
-							<td th:text="${treatment.treatmentID}"></td>
-							<td th:text="${treatment.diagnosis}"></td>
-							<td th:text="${treatment.appointment.patient.patientName}"></td>
-							<td th:text="${treatment.appointment.doctor.doctorName}"></td>
-							<td th:text="${treatment.appointment.appointmentDate}"></td>
-							<td th:text="${treatment.notes}"></td>
-							<td>
-								<button th:data-treatment-id="${treatment.treatmentID}"
-									th:data-doctor-id="${treatment.appointment.doctor.doctorID}"
-									th:data-patient-id="${treatment.appointment.patient.patientID}"
-									th:data-appointment-id="${treatment.appointment.appointmentID}"
-									th:data-source="${source}"
-									onclick="bookFollowupAppointment(this)">Book
-									Appointment</button>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th style="width: 10%;">Payment ID</th>
+						<th style="width: 12%;">Date</th>
+						<th style="width: 18%;">Description</th>
+						<th style="width: 15%;">Doctor/Service</th>
+						<th style="width: 12%;">Amount</th>
+						<th style="width: 15%;">Payment Method</th>
+						<th style="width: 10%;">Status</th>
+						<th style="width: 8%;">Receipt</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>#PAY-2451</td>
+						<td>Oct 15, 2025</td>
+						<td>Consultation Fee</td>
+						<td>Dr. Smith</td>
+						<td>₹500.00</td>
+						<td>
+							<div class="payment-method">
+								<i class="fas fa-credit-card"></i> <span>Credit Card</span>
+							</div>
+						</td>
+						<td><span class="status-badge status-completed">Completed</span></td>
+						<td><a href="/api/v1/payment/printreceipt?source='patientdashboard'" target="_blank"><i class="fas fa-download"></i></a></td>
+					</tr>
+					<tr>
+						<td>#PAY-2438</td>
+						<td>Oct 10, 2025</td>
+						<td>Follow-up Consultation</td>
+						<td>Dr. Rock</td>
+						<td>₹950.00</td>
+						<td>
+							<div class="payment-method">
+								<i class="fas fa-university"></i> <span>Debit Card</span>
+							</div>
+						</td>
+						<td><span class="status-badge status-completed">Completed</span></td>
+						<td><a href="#"><i class="fas fa-download"></i></a></td>
+					</tr>
+					<tr>
+						<td>#PAY-2422</td>
+						<td>Oct 5, 2025</td>
+						<td>Specialist Consultation</td>
+						<td>Dr. Wanda</td>
+						<td>₹1,500.00</td>
+						<td>
+							<div class="payment-method">
+								<i class="fas fa-mobile-alt"></i> <span>UPI</span>
+							</div>
+						</td>
+						<td><span class="status-badge status-completed">Completed</span></td>
+						<td><a href="#"><i class="fas fa-download"></i></a></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
-	<script>
-		function bookFollowupAppointment(button) {
-			const treatmentID = button.getAttribute('data-treatment-id');
-			const doctorID = button.getAttribute('data-doctor-id');
-			const patientID = button.getAttribute('data-patient-id');
-			const parentAppointmentID = button
-					.getAttribute('data-appointment-id');
-			const source = button.getAttribute('data-source');
-			window.location.href = `/api/v1/appointments/createappointment?treatmentID=${treatmentID}&doctorID=${doctorID}&patientID=${patientID}&parentAppointmentID=${parentAppointmentID}&source=${source}&isFollowup=true`;
-		}
-	</script>
-
 	<!-- Include Footer Fragment -->
 	<div th:replace="~{fragments/footer :: footer}"></div>
 </body>

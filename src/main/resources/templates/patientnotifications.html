@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Notifications</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<style>
+body {
+	font-family: 'Open Sans', sans-serif;
+	background-color: #f8f9fa;
+}
+
+.notification-filters {
+	background: white;
+	padding: 20px;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-tabs {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.filter-btn {
+	padding: 8px 20px;
+	border: 2px solid #e0e0e0;
+	background: white;
+	border-radius: 25px;
+	cursor: pointer;
+	transition: all 0.3s;
+	font-weight: 500;
+}
+
+.filter-btn:hover {
+	border-color: #667eea;
+	color: #667eea;
+}
+
+.filter-btn.active {
+	background: #667eea;
+	color: white;
+	border-color: #667eea;
+}
+
+.notification-card {
+	background: white;
+	border-radius: 10px;
+	padding: 20px;
+	margin-bottom: 15px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	border-left: 4px solid #667eea;
+	transition: all 0.3s;
+	position: relative;
+}
+
+.notification-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+}
+
+.notification-card.unread {
+	background: #f0f4ff;
+	border-left-color: #667eea;
+}
+
+.notification-card.appointment {
+	border-left-color: #2196F3;
+}
+
+.notification-card.cancelled {
+	border-left-color: #f44336;
+	background: #fff5f5;
+}
+
+.notification-card.rescheduled {
+	border-left-color: #FF9800;
+}
+
+.notification-card.confirmed {
+	border-left-color: #4CAF50;
+}
+
+.notification-card.reminder {
+	border-left-color: #9C27B0;
+}
+
+.notification-card.test-result {
+	border-left-color: #00BCD4;
+}
+
+.notification-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	margin-bottom: 10px;
+}
+
+.notification-type {
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: 15px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.type-appointment {
+	background: #e3f2fd;
+	color: #1565c0;
+}
+
+.type-cancelled {
+	background: #ffebee;
+	color: #c62828;
+}
+
+.type-rescheduled {
+	background: #fff3e0;
+	color: #e65100;
+}
+
+.type-confirmed {
+	background: #e8f5e9;
+	color: #2e7d32;
+}
+
+.type-reminder {
+	background: #f3e5f5;
+	color: #6a1b9a;
+}
+
+.type-test-result {
+	background: #e0f7fa;
+	color: #00838f;
+}
+
+.notification-time {
+	font-size: 0.85rem;
+	color: #666;
+}
+
+.notification-title {
+	font-weight: 700;
+	font-size: 1.1rem;
+	margin-bottom: 8px;
+	color: #333;
+}
+
+.notification-body {
+	color: #555;
+	margin-bottom: 12px;
+	line-height: 1.6;
+}
+
+.appointment-details {
+	background: #f8f9fa;
+	padding: 15px;
+	border-radius: 8px;
+	margin: 10px 0;
+}
+
+.detail-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+	color: #555;
+}
+
+.detail-row:last-child {
+	margin-bottom: 0;
+}
+
+.detail-icon {
+	width: 30px;
+	color: #667eea;
+}
+
+.detail-label {
+	font-weight: 600;
+	margin-right: 8px;
+	min-width: 80px;
+}
+
+.status-change-box {
+	background: #fff9e6;
+	border: 1px dashed #ffa726;
+	padding: 12px;
+	border-radius: 8px;
+	margin: 10px 0;
+}
+
+.old-info {
+	text-decoration: line-through;
+	color: #999;
+}
+
+.new-info {
+	color: #e65100;
+	font-weight: 600;
+}
+
+.notification-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 15px;
+	flex-wrap: wrap;
+}
+
+.action-btn {
+	padding: 6px 16px;
+	border-radius: 6px;
+	border: none;
+	cursor: pointer;
+	font-size: 0.9rem;
+	font-weight: 500;
+	transition: all 0.3s;
+}
+
+.btn-primary-action {
+	background: #667eea;
+	color: white;
+}
+
+.btn-primary-action:hover {
+	background: #5568d3;
+}
+
+.btn-secondary-action {
+	background: #e0e0e0;
+	color: #333;
+}
+
+.btn-secondary-action:hover {
+	background: #d0d0d0;
+}
+
+.btn-success-action {
+	background: #4CAF50;
+	color: white;
+}
+
+.btn-success-action:hover {
+	background: #45a049;
+}
+
+.btn-danger-action {
+	background: #f44336;
+	color: white;
+}
+
+.btn-danger-action:hover {
+	background: #da190b;
+}
+
+.unread-badge {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	width: 10px;
+	height: 10px;
+	background: #667eea;
+	border-radius: 50%;
+}
+
+.stats-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+	margin-bottom: 25px;
+}
+
+.stat-card {
+	background: white;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	text-align: center;
+}
+
+.stat-number {
+	font-size: 2rem;
+	font-weight: 700;
+	color: #667eea;
+}
+
+.stat-label {
+	color: #666;
+	font-size: 0.9rem;
+	margin-top: 5px;
+}
+
+.reason-box {
+	background: #fff3e0;
+	border-left: 3px solid #ff9800;
+	padding: 12px;
+	border-radius: 4px;
+	margin-top: 10px;
+}
+
+.reason-title {
+	font-weight: 600;
+	color: #e65100;
+	margin-bottom: 5px;
+}
+
+.reason-text {
+	color: #555;
+	font-size: 0.95rem;
+}
+
+.empty-state {
+	text-align: center;
+	padding: 60px 20px;
+	color: #999;
+}
+
+.empty-state i {
+	font-size: 4rem;
+	margin-bottom: 20px;
+	opacity: 0.3;
+}
+
+@media ( max-width : 768px) {
+	.notification-actions {
+		flex-direction: column;
+	}
+	.action-btn {
+		width: 100%;
+	}
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	margin-top: 30px;
+	margin-bottom: 50px;
+	padding: 20px;
+	margin-bottom: 50px;
+}
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
+	<div class="container">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>
+						<span class="header-icon">🔔</span> Notifications [Stay updated
+						with your health and appointments]
+					</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/patient">Patient Dashboard</a></li>
+							<li class="breadcrumb-item active">Notifications</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
+
+		<!-- Statistics Row -->
+		<div class="stats-row">
+			<div class="stat-card">
+				<div class="stat-number">8</div>
+				<div class="stat-label">Unread Notifications</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-number">3</div>
+				<div class="stat-label">Upcoming Appointments</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-number">2</div>
+				<div class="stat-label">Status Changes</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-number">1</div>
+				<div class="stat-label">Action Required</div>
+			</div>
+		</div>
+
+		<!-- Notification Filters -->
+		<div class="notification-filters">
+			<div class="filter-tabs">
+				<button class="filter-btn active" data-filter="all">All
+					Notifications</button>
+				<button class="filter-btn" data-filter="appointment">Appointments</button>
+				<button class="filter-btn" data-filter="status-change">Status
+					Changes</button>
+				<button class="filter-btn" data-filter="reminder">Reminders</button>
+				<button class="filter-btn" data-filter="test-result">Test
+					Results</button>
+				<button class="filter-btn" data-filter="unread">Unread Only</button>
+			</div>
+		</div>
+
+		<!-- Notifications List -->
+		<div id="notificationsList">
+
+			<!-- Appointment Cancelled -->
+			<div class="notification-card cancelled unread"
+				data-type="cancelled status-change">
+				<span class="unread-badge"></span>
+				<div class="notification-header">
+					<span class="notification-type type-cancelled">Cancelled</span> <span
+						class="notification-time"><i class="fas fa-clock"></i> 30
+						minutes ago</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-calendar-times"></i> Appointment Cancelled by
+					Hospital
+				</div>
+				<div class="notification-body">Your scheduled appointment has
+					been cancelled due to unforeseen circumstances.</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-user-md detail-icon"></i> <span
+							class="detail-label">Doctor:</span> <span>Dr. Arun Patel
+							(Cardiologist)</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-calendar detail-icon"></i> <span
+							class="detail-label">Date & Time:</span> <span class="old-info">October
+							16, 2025 at 2:30 PM</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-map-marker-alt detail-icon"></i> <span
+							class="detail-label">Location:</span> <span>Apollo
+							Hospital - Cardiology Wing</span>
+					</div>
+				</div>
+				<div class="reason-box">
+					<div class="reason-title">
+						<i class="fas fa-info-circle"></i> Reason for Cancellation:
+					</div>
+					<div class="reason-text">Dr. Patel has a medical emergency to
+						attend. Please reschedule at your earliest convenience.</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-primary-action">
+						<i class="fas fa-calendar-plus"></i> Reschedule Appointment
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-phone"></i> Contact Hospital
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-check"></i> Mark Read
+					</button>
+				</div>
+			</div>
+
+			<!-- Appointment Rescheduled -->
+			<div class="notification-card rescheduled unread"
+				data-type="rescheduled status-change">
+				<span class="unread-badge"></span>
+				<div class="notification-header">
+					<span class="notification-type type-rescheduled">Rescheduled</span>
+					<span class="notification-time"><i class="fas fa-clock"></i>
+						2 hours ago</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-calendar-alt"></i> Appointment Rescheduled -
+					Action Required
+				</div>
+				<div class="notification-body">Your appointment has been
+					rescheduled due to doctor's unavailability. Please confirm the new
+					time slot.</div>
+				<div class="status-change-box">
+					<div style="margin-bottom: 10px;">
+						<strong>Previous Schedule:</strong><br> <span
+							class="old-info">October 17, 2025 at 10:00 AM</span>
+					</div>
+					<div>
+						<strong>New Schedule:</strong><br> <span class="new-info">October
+							18, 2025 at 11:30 AM</span>
+					</div>
+				</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-user-md detail-icon"></i> <span
+							class="detail-label">Doctor:</span> <span>Dr. Meera Reddy
+							(Orthopedic)</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-map-marker-alt detail-icon"></i> <span
+							class="detail-label">Location:</span> <span>Fortis
+							Hospital - Consultation Room 3B</span>
+					</div>
+				</div>
+				<div class="reason-box">
+					<div class="reason-title">
+						<i class="fas fa-info-circle"></i> Reason for Rescheduling:
+					</div>
+					<div class="reason-text">Dr. Reddy has been called for an
+						urgent surgery. The new time slot has been allocated based on your
+						availability preferences.</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-success-action">
+						<i class="fas fa-check-circle"></i> Confirm New Time
+					</button>
+					<button class="action-btn btn-danger-action">
+						<i class="fas fa-times-circle"></i> Decline & Reschedule
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-download"></i> Add to Calendar
+					</button>
+				</div>
+			</div>
+
+			<!-- Appointment Reminder -->
+			<div class="notification-card reminder unread" data-type="reminder">
+				<span class="unread-badge"></span>
+				<div class="notification-header">
+					<span class="notification-type type-reminder">Reminder</span> <span
+						class="notification-time"><i class="fas fa-clock"></i> 4
+						hours ago</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-bell"></i> Appointment Reminder - Tomorrow at 9:00
+					AM
+				</div>
+				<div class="notification-body">This is a reminder for your
+					upcoming appointment tomorrow morning.</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-user-md detail-icon"></i> <span
+							class="detail-label">Doctor:</span> <span>Dr. Suresh Kumar
+							(General Physician)</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-calendar detail-icon"></i> <span
+							class="detail-label">Date & Time:</span> <span>October 16,
+							2025 at 9:00 AM</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-map-marker-alt detail-icon"></i> <span
+							class="detail-label">Location:</span> <span>Max Healthcare
+							- OPD Block A</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-clipboard-list detail-icon"></i> <span
+							class="detail-label">Type:</span> <span>Follow-up
+							Consultation</span>
+					</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-primary-action">
+						<i class="fas fa-directions"></i> Get Directions
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-file-medical"></i> View Details
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-check"></i> Acknowledge
+					</button>
+				</div>
+			</div>
+
+			<!-- New Appointment Confirmed -->
+			<div class="notification-card confirmed unread"
+				data-type="confirmed appointment">
+				<span class="unread-badge"></span>
+				<div class="notification-header">
+					<span class="notification-type type-confirmed">Confirmed</span> <span
+						class="notification-time"><i class="fas fa-clock"></i> 6
+						hours ago</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-check-circle"></i> Appointment Confirmed
+					Successfully
+				</div>
+				<div class="notification-body">Your appointment has been
+					successfully confirmed by the hospital. Please arrive 15 minutes
+					early.</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-user-md detail-icon"></i> <span
+							class="detail-label">Doctor:</span> <span>Dr. Priya Singh
+							(Dermatologist)</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-calendar detail-icon"></i> <span
+							class="detail-label">Date & Time:</span> <span>October 20,
+							2025 at 3:00 PM</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-map-marker-alt detail-icon"></i> <span
+							class="detail-label">Location:</span> <span>Manipal
+							Hospital - Dermatology Department</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-money-bill-wave detail-icon"></i> <span
+							class="detail-label">Consultation Fee:</span> <span>₹800</span>
+					</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-primary-action">
+						<i class="fas fa-download"></i> Download Confirmation
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-share"></i> Share
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-check"></i> Mark Read
+					</button>
+				</div>
+			</div>
+
+			<!-- Test Results Available -->
+			<div class="notification-card test-result unread"
+				data-type="test-result">
+				<span class="unread-badge"></span>
+				<div class="notification-header">
+					<span class="notification-type type-test-result">Test
+						Results</span> <span class="notification-time"><i
+						class="fas fa-clock"></i> Yesterday</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-flask"></i> Lab Test Results Available
+				</div>
+				<div class="notification-body">Your recent lab test results
+					are now available for review. Please check your medical records.</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-vial detail-icon"></i> <span class="detail-label">Test
+							Type:</span> <span>Complete Blood Count (CBC)</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-calendar detail-icon"></i> <span
+							class="detail-label">Test Date:</span> <span>October 12,
+							2025</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-hospital detail-icon"></i> <span
+							class="detail-label">Lab:</span> <span>Apollo Diagnostics</span>
+					</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-primary-action">
+						<i class="fas fa-file-download"></i> View Results
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-print"></i> Print
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-check"></i> Mark Read
+					</button>
+				</div>
+			</div>
+
+			<!-- Appointment Time Change -->
+			<div class="notification-card rescheduled"
+				data-type="rescheduled status-change">
+				<div class="notification-header">
+					<span class="notification-type type-rescheduled">Time
+						Changed</span> <span class="notification-time"><i
+						class="fas fa-clock"></i> 2 days ago</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-clock"></i> Appointment Time Updated
+				</div>
+				<div class="notification-body">Minor adjustment to your
+					appointment time to optimize scheduling.</div>
+				<div class="status-change-box">
+					<div style="margin-bottom: 10px;">
+						<strong>Original Time:</strong><br> <span class="old-info">October
+							19, 2025 at 4:00 PM</span>
+					</div>
+					<div>
+						<strong>Updated Time:</strong><br> <span class="new-info">October
+							19, 2025 at 4:30 PM</span>
+					</div>
+				</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-user-md detail-icon"></i> <span
+							class="detail-label">Doctor:</span> <span>Dr. Rajesh Iyer
+							(ENT Specialist)</span>
+					</div>
+				</div>
+				<div class="reason-box">
+					<div class="reason-title">
+						<i class="fas fa-info-circle"></i> Reason:
+					</div>
+					<div class="reason-text">Schedule optimization to reduce
+						patient wait times.</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-primary-action">
+						<i class="fas fa-calendar-check"></i> Accept Change
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-check"></i> Mark Read
+					</button>
+				</div>
+			</div>
+
+			<!-- Appointment Reminder (24 hours) -->
+			<div class="notification-card reminder" data-type="reminder">
+				<div class="notification-header">
+					<span class="notification-type type-reminder">Reminder</span> <span
+						class="notification-time"><i class="fas fa-clock"></i> 3
+						days ago</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-calendar-day"></i> Upcoming Appointment in 24
+					Hours
+				</div>
+				<div class="notification-body">Don't forget your appointment
+					scheduled for tomorrow. Please bring your medical records and
+					insurance card.</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-user-md detail-icon"></i> <span
+							class="detail-label">Doctor:</span> <span>Dr. Kavita Nair
+							(Gynecologist)</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-calendar detail-icon"></i> <span
+							class="detail-label">Date & Time:</span> <span>October 16,
+							2025 at 11:00 AM</span>
+					</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-primary-action">
+						<i class="fas fa-check-circle"></i> I'll be there
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-check"></i> Dismiss
+					</button>
+				</div>
+			</div>
+
+			<!-- Doctor Unavailable -->
+			<div class="notification-card cancelled"
+				data-type="cancelled status-change">
+				<div class="notification-header">
+					<span class="notification-type type-cancelled">Doctor
+						Unavailable</span> <span class="notification-time"><i
+						class="fas fa-clock"></i> 5 days ago</span>
+				</div>
+				<div class="notification-title">
+					<i class="fas fa-user-md-slash"></i> Doctor Temporarily Unavailable
+				</div>
+				<div class="notification-body">Your scheduled doctor is
+					temporarily unavailable. You can either wait for the doctor to
+					return or see an alternate doctor.</div>
+				<div class="appointment-details">
+					<div class="detail-row">
+						<i class="fas fa-user-md detail-icon"></i> <span
+							class="detail-label">Original Doctor:</span> <span>Dr.
+							Amit Verma (Neurologist)</span>
+					</div>
+					<div class="detail-row">
+						<i class="fas fa-calendar detail-icon"></i> <span
+							class="detail-label">Scheduled:</span> <span>October 22,
+							2025 at 2:00 PM</span>
+					</div>
+				</div>
+				<div class="reason-box">
+					<div class="reason-title">
+						<i class="fas fa-info-circle"></i> Reason:
+					</div>
+					<div class="reason-text">Dr. Verma is attending a medical
+						conference abroad from October 20-25, 2025.</div>
+				</div>
+				<div class="notification-actions">
+					<button class="action-btn btn-primary-action">
+						<i class="fas fa-user-md"></i> See Alternate Doctor
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-calendar-plus"></i> Reschedule
+					</button>
+					<button class="action-btn btn-secondary-action">
+						<i class="fas fa-check"></i> I'll Wait
+					</button>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<script>
+		$(document)
+				.ready(
+						function() {
+							// Filter notifications
+							$('.filter-btn')
+									.click(
+											function() {
+												$('.filter-btn').removeClass(
+														'active');
+												$(this).addClass('active');
+
+												const filter = $(this).data(
+														'filter');
+
+												if (filter === 'all') {
+													$('.notification-card')
+															.show();
+												} else if (filter === 'unread') {
+													$('.notification-card')
+															.hide();
+													$(
+															'.notification-card.unread')
+															.show();
+												} else if (filter === 'status-change') {
+													$('.notification-card')
+															.hide();
+													$(
+															'.notification-card[data-type*="status-change"]')
+															.show();
+												} else {
+													$('.notification-card')
+															.hide();
+													$(
+															`.notification-card[data-type*="${filter}"]`)
+															.show();
+												}
+											});
+
+							// Mark as read functionality
+							$('.notification-card')
+									.on(
+											'click',
+											'.btn-secondary-action:contains("Mark Read"), .btn-secondary-action:contains("Acknowledge"), .btn-secondary-action:contains("Dismiss")',
+											function(e) {
+												e.preventDefault();
+												const card = $(this).closest(
+														'.notification-card');
+												if (card.hasClass('unread')) {
+													card.removeClass('unread');
+													card.find('.unread-badge')
+															.fadeOut();
+
+													// Update unread count
+													const currentCount = parseInt($(
+															'.stats-row .stat-card:first .stat-number')
+															.text());
+													if (currentCount > 0) {
+														$(
+																'.stats-row .stat-card:first .stat-number')
+																.text(
+																		currentCount - 1);
+													}
+												}
+											});
+
+							// Confirm appointment action
+							$('.notification-card')
+									.on(
+											'click',
+											'.btn-success-action',
+											function(e) {
+												e.preventDefault();
+												const card = $(this).closest(
+														'.notification-card');
+												alert('Appointment confirmed! A confirmation SMS will be sent to your registered mobile number.');
+												card.removeClass('unread');
+												card.find('.unread-badge')
+														.fadeOut();
+											});
+
+							// Decline appointment action
+							$('.notification-card')
+									.on(
+											'click',
+											'.btn-danger-action',
+											function(e) {
+												e.preventDefault();
+												const card = $(this).closest(
+														'.notification-card');
+												if (confirm('Are you sure you want to decline this appointment time? You will need to choose a new time slot.')) {
+													alert('Redirecting to reschedule page...');
+												}
+											});
+
+							// Reschedule action
+							$('.notification-card')
+									.on(
+											'click',
+											'.btn-primary-action:contains("Reschedule")',
+											function(e) {
+												e.preventDefault();
+												alert('Redirecting to appointment booking page...');
+											});
+
+							// Add smooth scrolling
+							$('html').css('scroll-behavior', 'smooth');
+
+							// Format timestamps using moment.js
+							moment.locale('en');
+
+							// Optional: Auto-refresh notification times every minute
+							setInterval(function() {
+								$('.notification-time').each(function() {
+									const timeText = $(this).text();
+									// Update relative time if using moment.js
+								});
+							}, 60000);
+
+							// Notification count animation on load
+							$('.stat-number').each(function() {
+								const $this = $(this);
+								const countTo = parseInt($this.text());
+								$({
+									countNum : 0
+								}).animate({
+									countNum : countTo
+								}, {
+									duration : 1000,
+									easing : 'swing',
+									step : function() {
+										$this.text(Math.floor(this.countNum));
+									},
+									complete : function() {
+										$this.text(this.countNum);
+									}
+								});
+							});
+						});
+	</script>
+
+	<!-- Include Footer Fragment -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

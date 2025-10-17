@@ -77,7 +77,7 @@ form input, form select {
 	justify-content: center;
 	padding: 20px;
 	background-color: #fff;
-	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	/* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); */
 	border-radius: 8px;
 	width: 100%; /* Set the width to 100% of the parent container */
 	max-width: 400px;
@@ -99,38 +99,6 @@ form input, form select {
 	max-width: 600px;
 	/* Optionally set a maximum width for the input fields */
 	/* Ensures padding and border are included in the element's total width and height */
-}
-
-footer {
-	background-color: rgb(138, 6, 145);
-	color: #fff; /* White text color */
-	padding: 10px 0;
-	text-align: center;
-	position: fixed;
-	width: 100%;
-	bottom: 0;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-footer p {
-	margin: 0;
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-footer a, footer span {
-	color: #fff; /* White link and text color */
-	text-decoration: none;
-}
-
-footer .center {
-	order: 2;
-	flex-grow: 1;
-	text-align: center;
 }
 
 .content {

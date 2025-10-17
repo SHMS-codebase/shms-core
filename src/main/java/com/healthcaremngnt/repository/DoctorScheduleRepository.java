@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +27,9 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
 			@Param("availableDate") LocalDate availableDate, @Param("specialization") String specialization,
 			@Param("scheduleStatus") ScheduleStatus scheduleStatus);
 
-	List<DoctorSchedule> findByDoctor(Doctor doctor);
+	Page<DoctorSchedule> findByDoctorOrderByCreatedDateDesc(Doctor doctor, Pageable pageable);
+
+	List<DoctorSchedule> findByDoctorOrderByCreatedDateDesc(Doctor doctor);
 
 	DoctorSchedule findByScheduleID(Long scheduleID);
 	// If findByScheduleID is just an alias for findById, remove it and use the
@@ -38,10 +42,11 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
 			+ "WHERE d.doctorID = :doctorID AND ds.scheduleStatus = 'Approved' AND ds.availableCount > 0 AND expiredDate IS NULL ")
 	List<LocalDate> findAvailableDatesByDoctorID(@Param("doctorID") Long doctorID);
 
-	List<DoctorSchedule> findByDoctor_DoctorIDAndAvailableDate(Long doctorID, LocalDate availableDate); // Derived Query
+	List<DoctorSchedule> findByDoctor_DoctorIDAndAvailableDateAndScheduleStatus(Long doctorID, LocalDate availableDate,
+			ScheduleStatus scheduleStatus); // Derived Query
 
-	List<DoctorSchedule> findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThan(Long doctorID,
-			LocalDate availableDate, int availableCount);
+	List<DoctorSchedule> findByDoctor_DoctorIDAndAvailableDateAndAvailableCountGreaterThanAndScheduleStatus(Long doctorID,
+			LocalDate availableDate, int availableCount, ScheduleStatus scheduleStatus);
 
 	@Query("SELECT ds FROM DoctorSchedule ds WHERE ds.doctor.doctorID = :doctorID AND ds.availableDate = :availableDate "
 			+ "AND ds.startTime = :startTime AND ds.endTime = :endTime")

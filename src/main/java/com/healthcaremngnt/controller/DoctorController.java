@@ -10,6 +10,10 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -100,11 +104,11 @@ public class DoctorController {
 			logger.debug("doctorScheduleWrapper: {}", doctorScheduleWrapper);
 			model.addAttribute("doctorScheduleWrapper", doctorScheduleWrapper);
 		} catch (NumberFormatException e) {
-			logger.error("{}: {}", MessageConstants.SCHEDULE_ID_INVALID, e);
-			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_ID_INVALID);
+			logger.error("{}: {}", MessageConstants.SCHEDULE_ID_INVALID, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.SCHEDULE_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.SCHEDULE_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		}
 
 		List<BreadcrumbItem> breadcrumbTrail = new ArrayList<>();
@@ -115,8 +119,9 @@ public class DoctorController {
 		} else if (!flow.equalsIgnoreCase("searchschedule")) {
 
 			// Need to check the flow before this page is called
-			
-			breadcrumbTrail.add(new BreadcrumbItem("All Schedules", "/api/v1/doctor/viewallschedules?doctorID=" + doctorID));
+
+			breadcrumbTrail
+					.add(new BreadcrumbItem("All Schedules", "/api/v1/doctor/viewallschedules?doctorID=" + doctorID));
 		}
 
 		breadcrumbTrail.add(new BreadcrumbItem("View/Update Schedule", null));
@@ -150,8 +155,8 @@ public class DoctorController {
 					scheduleID);
 			model.addAttribute("message", MessageConstants.SCHEDULE_UPDATE_SUCCESS);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.SCHEDULE_UPDATE_FAILURE, e);
-			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_UPDATE_FAILURE);
+			logger.error("{}: {}", MessageConstants.SCHEDULE_UPDATE_FAILURE, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			model.addAttribute("doctorScheduleWrapper", doctorScheduleWrapper);
 			return "viewdoctorschedule";
 		}
@@ -188,8 +193,8 @@ public class DoctorController {
 			logger.debug("source: {}", source);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.CREATE_SCHEDULE_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.CREATE_SCHEDULE_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.CREATE_SCHEDULE_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source; // load the page that called this request
 		}
 
@@ -232,6 +237,15 @@ public class DoctorController {
 
 		model.addAttribute("source", source);
 
+		logger.debug("Determined Schedule Status: {}", scheduleStatus);
+		logger.debug("Initial Doctor ID in Model: {}", model.getAttribute("doctorID"));
+		if (scheduleStatus.equals(ScheduleStatus.PENDING)) {
+			model.addAttribute("doctorID", doctorID);
+		} else {
+			model.addAttribute("doctorID", null);
+		}
+		logger.debug("Final Doctor ID in Model: {}", model.getAttribute("doctorID"));
+
 		try {
 
 			DoctorScheduleRequest request = new DoctorScheduleRequest(doctorID, availableDate, startTime, endTime,
@@ -249,12 +263,13 @@ public class DoctorController {
 
 			List<Doctor> doctors = doctorService.getAllDoctors();
 			model.addAttribute("doctors", doctors);
+
 			return "createschedule";
 		} catch (InvalidInputException | DoctorNotFoundException | OverlappingScheduleException e) {
-			logger.error("{}: {}", MessageConstants.SCHEDULE_SAVE_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_SAVE_ERROR);
+			logger.error("{}: {}", MessageConstants.SCHEDULE_SAVE_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 
-			model.addAttribute("doctorID", doctorID);
+//			model.addAttribute("doctorID", doctorID);
 			model.addAttribute("availableDate", availableDate);
 			model.addAttribute("startTime", startTime);
 			model.addAttribute("endTime", endTime);
@@ -263,8 +278,8 @@ public class DoctorController {
 
 			return "createschedule";
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.SCHEDULE_SAVE_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_SAVE_ERROR);
+			logger.error("{}: {}", MessageConstants.SCHEDULE_SAVE_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 
 			return "createschedule";
 		}
@@ -288,8 +303,8 @@ public class DoctorController {
 			model.addAttribute("doctorSchedules", doctorSchedules);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.APPROVE_SCHEDULE_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.APPROVE_SCHEDULE_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.APPROVE_SCHEDULE_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 
@@ -309,8 +324,8 @@ public class DoctorController {
 
 			model.addAttribute("message", MessageConstants.SCHEDULE_STATUS_UPD_SUCCESS);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.SCHEDULE_STATUS_UPD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_STATUS_UPD_ERROR);
+			logger.error("{}: {}", MessageConstants.SCHEDULE_STATUS_UPD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		}
 
 		try {
@@ -319,8 +334,8 @@ public class DoctorController {
 			model.addAttribute("doctorSchedules", doctorSchedules);
 		} catch (Exception e) {
 
-			logger.error("{}: {}", MessageConstants.SCHEDULE_RELOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.SCHEDULE_RELOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.SCHEDULE_RELOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		}
 
 		return "approveschedule";
@@ -328,15 +343,20 @@ public class DoctorController {
 
 	@GetMapping("/viewallschedules")
 	public String viewAllSchedules(@RequestParam(RequestParamConstants.DOCTOR_ID) Long doctorID,
-			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source, Model model) {
-		logger.info("Loading All Schedules for Doctor ID: {}", doctorID);
+			@RequestParam(value = RequestParamConstants.SOURCE, required = false) String source,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, Model model) {
+		logger.info("Loading All Schedules for Doctor ID: {}, Page: {}", doctorID, page);
 
 		try {
-			List<DoctorSchedule> doctorSchedules = doctorService.findDoctorSchedule(doctorID);
-			model.addAttribute("doctorSchedules", doctorSchedules);
+			Pageable pageable = PageRequest.of(page, size, Sort.by("availableDate").descending());
+			Page<DoctorSchedule> doctorSchedulesPage = doctorService.findDoctorSchedule(doctorID, pageable);
+
+			model.addAttribute("doctorSchedules", doctorSchedulesPage.getContent());
+			model.addAttribute("currentPage", page);
+			model.addAttribute("totalPages", doctorSchedulesPage.getTotalPages());
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.VIEW_ALL_SCHEDULES_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.VIEW_ALL_SCHEDULES_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.VIEW_ALL_SCHEDULES_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 

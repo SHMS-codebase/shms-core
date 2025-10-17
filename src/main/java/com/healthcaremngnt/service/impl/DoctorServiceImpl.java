@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -66,16 +68,17 @@ public class DoctorServiceImpl implements DoctorService {
 	}
 
 	@Override
-	public List<DoctorSchedule> findDoctorSchedule(Long doctorID) throws DoctorNotFoundException {
-		logger.info("Finding schedule for Doctor ID: {}", doctorID);
+	public Page<DoctorSchedule> findDoctorSchedule(Long doctorID, Pageable pageable) throws DoctorNotFoundException {
+		logger.info("Finding paginated schedules for Doctor ID: {}, Page: {}", doctorID, pageable.getPageNumber());
 
 		var doctor = doctorRepository.findById(doctorID)
 				.orElseThrow(() -> new DoctorNotFoundException("Doctor not found with ID: " + doctorID));
 
-		var schedules = doctorScheduleRepository.findByDoctor(doctor);
-		logger.info("Found {} schedules for Doctor ID: {}", schedules.size(), doctorID);
+		var schedulesPage = doctorScheduleRepository.findByDoctorOrderByCreatedDateDesc(doctor, pageable);
+		logger.info("Found {} schedules on page {} for Doctor ID: {}", schedulesPage.getNumberOfElements(),
+				pageable.getPageNumber(), doctorID);
 
-		return schedules;
+		return schedulesPage;
 	}
 
 	@Override
@@ -109,6 +112,19 @@ public class DoctorServiceImpl implements DoctorService {
 	}
 
 	@Override
+	public List<DoctorSchedule> findDoctorSchedule(Long doctorID) throws DoctorNotFoundException {
+		logger.info("Finding schedule for Doctor ID: {}", doctorID);
+
+		var doctor = doctorRepository.findById(doctorID)
+				.orElseThrow(() -> new DoctorNotFoundException("Doctor not found with ID: " + doctorID));
+
+		var schedules = doctorScheduleRepository.findByDoctorOrderByCreatedDateDesc(doctor);
+		logger.info("Found {} schedules for Doctor ID: {}", schedules.size(), doctorID);
+
+		return schedules;
+	}
+
+	@Override
 	public void loadDoctorsAndFormValues(Model model, Long doctorID, LocalDate availableDate, LocalTime startTime,
 			LocalTime endTime, String scheduleStatus) {
 		logger.info("Loading doctors and form values for Doctor ID: {}", doctorID);
@@ -138,7 +154,7 @@ public class DoctorServiceImpl implements DoctorService {
 	@Override
 	public List<Doctor> getDoctorsWithSchedule() {
 		logger.info("Fetching doctors with valid schedules.");
-		
+
 		return doctorRepository.findDoctorsByScheduleStatus(ScheduleStatus.APPROVED);
 	}
 

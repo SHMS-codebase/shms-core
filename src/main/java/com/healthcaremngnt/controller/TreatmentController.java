@@ -304,7 +304,10 @@ public class TreatmentController {
 		Optional.ofNullable(source).ifPresent(src -> logger.debug("Source: {}", src));
 
 		try {
-			treatmentService.updateTreatmentDetails(treatment);
+			Treatment updatedTreatment = treatmentService.updateTreatmentDetails(treatment);
+			logger.debug("Updated Treatment Details: {}", updatedTreatment);
+			model.addAttribute("treatment", updatedTreatment);
+
 		} catch (Exception e) {
 			logger.error("{}: {}", MessageConstants.TREATMENT_UPDATE_FAILURE, e);
 			model.addAttribute("errorMessage", MessageConstants.TREATMENT_UPDATE_FAILURE);
@@ -314,7 +317,6 @@ public class TreatmentController {
 
 		logger.debug("{}", MessageConstants.TREATMENT_UPDATE_SUCCESS);
 
-		model.addAttribute("treatment", treatment);
 		model.addAttribute("treatmentID", treatmentID);
 		model.addAttribute("message", MessageConstants.TREATMENT_UPDATE_SUCCESS);
 		model.addAttribute("source", source);

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Receipt</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+<link rel="stylesheet" th:href="@{/css/fragmentstyles.css}">
+<style>
+/* Card styles */
+.card {
+	margin-top: 100px;
+	width: 100%;
+	max-width: 1000px;
+	margin: 100px auto 20px;
+	background-color: #fff;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header {
+	background: linear-gradient(to top, rgb(5, 5, 40), rgb(15, 32, 95));
+	color: white;
+	padding: 10px 15px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	margin-bottom: 20px;
+	margin-top: -70px;
+}
+
+.card-header h5 {
+	margin: 0;
+	text-align: center;
+}
+
+.card-body {
+	padding: 15px 20px;
+}
+
+.container {
+	width: 70%;
+	margin-top: 500px;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Prescription Header */
+.receipt-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 15px;
+	margin: 20px;
+	border-bottom: 1px solid #ccc; /* Separator line */
+}
+
+.receipt-title {
+	text-align: center;
+	margin: 15px 0;
+	color: #2c3e50;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.rx-number {
+	font-size: 18px;
+	font-weight: bold;
+	color: rgb(0, 0, 128);
+	font-weight: normal;
+}
+
+.italic-text {
+	font-style: italic;
+	font-size: 15px;
+	color: #555;
+	margin-bottom: 5px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+/* Print Button */
+.print-button {
+	background-color: #3498db;
+	color: white;
+	border: none;
+	padding: 10px 15px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	margin-top: 20px;
+}
+
+/* Print Media Styles */
+@media print {
+	.no-print {
+		display: none;
+	}
+	body * {
+		visibility: hidden;
+	}
+	.card.mb-4, .card.mb-4 * {
+		visibility: visible;
+	}
+	.card.mb-4 {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+	.btn {
+		display: none;
+	}
+	.container {
+		box-shadow: none;
+		padding: 0;
+	}
+}
+
+.centered-text {
+	text-align: center;
+}
+
+.receipt-box {
+	background: white;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	max-width: 600px;
+	margin: auto;
+}
+</style>
+</head>
+<body>
+
+	<!-- Include Header Fragment -->
+	<div th:replace="~{fragments/header-loggedin :: header}"></div>
+
+	<div class="container mt-4 mb-5">
+
+		<div class="card mb-4">
+
+			<div class="card-header">
+				<div class="row">
+					<div class="col-md-6">
+						<h4 class="mb-0">Smart HealthCare Management System</h4>
+					</div>
+				</div>
+			</div>
+
+			<div class="receipt-title">Receipt Details</div>
+
+			<div class="receipt-header">
+				<div class="rx-number">
+					Receipt ID: &nbsp; <span>#PAY-2451</span>
+				</div>
+				<p style="font-weight: lighter;">
+					Printed on: &nbsp; <span th:text="${currentDate}"></span>
+				</p>
+			</div>
+
+			<div class="card-body">
+				<div class="row mb-4">
+
+					<div class="card-body">
+						<div class="row mb-4">
+							<!-- Patient Information -->
+							<div class="col-md-6">
+								<h6 style="color: #2c3e50; font-weight: bold;">Patient
+									Information</h6>
+								<p class="mb-1">
+									<strong>Name:</strong> <span>Prestine Mary</span>
+								</p>
+								<p class="mb-1">
+									<strong>Patient ID:</strong> <span>PT-78945</span>
+								</p>
+								<p class="mb-1">
+									<strong>Age/Gender:</strong> <span>35</span> / <span>Male</span>
+								</p>
+								<p class="mb-1">
+									<strong>Contact:</strong> <span>+91 32145 69784</span>
+								</p>
+							</div>
+
+							<!-- Payment Information -->
+							<div class="col-md-6">
+								<h6 style="color: #2c3e50; font-weight: bold;">Payment
+									Information</h6>
+								<p class="mb-1">
+									<strong>Payment Date:</strong> <span>17-Oct-2025</span>
+								</p>
+								<p class="mb-1">
+									<strong>Payment Mode:</strong> <span>Credit Card</span>
+								</p>
+								<p class="mb-1">
+									<strong>Transaction ID:</strong> <span>TXN98745632101</span>
+								</p>
+								<p class="mb-1">
+									<strong>Status:</strong> <span
+										style="color: green; font-weight: bold;">Completed</span>
+								</p>
+							</div>
+						</div>
+
+						<!-- Bill Details Table -->
+						<div class="row mb-4">
+							<div class="col-12">
+								<h6 style="color: #2c3e50; font-weight: bold;">Bill Details</h6>
+								<table class="table table-bordered">
+									<thead style="background-color: #f8f9fa;">
+										<tr>
+											<th>Description</th>
+											<th>Quantity</th>
+											<th class="text-end">Amount (₹)</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="item : ${billItems}">
+											<td th:text="${item.description}">Consultation Fee -
+												General Medicine</td>
+											<td th:text="${item.quantity}">1</td>
+											<td class="text-end" th:text="${item.amount}">500.00</td>
+										</tr>
+										<!-- Static example rows if no Thymeleaf data -->
+										<tr th:if="${billItems == null or billItems.isEmpty()}">
+											<td>Consultation Fee - General Medicine</td>
+											<td>1</td>
+											<td class="text-end">500.00</td>
+										</tr>
+
+										<tr th:if="${billItems == null or billItems.isEmpty()}">
+											<td>Medicines</td>
+											<td>1</td>
+											<td class="text-end">1,250.00</td>
+										</tr>
+
+									</tbody>
+									<tfoot>
+										<tr style="background-color: #f8f9fa;">
+											<td colspan="2" class="text-end"><strong>Subtotal:</strong></td>
+											<td class="text-end"><strong>1,750.00</strong></td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-end">Tax (5%):</td>
+											<td class="text-end">87.05</td>
+										</tr>
+										<tr>
+											<td colspan="2" class="text-end">Discount:</td>
+											<td class="text-end">- 200.00</td>
+										</tr>
+										<tr style="background-color: #e3f2fd; font-size: 1.1em;">
+											<td colspan="2" class="text-end"><strong>Total
+													Amount Paid:</strong></td>
+											<td class="text-end"><strong>₹ 1,637.50</strong></td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</div>
+
+						<!-- Hospital and Doctor Information -->
+						<div class="row mb-4">
+							<div class="col-md-6">
+								<h6 style="color: #2c3e50; font-weight: bold;">HealthCare
+									Provider:</h6>
+								<p class="mb-1">
+									<strong>Name:</strong> Smart HealthCare Management System
+								</p>
+								<p class="mb-1">
+									<strong>Address:</strong> 123 Healthcare St., .... India
+								</p>
+								<p class="mb-1">
+									<strong>Phone:</strong> +91 ***** *****
+								</p>
+								<p class="mb-1">
+									<strong>Email:</strong> smarthealthcaremngntsystem@gmail.com
+								</p>
+							</div>
+
+							<div class="col-md-6">
+								<h6 style="color: #2c3e50; font-weight: bold;">Attended By</h6>
+								<p class="mb-1">
+									<strong>Doctor:</strong> <span>Dr. Smith</span>
+								</p>
+								<p class="mb-1">
+									<strong>Specialization:</strong> <span>General Physician</span>
+								</p>
+								<p class="mb-1">
+									<strong>License No:</strong> <span>MH987654</span>
+								</p>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="row">
+						<div class="col-12">
+							<div class="alert alert-info mt-3">
+								<p class="centered-text">This receipt is electronically
+									generated from the Smart Healthcare Management System.</p>
+								<p class="centered-text">For verification, please contact
+									the prescriber's office or //scan the barcode.</p>
+								<p class="centered-text">CONFIDENTIAL PAYMENT INFORMATION -
+									Protected by Health Privacy Laws</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="no-print" style="text-align: center;">
+					<button class="print-button" onclick="window.print()">Print
+						Receipt</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Include Footer Fragment -->
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

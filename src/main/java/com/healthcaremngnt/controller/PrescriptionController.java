@@ -76,6 +76,7 @@ public class PrescriptionController {
 
 	@GetMapping("/viewprescription")
 	public String viewPrescriptionDetails(@RequestParam(RequestParamConstants.PRESCRIPTION_ID) Long prescriptionID,
+			@RequestParam(value = RequestParamConstants.PATIENT_ID, required=false) String patientID,
 			@RequestParam(RequestParamConstants.SOURCE) String source, Model model) {
 		logger.info("Loading Prescription Details!!!");
 
@@ -133,12 +134,13 @@ public class PrescriptionController {
 			model.addAttribute("simplePrescriptionDetails", simplePrescriptionDetails);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.PRESCRIPTION_LOAD_ERROR, e.getLocalizedMessage());
-			model.addAttribute("errorMessage", MessageConstants.PRESCRIPTION_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.PRESCRIPTION_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 
 		}
 
 		model.addAttribute("source", source);
+		model.addAttribute("patientID", patientID);
 		return "viewprescription";
 
 	}
@@ -202,8 +204,8 @@ public class PrescriptionController {
 			model.addAttribute("prescription", prescription);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.PRESCRIPTION_PRINT_LOAD_ERROR, e.getLocalizedMessage());
-			model.addAttribute("errorMessage", MessageConstants.PRESCRIPTION_PRINT_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.PRESCRIPTION_PRINT_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 
 		}
 
@@ -257,8 +259,8 @@ public class PrescriptionController {
 			prescriptionService.updatePrescriptionDetails(prescription);
 			logger.debug("{}", MessageConstants.PRESCRIPTION_UPD_SUCCESS);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.PRESCRIPTION_UPD_FAILURE, e);
-			model.addAttribute("errorMessage", MessageConstants.PRESCRIPTION_UPD_FAILURE);
+			logger.error("{}: {}", MessageConstants.PRESCRIPTION_UPD_FAILURE, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			model.addAttribute("prescription", prescription);
 			return "viewprescription";
 		}
@@ -381,8 +383,8 @@ public class PrescriptionController {
 			model.addAttribute("message", MessageConstants.PRESCRIPTION_CRTED_SUCCESS);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.PRESCRIPTION_CRTED_FAILURE, e);
-			model.addAttribute("errorMessage", MessageConstants.PRESCRIPTION_CRTED_FAILURE);
+			logger.error("{}: {}", MessageConstants.PRESCRIPTION_CRTED_FAILURE, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 		}
 
 		model.addAttribute("source", source);

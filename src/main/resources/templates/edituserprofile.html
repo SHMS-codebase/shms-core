@@ -76,7 +76,7 @@ form {
 	width: 100%;
 	max-width: 650px;
 	padding: 30px;
-	margin-top: 500px;
+	margin-top: 600px;
 	margin-bottom: 40px;
 }
 
@@ -101,16 +101,44 @@ form {
 	box-sizing: border-box;
 	/* Ensures padding and border are included in the width and height */
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
-
-		<h4 class="centered-text">Edit User Profile</h4>
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>Edit User Profile</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item" th:if="${userDetails.doctor != null}">
+								<a href="/api/v1/auth/dashboard/doctor">Doctor Dashboard</a>
+							</li>
+							<li class="breadcrumb-item"
+								th:unless="${userDetails.doctor != null}"><a
+								href="/api/v1/auth/dashboard/patient">Patient Dashboard</a></li>
+							<li class="breadcrumb-item active"
+								th:if="${userDetails.doctor != null}">Edit Doctor Profile</li>
+							<li class="breadcrumb-item active"
+								th:unless="${userDetails.doctor != null}">Edit Patient
+								Profile</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
@@ -119,8 +147,8 @@ form {
 			<p th:text="${message}"></p>
 		</div>
 
-		<form th:action="@{/api/v1/users/edituserprofile}" th:object="${userDetails}"
-			method="post">
+		<form th:action="@{/api/v1/users/edituserprofile}"
+			th:object="${userDetails}" method="post">
 
 			<!-- Hidden fields -->
 			<input type="hidden" th:field="*{roleID}" /> <input type="hidden"
@@ -146,7 +174,7 @@ form {
 					th:field="*{doctor.doctorName}" /> <input type="text"
 					th:if="${userDetails.doctor == null}"
 					th:field="*{patient.patientName}" />
-			</div>			
+			</div>
 			<div class="form-group" th:if="${userDetails.doctor != null}">
 				<label class="required">License Number: </label> <input type="text"
 					th:field="*{doctor.licenseNumber}" />

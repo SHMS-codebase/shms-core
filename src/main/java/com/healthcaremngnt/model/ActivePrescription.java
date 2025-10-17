@@ -134,6 +134,10 @@ public class ActivePrescription {
 		this.followUpNeeded = followUpNeeded;
 	}
 
+	public String getFollowUpNeededDisplay() {
+		return Boolean.TRUE.equals(followUpNeeded) ? "Yes" : "No";
+	}
+
 	@Override
 	public String toString() {
 		return "ActivePrescription [prescriptionID=" + prescriptionID + ", patientName=" + patientName + ", diagnosis="

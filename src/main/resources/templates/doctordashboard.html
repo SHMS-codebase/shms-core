@@ -46,10 +46,11 @@
 							<strong>Experience:</strong> <span
 								th:text="${doctor.experience + ' Years'}"></span>
 						</div>
-						<div>
+						<div class="edit-link-wrapper">
 							<a
-								th:href="@{/api/v1/users/edituserprofile(source='doctordashboard')}">Edit
-								Profile</a>
+								th:href="@{/api/v1/users/edituserprofile(source='doctordashboard')}">
+								<i class="fas fa-user-edit"></i> Edit Profile
+							</a>
 						</div>
 					</div>
 				</section>
@@ -72,20 +73,23 @@
 				<!-- Tab Content Section -->
 
 				<div id="Schedule" class="tabcontent">
-					<h2>My Schedule</h2>
+					<h3 class="centered-text">My Schedule</h3>
+					<p>Manage your availability and appointments</p>
 					<ul>
 						<li><a
 							th:href="@{/api/v1/doctor/createschedule(doctorID=${doctor.doctorID}, source='doctordashboard')}">Create
 								Schedules</a></li>
 						<li><a
-							th:href="@{/api/v1/doctor/viewallschedules(doctorID=${doctor.doctorID}, source='doctordashboard')}">View/
-								Update Schedules</a></li>
+							th:href="@{/api/v1/doctor/viewallschedules(doctorID=${doctor.doctorID}, source='doctordashboard')}">View All Schedules</a></li>
 					</ul>
 				</div>
 				<div id="Appointments" class="tabcontent">
-					<h2>Today's Appointments</h2>
+					<h3 class="centered-text">Today's Appointments</h3>
+					<p>View and Manage Today's Appointments</p>
 					<br>
-					<h3>New Appointments</h3>
+					<h4>
+						<i>New Appointments</i>
+					</h4>
 					<div th:with="newAppointments=${appointments.?[!isFollowup]}">
 						<div
 							th:if="${newAppointments != null and !newAppointments.isEmpty()}">
@@ -115,10 +119,10 @@
 							<p>No New Appointments for Today!</p>
 						</div>
 					</div>
-
 					<br>
-
-					<h3>Follow-up Appointments</h3>
+					<h4>
+						<i>Follow-up Appointments</i>
+					</h4>
 					<div th:with="followupAppointments=${appointments.?[isFollowup]}">
 						<div
 							th:if="${followupAppointments != null and !followupAppointments.isEmpty()}">
@@ -151,7 +155,8 @@
 				</div>
 
 				<div id="PatientRecords" class="tabcontent">
-					<h2>Patient Records</h2>
+					<h3 class="centered-text">Patient Records</h3>
+					<p>Access and Update Patient Medical Records</p>
 					<ul>
 						<li><a
 							th:href="@{/api/v1/search/searchuser(doctorID=${doctor.doctorID}, source='doctordashboard')}">Search/
@@ -163,7 +168,8 @@
 				</div>
 
 				<div id="Prescriptions" class="tabcontent">
-					<h2>Active Prescriptions</h2>
+					<h3 class="centered-text">Active Prescriptions</h3>
+					<p>View and Manage Active Prescriptions</p>
 					<div
 						th:if="${activeprescriptions != null and !activeprescriptions.isEmpty()}">
 						<table>
@@ -188,7 +194,7 @@
 									<td th:text="${prescription.numberOfMedications}"></td>
 									<td th:text="${prescription.prescriptionDate}"></td>
 									<td th:text="${prescription.treatmentStatus}"></td>
-									<td th:text="${prescription.followUpNeeded}"></td>
+									<td th:text="${prescription.followUpNeededDisplay}"></td>
 								</tr>
 							</tbody>
 						</table>
@@ -200,9 +206,10 @@
 				</div>
 
 				<div id="Messages" class="tabcontent">
-					<h2>Messages &amp; Notifications</h2>
+					<h3 class="centered-text">Messages &amp; Notifications</h3>
+					<p>View all your messages and notifications</p>
 					<ul>
-						<li><a href="/notifications">Notifications</a></li>
+						<li><a th:href="@{/api/v1/notifications/doctornotifications(source='doctordashboard')}">Notifications</a></li>
 					</ul>
 				</div>
 

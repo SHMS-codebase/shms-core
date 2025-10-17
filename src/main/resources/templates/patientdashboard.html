@@ -38,10 +38,11 @@
 						<div>
 							<strong>Date Of Birth:</strong> <span th:text="${patient.dob}"></span>
 						</div>
-						<div>
+						<div class="edit-link-wrapper">
 							<a
-								th:href="@{/api/v1/users/edituserprofile(source='patientdashboard')}">Edit
-								Profile</a>
+								th:href="@{/api/v1/users/edituserprofile(source='patientdashboard')}">
+								<i class="fas fa-user-edit"></i> Edit Profile
+							</a>
 						</div>
 					</div>
 				</section>
@@ -70,6 +71,7 @@
 				<!-- Tab Content Section -->
 				<div id="Appointments" class="tabcontent">
 					<h3 class="centered-text">Upcoming Appointments</h3>
+					<p>View and manage your upcoming appointments</p>
 					<div th:if="${appointments != null and !appointments.isEmpty()}">
 						<table>
 							<thead>
@@ -92,12 +94,14 @@
 							</tbody>
 						</table>
 					</div>
+					<br>
 					<div th:if="${appointments == null or appointments.isEmpty()}">
 						<p>No upcoming appointments!</p>
 					</div>
 				</div>
 				<div id="MedRecSummary" class="tabcontent">
 					<h3>Medical Summary</h3>
+					<p>Overview of your medical history</p>
 					<ul>
 						<li><a
 							th:href="@{/api/v1/patient/recentvisits(patientID=${patient.patientID}, source='patientdashboard')}">Recent
@@ -115,6 +119,7 @@
 				</div>
 				<div id="DoctorProfiles" class="tabcontent">
 					<h3>View Doctor Profiles</h3>
+					<p>Search and connect with doctors</p>
 					<ul>
 						<li><a
 							th:href="@{/api/v1/search/searchuser(source='patientdashboard')}">Search
@@ -126,6 +131,7 @@
 				</div>
 				<div id="ActivePrescriptions" class="tabcontent">
 					<h3>Active Prescriptions</h3>
+					<p>View and manage your active prescriptions</p>
 					<div
 						th:if="${activeprescriptions != null and !activeprescriptions.isEmpty()}">
 						<table>
@@ -162,18 +168,25 @@
 				</div>
 				<div id="BillingInfo" class="tabcontent">
 					<h3>Billing Information</h3>
+					<p>View and manage your billing details</p>
 					<ul>
-						<li><a href="#">Search Invoices</a></li>
-						<li><a href="#">Recent Payments</a></li>
+						<li><a
+							th:href="@{/api/v1/search/searchinvoices(patientID=${patient.patientID}, source='patientdashboard')}">Search
+								Invoices</a></li>
+						<li><a
+							th:href="@{/api/v1/payment/recentpayments(patientID=${patient.patientID}, source='patientdashboard')}">Recent
+								Payments</a></li>
 					</ul>
 				</div>
 				<!-- Messages & Notifications -->
 				<div id="AnnouncementsNotifications" class="tabcontent">
 					<h3 class="centered-text">Announcements &amp; Notifications</h3>
-					<p>System alerts and updates</p>
+					<p>Stay updated with the latest news and alerts</p>
 					<ul>
-						<li><a href="#">Announcements</a>
-						<li><a href="#">Notifications</a></li>
+						<li><a
+							th:href="@{/api/v1/notifications/announcements(source='patientdashboard')}">Announcements</a>
+						<li><a
+							th:href="@{/api/v1/notifications/patientnotifications(source='patientdashboard')}">Notifications</a></li>
 					</ul>
 				</div>
 			</div>

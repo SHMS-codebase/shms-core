@@ -50,8 +50,8 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 500px;
-	margin-bottom: 400px;
+	margin-top: 200px;
+	margin-bottom: 20px;
 	display: flex;
 	flex-direction: column;
 }
@@ -98,6 +98,14 @@ th {
 		width: 95%;
 	}
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
@@ -106,7 +114,21 @@ th {
 
 	<div class="container">
 
-		<h4 class="centered-text">Treatment Details</h4>
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>My Treatment Details</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/patient">Patient Dashboard</a></li>
+							<li class="breadcrumb-item active">Treatment Details</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
 
 		<div th:if="${errorMessage}" class="error-message">
 			<p th:text="${errorMessage}"></p>
@@ -129,7 +151,7 @@ th {
 				<tbody>
 					<tr th:each="treatmentdetail : ${treatmentdetails}">
 						<td><a
-							th:href="@{'/api/v1/treatments/viewtreatment'(treatmentID=${treatmentdetail.treatmentID}, source='doctordashboard')}"
+							th:href="@{'/api/v1/treatments/viewtreatment'(treatmentID=${treatmentdetail.treatmentID}, source='patientdashboard')}"
 							th:text="${treatmentdetail.treatmentID}"></a></td>
 						<td th:text="${treatmentdetail.treatmentDate}"></td>
 						<td th:text="${treatmentdetail.diagnosis}"></td>

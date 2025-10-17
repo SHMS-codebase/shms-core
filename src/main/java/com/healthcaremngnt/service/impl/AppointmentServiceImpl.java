@@ -210,7 +210,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public List<Appointment> getTodaysAppointments(Doctor doctor) {
 		logger.info("Fetching today's appointments for Doctor ID: {}", doctor.getDoctorID());
 
-		return appointmentRepository.findByDoctorAndAppointmentDateAndAppointmentStatus(doctor, LocalDate.now(),
+		return appointmentRepository.findByDoctorAndAppointmentDateAndAppointmentStatusOrderByCreatedDateAsc(doctor, LocalDate.now(),
 				AppointmentStatus.SCHEDULED);
 
 	}

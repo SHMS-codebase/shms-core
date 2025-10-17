@@ -66,8 +66,8 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 600px;
-	margin-bottom: 550px;
+	margin-top: 200px;
+	margin-bottom: 50px;
 	display: flex;
 	flex-direction: column;
 }
@@ -132,6 +132,14 @@ label {
 	display: block; /* Ensure the label stays above the field */
 	margin-bottom: 5px;
 }
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -139,17 +147,32 @@ label {
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-
 	<div class="container">
 
 		<div class="search-section">
-			<h4 class="centered-text">Search Treatments</h4>
+
+			<!-- Page Header -->
+			<div class="page-header">
+				<div class="d-flex justify-content-between align-items-center">
+					<div>
+						<h2>Search Treatments</h2>
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a
+									href="/api/v1/auth/dashboard/doctor">Doctor Dashboard</a></li>
+								<li class="breadcrumb-item active">Search Treatments</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
 
 			<div th:if="${errorMessage}" class="error-message">
 				<p th:text="${errorMessage}"></p>
 			</div>
 
-			<form id="searchForm" th:action="@{/api/v1/search/searchtreatments}" method="POST">
+			<form id="searchForm" th:action="@{/api/v1/search/searchtreatments}"
+				method="POST">
 
 				<input type="hidden" name="source" th:value="${source}">
 
@@ -166,14 +189,15 @@ label {
 					</div>
 
 					<div class="form-group col-md-3">
-						<label for="treatmentID">Treatment ID:</label> <input type="number"
-							id="treatmentID" name="treatmentID" class="form-control"
-							placeholder="Enter Treatment ID">
+						<label for="treatmentID">Treatment ID:</label> <input
+							type="number" id="treatmentID" name="treatmentID"
+							class="form-control" placeholder="Enter Treatment ID">
 					</div>
 
 					<div class="form-group col-md-3">
-						<label for="treatmentDate">Treatment Date:</label> <input type="date"
-							id="treatmentDate" name="treatmentDate" class="form-control">
+						<label for="treatmentDate">Treatment Date:</label> <input
+							type="date" id="treatmentDate" name="treatmentDate"
+							class="form-control">
 					</div>
 
 					<div class="form-group col-md-3">

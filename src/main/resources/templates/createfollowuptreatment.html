@@ -206,13 +206,15 @@ textarea.form-control {
 	color: white;
 	border: none;
 	border-radius: 4px;
-	padding: 12px 30px;
+	padding: 34px 73px;
 	font-size: 16px;
 	cursor: pointer;
 	transition: background-color 0.3s;
 	font-weight: 500;
 	text-decoration: none;
 	display: inline-block;
+	margin-top: 15px;
+	margin-bottom: 10px;
 }
 
 .btn-secondary:hover {
@@ -281,235 +283,264 @@ textarea.form-control {
 		margin-bottom: 8px;
 	}
 }
+
+.container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 1000px;
+	padding: 30px;
+	margin-top: 1900px;
+	margin-bottom: 40px;
+}
+
+.page-header {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
 	<!-- Include Header Fragment -->
 	<div th:replace="~{fragments/header-loggedin :: header}"></div>
 
-	<div class="main-content">
-		<div class="container-wrapper">
-			<h2 class="page-title">Follow-up Treatment</h2>
-
-			<!-- Display error or success message if available -->
-			<div th:if="${errorMessage}" class="message-box error-message">
-				<p th:text="${errorMessage}"></p>
+	<div class="container">
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="d-flex justify-content-between align-items-center">
+				<div>
+					<h2>Follow-up Treatment</h2>
+					<nav aria-label="breadcrumb">
+						<ol class="breadcrumb mb-0">
+							<li class="breadcrumb-item"><a
+								href="/api/v1/auth/dashboard/doctor">Doctor Dashboard</a></li>
+							<li class="breadcrumb-item active">Follow-up Treatment</li>
+						</ol>
+					</nav>
+				</div>
 			</div>
-			<div th:if="${message}" class="message-box success-message">
-				<p th:text="${message}"></p>
+		</div>
+
+
+		<!-- Display error or success message if available -->
+		<div th:if="${errorMessage}" class="message-box error-message">
+			<p th:text="${errorMessage}"></p>
+		</div>
+		<div th:if="${message}" class="message-box success-message">
+			<p th:text="${message}"></p>
+		</div>
+
+		<!-- Previous Treatment Details Section -->
+		<div class="section-card" th:if="${previousTreatment != null}">
+
+			<!-- Patient and Doctor Information (Read-only) -->
+			<div class="form-row">
+				<div class="form-label">Patient:</div>
+				<div class="form-input">
+					<div class="info-text" th:text="${patientName}"></div>
+				</div>
+				<div class="form-label">Doctor:</div>
+				<div class="form-input">
+					<div class="info-text" th:text="${doctorName}"></div>
+				</div>
 			</div>
 
-			<!-- Previous Treatment Details Section -->
-			<div class="section-card" th:if="${previousTreatment != null}">
+			<h3 class="section-title">
+				<i class="fas fa-history"></i> Previous Treatment Details
+			</h3>
 
-				<!-- Patient and Doctor Information (Read-only) -->
+			<div class="detail-row">
+				<div class="detail-label">Treatment ID:</div>
+				<div class="detail-value" th:text="${previousTreatment.treatmentID}"></div>
+				<div class="detail-label">Treatment Date:</div>
+				<div class="detail-value"
+					th:text="${#temporals.format(previousTreatment.treatmentDate, 'dd-MM-yyyy')}"></div>
+			</div>
+
+			<div class="detail-row">
+				<div class="detail-label">Diagnosis:</div>
+				<div class="detail-value" th:text="${previousTreatment.diagnosis}"></div>
+			</div>
+
+			<div class="detail-row"
+				th:if="${previousTreatment.treatmentDetails != null && !previousTreatment.treatmentDetails.isEmpty()}">
+				<div class="detail-label">Treatment Details:</div>
+				<div class="detail-value">
+					<div class="notes-box"
+						th:text="${previousTreatment.treatmentDetails}"></div>
+				</div>
+			</div>
+
+			<div class="section medication-section">
+				<h3 class="section-title">Previous Medications</h3>
+
+				<!-- Show table if prescription exists and has details -->
+				<div
+					th:if="${previousPrescription != null and #lists.isNotEmpty(previousPrescription.prescriptionDetails)}">
+					<table class="medication-table">
+						<thead>
+							<tr>
+								<th>Medicine Name</th>
+								<th>Medicine Type</th>
+								<th>Dosage</th>
+								<th>Frequency</th>
+								<th>Duration (Days)</th>
+								<th>Instructions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								th:each="detail : ${previousPrescription.prescriptionDetails}">
+								<td th:text="${detail.medicine.medicineName}"></td>
+								<td th:text="${detail.medicine.medicineType}"></td>
+								<td th:text="${detail.dosage}"></td>
+								<td th:text="${detail.frequency}"></td>
+								<td th:text="${detail.duration}"></td>
+								<td th:text="${detail.instructions}"></td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="medication-note">
+						<p>
+							<strong>General Instructions:</strong> <span
+								th:text="${previousTreatment.prescription.generalInstructions}"></span>
+						</p>
+					</div>
+				</div>
+
+				<p
+					th:unless="${previousPrescription != null and #lists.isNotEmpty(previousPrescription.prescriptionDetails)}">
+					No Medications Prescribed</p>
+			</div>
+
+
+			<div class="detail-row"
+				th:if="${previousTreatment.notes != null && !previousTreatment.notes.isEmpty()}">
+				<div class="detail-label">Additional Notes:</div>
+				<div class="detail-value">
+					<div class="notes-box" th:text="${previousTreatment.notes}"></div>
+				</div>
+			</div>
+
+			<div class="detail-row"
+				th:if="${previousTreatment.treatmentStatus != null}">
+				<div class="detail-label">Treatment Status:</div>
+				<div class="detail-value"
+					th:text="${previousTreatment.treatmentStatus}"></div>
+			</div>
+		</div>
+
+		<!-- New Treatment Form Section -->
+		<div class="section-card">
+			<h3 class="section-title">
+				<i class="fas fa-plus-circle"></i> Add Today's Treatment Details
+			</h3>
+
+			<form th:action="@{/api/v1/treatments/createFollowupTreatment}"
+				method="POST" id="followupTreatmentForm">
+
+				<!-- Hidden fields -->
+				<input type="hidden" name="appointmentID"
+					th:value="${appointmentID}" /> <input type="hidden"
+					name="previousTreatmentID"
+					th:value="${previousTreatment?.treatmentID}" />
+
+				<!-- Current Diagnosis -->
 				<div class="form-row">
-					<div class="form-label">Patient:</div>
+					<div class="form-label required">Current Diagnosis:</div>
 					<div class="form-input">
-						<div class="info-text" th:text="${patientName}"></div>
+						<textarea class="form-control" id="diagnosis" name="diagnosis"
+							placeholder="Enter current diagnosis or update on condition"
+							required></textarea>
+						<span class="error-message" id="diagnosisError"></span>
 					</div>
-					<div class="form-label">Doctor:</div>
+				</div>
+
+				<!-- Progress/Status Update -->
+				<div class="form-row">
+					<div class="form-label required">Progress Status:</div>
 					<div class="form-input">
-						<div class="info-text" th:text="${doctorName}"></div>
+						<select class="form-control" id="progressStatus"
+							name="progressStatus" required>
+							<option value="" disabled selected>Select Progress
+								Status</option>
+							<option value="IMPROVED">Improved</option>
+							<option value="STABLE">Stable/No Change</option>
+							<option value="WORSENED">Worsened</option>
+							<option value="RESOLVED">Resolved</option>
+						</select> <span class="error-message" id="progressStatusError"></span>
 					</div>
 				</div>
 
-				<h3 class="section-title">
-					<i class="fas fa-history"></i> Previous Treatment Details
-				</h3>
-
-				<div class="detail-row">
-					<div class="detail-label">Treatment ID:</div>
-					<div class="detail-value"
-						th:text="${previousTreatment.treatmentID}"></div>
-					<div class="detail-label">Treatment Date:</div>
-					<div class="detail-value"
-						th:text="${#temporals.format(previousTreatment.treatmentDate, 'dd-MM-yyyy')}"></div>
-				</div>
-
-				<div class="detail-row">
-					<div class="detail-label">Diagnosis:</div>
-					<div class="detail-value" th:text="${previousTreatment.diagnosis}"></div>
-				</div>
-
-				<div class="detail-row"
-					th:if="${previousTreatment.treatmentDetails != null && !previousTreatment.treatmentDetails.isEmpty()}">
-					<div class="detail-label">Treatment Details:</div>
-					<div class="detail-value">
-						<div class="notes-box"
-							th:text="${previousTreatment.treatmentDetails}"></div>
+				<!-- Treatment Notes -->
+				<div class="form-row">
+					<div class="form-label required">Treatment Details:</div>
+					<div class="form-input">
+						<textarea class="form-control" id="treatmentDetails"
+							name="treatmentDetails"
+							placeholder="Enter detailed treatment details, observations and recommendations"
+							rows="5" required></textarea>
+						<span class="error-message" id="treatmentNotesError"></span>
 					</div>
 				</div>
 
-				<div class="section medication-section">
-					<h3 class="section-title">Previous Medications</h3>
-
-					<!-- Show table if prescription exists and has details -->
-					<div
-						th:if="${previousPrescription != null and #lists.isNotEmpty(previousPrescription.prescriptionDetails)}">
-						<table class="medication-table">
-							<thead>
-								<tr>
-									<th>Medicine Name</th>
-									<th>Medicine Type</th>
-									<th>Dosage</th>
-									<th>Frequency</th>
-									<th>Duration (Days)</th>
-									<th>Instructions</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr
-									th:each="detail : ${previousPrescription.prescriptionDetails}">
-									<td th:text="${detail.medicine.medicineName}"></td>
-									<td th:text="${detail.medicine.medicineType}"></td>
-									<td th:text="${detail.dosage}"></td>
-									<td th:text="${detail.frequency}"></td>
-									<td th:text="${detail.duration}"></td>
-									<td th:text="${detail.instructions}"></td>
-								</tr>
-							</tbody>
-						</table>
-
-						<div class="medication-note">
-							<p>
-								<strong>General Instructions:</strong> <span
-									th:text="${previousTreatment.prescription.generalInstructions}"></span>
-							</p>
-						</div>
-					</div>
-
-					<p
-						th:unless="${previousPrescription != null and #lists.isNotEmpty(previousPrescription.prescriptionDetails)}">
-						No Medications Prescribed</p>
-				</div>
-
-
-				<div class="detail-row"
-					th:if="${previousTreatment.notes != null && !previousTreatment.notes.isEmpty()}">
-					<div class="detail-label">Additional Notes:</div>
-					<div class="detail-value">
-						<div class="notes-box" th:text="${previousTreatment.notes}"></div>
+				<!-- Additional Notes -->
+				<div class="form-row">
+					<div class="form-label">Additional Notes:</div>
+					<div class="form-input">
+						<textarea class="form-control" id="additionalNotes"
+							name="additionalNotes"
+							placeholder="Enter any additional observations or instructions"
+							rows="3"></textarea>
 					</div>
 				</div>
 
-				<div class="detail-row"
-					th:if="${previousTreatment.treatmentStatus != null}">
-					<div class="detail-label">Treatment Status:</div>
-					<div class="detail-value"
-						th:text="${previousTreatment.treatmentStatus}"></div>
+				<!-- Treatment Status -->
+				<div class="form-row">
+					<div class="form-label required">Treatment Status:</div>
+					<div class="form-input">
+						<select class="form-control" id="treatmentStatus"
+							name="treatmentStatus" required>
+							<option value="" disabled selected>Select Treatment
+								Status</option>
+							<option
+								th:each="status : ${T(com.healthcaremngnt.enums.TreatmentStatus).values()}"
+								th:value="${status}" th:text="${status}"></option>
+						</select> <span class="error-message" id="treatmentStatusError"></span>
+					</div>
 				</div>
-			</div>
 
-			<!-- New Treatment Form Section -->
-			<div class="section-card">
-				<h3 class="section-title">
-					<i class="fas fa-plus-circle"></i> Add Today's Treatment Details
-				</h3>
-
-				<form th:action="@{/api/v1/treatments/createFollowupTreatment}"
-					method="POST" id="followupTreatmentForm">
-
-					<!-- Hidden fields -->
-					<input type="hidden" name="appointmentID"
-						th:value="${appointmentID}" /> <input type="hidden"
-						name="previousTreatmentID"
-						th:value="${previousTreatment?.treatmentID}" />
-
-					<!-- Current Diagnosis -->
-					<div class="form-row">
-						<div class="form-label required">Current Diagnosis:</div>
-						<div class="form-input">
-							<textarea class="form-control" id="diagnosis" name="diagnosis"
-								placeholder="Enter current diagnosis or update on condition"
-								required></textarea>
-							<span class="error-message" id="diagnosisError"></span>
-						</div>
+				<!-- Follow-up Needed -->
+				<div class="form-row">
+					<div class="form-label required">Follow-up Needed:</div>
+					<div class="form-input">
+						<select class="form-control" id="followupNeeded"
+							name="followupNeeded" required>
+							<option value="" disabled selected>Select Follow-up
+								Option</option>
+							<option value="true">Yes</option>
+							<option value="false">No</option>
+						</select> <span class="error-message" id="followupNeededError"></span>
 					</div>
+				</div>
 
-					<!-- Progress/Status Update -->
-					<div class="form-row">
-						<div class="form-label required">Progress Status:</div>
-						<div class="form-input">
-							<select class="form-control" id="progressStatus"
-								name="progressStatus" required>
-								<option value="" disabled selected>Select Progress
-									Status</option>
-								<option value="IMPROVED">Improved</option>
-								<option value="STABLE">Stable/No Change</option>
-								<option value="WORSENED">Worsened</option>
-								<option value="RESOLVED">Resolved</option>
-							</select> <span class="error-message" id="progressStatusError"></span>
-						</div>
-					</div>
-
-
-
-					<!-- Treatment Notes -->
-					<div class="form-row">
-						<div class="form-label required">Treatment Details:</div>
-						<div class="form-input">
-							<textarea class="form-control" id="treatmentDetails"
-								name="treatmentDetails"
-								placeholder="Enter detailed treatment details, observations and recommendations"
-								rows="5" required></textarea>
-							<span class="error-message" id="treatmentNotesError"></span>
-						</div>
-					</div>
-
-					<!-- Additional Notes -->
-					<div class="form-row">
-						<div class="form-label">Additional Notes:</div>
-						<div class="form-input">
-							<textarea class="form-control" id="additionalNotes"
-								name="additionalNotes"
-								placeholder="Enter any additional observations or instructions"
-								rows="3"></textarea>
-						</div>
-					</div>
-
-					<!-- Treatment Status -->
-					<div class="form-row">
-						<div class="form-label required">Treatment Status:</div>
-						<div class="form-input">
-							<select class="form-control" id="treatmentStatus"
-								name="treatmentStatus" required>
-								<option value="" disabled selected>Select Treatment
-									Status</option>
-								<option
-									th:each="status : ${T(com.healthcaremngnt.enums.TreatmentStatus).values()}"
-									th:value="${status}" th:text="${status}"></option>
-							</select> <span class="error-message" id="treatmentStatusError"></span>
-						</div>
-					</div>
-
-					<!-- Follow-up Needed -->
-					<div class="form-row">
-						<div class="form-label required">Follow-up Needed:</div>
-						<div class="form-input">
-							<select class="form-control" id="followupNeeded"
-								name="followupNeeded" required>
-								<option value="" disabled selected>Select Follow-up
-									Option</option>
-								<option value="true">Yes</option>
-								<option value="false">No</option>
-							</select> <span class="error-message" id="followupNeededError"></span>
-						</div>
-					</div>
-
-					<!-- Submit Buttons -->
-					<div class="btn-container">
-						<a th:href="@{/treatments}" class="btn-secondary">Cancel</a>
-						<button type="button" class="btn-submit"
-							id="saveWithoutPrescription">
-							<i class="fas fa-save"></i> Save Without Prescription
-						</button>
-						<button type="button" class="btn-submit" id="saveWithPrescription">
-							<i class="fas fa-prescription"></i> Save &amp; Add Prescription
-						</button>
-					</div>
-				</form>
-			</div>
+				<!-- Submit Buttons -->
+				<div class="btn-container">
+					<a th:href="@{/api/v1/auth/dashboard/doctor}" class="btn-secondary">Cancel</a>
+					<button type="button" class="btn-submit"
+						id="saveWithoutPrescription">
+						<i class="fas fa-save"></i> Save Without Prescription
+					</button>
+					<button type="button" class="btn-submit" id="saveWithPrescription">
+						<i class="fas fa-prescription"></i> Save &amp; Add Prescription
+					</button>
+				</div>
+			</form>
 		</div>
 	</div>
 

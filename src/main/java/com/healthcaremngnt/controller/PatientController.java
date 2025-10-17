@@ -135,8 +135,8 @@ public class PatientController {
 			patientService.updateMedicalHistory(medicalHistory);
 			logger.debug("{}", MessageConstants.MEDICAL_HSTY_UPD_SUCCESS);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.MEDICAL_HSTY_UPD_FAILURE, e);
-			model.addAttribute("errorMessage", MessageConstants.MEDICAL_HSTY_UPD_FAILURE);
+			logger.error("{}: {}", MessageConstants.MEDICAL_HSTY_UPD_FAILURE, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			model.addAttribute("medicalHistoryWrapper", medicalHistoryWrapper);
 			return "viewmedicalhistory";
 		}
@@ -182,8 +182,8 @@ public class PatientController {
 			medicalHistoryWrapper.setMedicalHistoryList(medicalHistory);
 			logger.debug("{}", MessageConstants.MEDICAL_HSTY_ADD_SUCCESS);
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.MEDICAL_HSTY_ADD_FAILURE, e.getLocalizedMessage());
-			model.addAttribute("errorMessage", MessageConstants.MEDICAL_HSTY_ADD_FAILURE);
+			logger.error("{}: {}", MessageConstants.MEDICAL_HSTY_ADD_FAILURE, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			model.addAttribute("medicalHistoryWrapper", medicalHistoryWrapper);
 			return "viewmedicalhistory";
 		}
@@ -220,8 +220,8 @@ public class PatientController {
 			model.addAttribute("doctors", doctors);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.VIEW_MY_DOCTORS_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 
@@ -243,8 +243,8 @@ public class PatientController {
 			model.addAttribute("recentvisits", recentVisits);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.VIEW_RECENT_VISITS_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.VIEW_RECENT_VISITS_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.VIEW_RECENT_VISITS_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 
@@ -266,8 +266,8 @@ public class PatientController {
 			model.addAttribute("treatmentdetails", treatmentDetails);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.VIEW_TREATMENT_DETAILS_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.VIEW_TREATMENT_DETAILS_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.VIEW_TREATMENT_DETAILS_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 
@@ -289,8 +289,8 @@ public class PatientController {
 			model.addAttribute("prescriptiondetails", prescriptionDetails);
 
 		} catch (Exception e) {
-			logger.error("{}: {}", MessageConstants.VIEW_PRESC_DETAILS_LOAD_ERROR, e);
-			model.addAttribute("errorMessage", MessageConstants.VIEW_PRESC_DETAILS_LOAD_ERROR);
+			logger.error("{}: {}", MessageConstants.VIEW_PRESC_DETAILS_LOAD_ERROR, e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
 			return source;
 		}
 

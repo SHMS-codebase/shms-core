@@ -86,6 +86,7 @@ public class TreatmentServiceImpl implements TreatmentService {
 		validateTreatment(treatment);
 
 		var updatedTreatment = treatmentRepository.save(treatment);
+		logger.debug("Updated Treatment Entity: {}", updatedTreatment);
 		logger.info("Successfully updated treatment with ID: {}", updatedTreatment.getTreatmentID());
 
 		return updatedTreatment;

@@ -110,6 +110,7 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 		validatePrescription(prescription);
 
 		prescriptionRepository.save(prescription);
+		prescription.getPrescriptionDetails().size(); // triggers lazy loading
 		if (!prescription.getPrescriptionDetails().isEmpty()) {
 			prescriptionDetailService.updatePrescriptionDetails(prescription);
 		}

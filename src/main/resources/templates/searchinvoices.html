@@ -66,7 +66,7 @@ form {
 	width: 100%;
 	max-width: 1200px;
 	padding: 30px;
-	margin-top: 150px;
+	margin-top: 250px;
 	margin-bottom: 50px;
 	display: flex;
 	flex-direction: column;
@@ -158,15 +158,19 @@ label {
 						<h2>Search Invoices</h2>
 						<nav aria-label="breadcrumb">
 							<ol class="breadcrumb mb-0">
-								<li class="breadcrumb-item"><a
+								<li class="breadcrumb-item"
+									th:if="${source == 'admindashboard'}"><a
 									href="/api/v1/auth/dashboard/admin">Dashboard</a></li>
+								<li class="breadcrumb-item"
+									th:if="${source == 'patientdashboard'}"><a
+									href="/api/v1/auth/dashboard/patient">Patient Dashboard</a></li>
 								<li class="breadcrumb-item active">Search Invoices</li>
 							</ol>
 						</nav>
 					</div>
 				</div>
 			</div>
-			
+
 			<div th:if="${errorMessage}" class="error-message">
 				<p th:text="${errorMessage}"></p>
 			</div>
@@ -174,13 +178,24 @@ label {
 			<form id="searchForm" th:action="@{/api/v1/search/searchinvoices}"
 				method="POST">
 
-				<input type="hidden" name="source" th:value="${source}">
+				<input type="hidden" name="source" th:value="${source}"> 
+				<!-- <input type="hidden" name="patientID" th:value="${patientID}"> -->
 
 				<div class="form-inline row">
 					<div class="form-group col-md-3">
-						<label for="patientID">Patient Name:</label> <select
-							id="patientID" name="patientID" class="form-control">
-							<option value="" disabled selected>Select Patient</option>
+						<label for="patientID">Patient Name:</label>
+						<!-- Patient user - readonly field (when patientID is provided) -->
+						<th:block th:if="${patientID != null}">
+							<input type="text" class="form-control"
+								th:value="${patients.?[patientID == __${patientID}__][0]?.patientName}"
+								readonly />
+							<input type="hidden" name="patientID" th:value="${patientID}" />
+						</th:block>
+
+						<!-- Admin user - dropdown (when patientID is null) -->
+						<select th:if="${patientID == null}" id="patientID"
+							name="patientID" class="form-control">
+							<option value="">All Patients</option>
 							<th:block th:each="patient : ${patients}">
 								<option th:value="${patient.patientID}"
 									th:text="${patient.patientName}"></option>
@@ -235,7 +250,7 @@ label {
 					<tbody id="resultsBody">
 						<tr th:each="invoice : ${invoices}">
 							<td><a
-								th:href="@{'/api/v1/invoices/viewinvoice'(invoiceID=${invoice.invoiceID}, source='admindashboard', flow='searchinvoices')} "
+								th:href="@{'/api/v1/invoices/viewinvoice'(invoiceID=${invoice.invoiceID}, patientID=${patientID}, source=${source}, flow='searchinvoices')} "
 								th:text="${invoice.invoiceID}"></a></td>
 							<td th:text="${invoice.invoiceDate}"></td>
 							<td th:text="${invoice.totalAmount}"></td>
